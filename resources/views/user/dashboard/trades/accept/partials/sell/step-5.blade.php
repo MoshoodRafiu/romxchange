@@ -16,7 +16,7 @@
                         " data-rating="5"></span><input class="form-control rating-value" type="hidden" id="rate" name="Rating" value="0" />
         </div>
     </div>
-    <p>Transaction completed, the held <strong class="text-info">0.00353 BTC</strong> has been released to <strong>Meezy</strong> . Please Rate Your Transaction With <strong>Meezy</strong> based on transaction time and completion</p>
+    <p>Transaction completed, the held <strong class="text-info">{{ $trade->coin_amount }} {{ $trade->market->coin->abbr }}</strong> has been released to <strong>{{ \App\User::whereId($trade->buyer_id)->first()->display_name }}</strong> . Please Rate Your Transaction With <strong>{{ \App\User::whereId($trade->buyer_id)->first()->display_name }}</strong> based on transaction time and completion</p>
     <div class="form-group col-12">
         <textarea name="review" id="review" class="form-control" placeholder="Review"></textarea>
     </div>

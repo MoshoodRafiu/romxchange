@@ -34,7 +34,11 @@
             </div>
         </div>
         <div class="mx-auto">
-            <button type="submit" id="step-3-proceed" class="btn btn-special px-4">I Have Made Payment</button>
+            @if($trade->buyer_transaction_stage == 2)
+                <button type="submit" id="step-3-proceed" class="btn btn-special px-4">I Have Made Payment</button>
+            @else
+                <button type="submit" id="step-4-nav" class="btn btn-special mx-4">Proceed</button>
+            @endif
         </div>
     </div>
 </form>

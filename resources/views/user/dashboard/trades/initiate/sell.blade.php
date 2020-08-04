@@ -12,11 +12,11 @@
                 <div class="card text-left">
                     <div class="card-header bg-special">
                         <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                            <li class="nav-item"><a class="nav-link step-info present" id="item-1-1-tab" data-toggle="tab" role="tab" aria-controls="item-1-1" aria-selected="true" href="#item-1-1">Coin Volume <i class="fa fa-check-circle text-success"></i></a></li>
-                            <li class="nav-item"><a class="nav-link step-info" id="item-1-2-tab" data-toggle="tab" role="tab" aria-controls="item-1-2" aria-selected="false" href="#item-1-2">Coin Deposit <i class="fa fa-check-circle text-success"></i></a></li>
-                            <li class="nav-item"><a class="nav-link step-info" id="item-1-3-tab" data-toggle="tab" role="tab" aria-controls="item-1-3" aria-selected="false" href="#item-1-3">Acknowledge Payment <i class="fa fa-check-circle text-success"></i></a></li>
-                            <li class="nav-item"><a class="nav-link step-info" id="item-1-4-tab" data-toggle="tab" role="tab" aria-controls="item-1-4" aria-selected="false" href="#item-1-4">Release Coin <i class="fa fa-check-circle text-success"></i></a></li>
-                            <li class="nav-item"><a class="nav-link step-info" id="item-1-5-tab" data-toggle="tab" role="tab" aria-controls="item-1-5" aria-selected="false" href="#item-1-5">Rate Buyer <i class="fa fa-info-circle text-warning"></i></a></li>
+                            <li class="nav-item"><a class="nav-link step-info present" id="item-1-1-tab" data-toggle="tab" role="tab" aria-controls="item-1-1" aria-selected="true" href="#item-1-1">Coin Volume <i id="step-icon-1" class="fa @isset($trade) @if($trade->seller_transaction_stage >= 1) fa-check-circle text-success @else fa-info-circle text-danger @endif @else fa-info-circle text-danger @endisset"></i></a></li>
+                            <li class="nav-item"><a class="nav-link step-info" id="item-1-2-tab" data-toggle="tab" role="tab" aria-controls="item-1-2" aria-selected="false" href="#item-1-2">Coin Deposit <i id="step-icon-2" class="fa @isset($trade) @if($trade->seller_transaction_stage >= 2) fa-check-circle text-success @else fa-info-circle text-danger @endif @else fa-info-circle text-danger @endisset"></i></a></li>
+                            <li class="nav-item"><a class="nav-link step-info" id="item-1-3-tab" data-toggle="tab" role="tab" aria-controls="item-1-3" aria-selected="false" href="#item-1-3">Acknowledge Payment <i id="step-icon-3" class="fa @isset($trade) @if($trade->seller_transaction_stage >= 3) fa-check-circle text-success @else fa-info-circle text-danger @endif @else fa-info-circle text-danger @endisset"></i></a></li>
+                            <li class="nav-item"><a class="nav-link step-info" id="item-1-4-tab" data-toggle="tab" role="tab" aria-controls="item-1-4" aria-selected="false" href="#item-1-4">Release Coin <i id="step-icon-4" class="fa @isset($trade) @if($trade->seller_transaction_stage >= 4) fa-check-circle text-success @else fa-info-circle text-danger @endif @else fa-info-circle text-danger @endisset"></i></a></li>
+                            <li class="nav-item"><a class="nav-link step-info" id="item-1-5-tab" data-toggle="tab" role="tab" aria-controls="item-1-5" aria-selected="false" href="#item-1-5">Rate Buyer <i id="step-icon-5" class="fa @isset($trade) @if($trade->seller_transaction_stage === 5) fa-check-circle text-success @else fa-info-circle text-danger @endif @else fa-info-circle text-danger @endisset"></i></a></li>
                         </ul>
                     </div>
                     <div class="card-body">
@@ -74,7 +74,7 @@
                                         </div>
                                         <div class="mx-auto">
                                             @isset($trade)
-                                                <button type="submit" id="step-1-disabled"  class="btn btn-special px-5" disabled>Proceed</button>
+                                                <button type="submit" id="step-2-nav"  class="btn btn-special px-5">Proceed</button>
                                             @else
                                                 <button id="step-1-proceed" class="btn btn-special px-5">Proceed</button>
                                             @endisset
@@ -188,6 +188,8 @@
                             $(".step").fadeIn().html(result.html);
                             $(".step-info").removeClass("present");
                             $("#item-1-3-tab").addClass("present");
+                            $("#step-icon-2").removeClass("fa-info-circle text-danger");
+                            $("#step-icon-2").addClass("fa-check-circle text-success");
                         }
                     }
                 });
@@ -222,6 +224,8 @@
                             $(".step").fadeIn().html(result.html);
                             $(".step-info").removeClass("present");
                             $("#item-1-4-tab").addClass("present");
+                            $("#step-icon-3").removeClass("fa-info-circle text-danger");
+                            $("#step-icon-3").addClass("fa-check-circle text-success");
                         }
                     }
                 });
@@ -256,6 +260,8 @@
                             $(".step").fadeIn().html(result.html);
                             $(".step-info").removeClass("present");
                             $("#item-1-5-tab").addClass("present");
+                            $("#step-icon-4").removeClass("fa-info-circle text-danger");
+                            $("#step-icon-4").addClass("fa-check-circle text-success");
                         }
                     }
                 });
@@ -265,8 +271,13 @@
 
             //NAVIGATIONS TAB-1
 
+
             $("#item-1-1-tab").click(function (e) {
                 e.preventDefault();
+                nav1();
+            });
+
+            var nav1 = function(){
                 $.ajaxSetup({
                     headers: {
                         "X-CSRF-TOKEN": $("meta[name='csrf-token']").attr('content')
@@ -295,12 +306,22 @@
                     }
                 });
                 @endisset
-            });
+            }
 
             //NAVIGATIONS TAB-2
 
+
+            $(".step").on('click', '#step-2-nav', function (e) {
+                e.preventDefault();
+                nav2();
+            });
+
             $("#item-1-2-tab").click(function (e) {
                 e.preventDefault();
+                nav2();
+            });
+
+            var nav2 = function(){
                 $.ajaxSetup({
                     headers: {
                         "X-CSRF-TOKEN": $("meta[name='csrf-token']").attr('content')
@@ -329,12 +350,21 @@
                     }
                 });
                 @endisset
-            });
+            }
 
             //NAVIGATIONS TAB-3
 
+            $(".step").on('click', '#step-3-nav', function (e) {
+                e.preventDefault();
+                nav3();
+            });
+
             $("#item-1-3-tab").click(function (e) {
                 e.preventDefault();
+                nav3();
+            });
+
+            var nav3 = function(){
                 $.ajaxSetup({
                     headers: {
                         "X-CSRF-TOKEN": $("meta[name='csrf-token']").attr('content')
@@ -363,12 +393,21 @@
                     }
                 });
                 @endisset
-            });
+            }
 
             //NAVIGATIONS TAB-4
 
+            $(".step").on('click', '#step-4-nav', function (e) {
+                e.preventDefault();
+                nav4();
+            });
+
             $("#item-1-4-tab").click(function (e) {
                 e.preventDefault();
+                nav4();
+            });
+
+            var nav4 = function(){
                 $.ajaxSetup({
                     headers: {
                         "X-CSRF-TOKEN": $("meta[name='csrf-token']").attr('content')
@@ -397,12 +436,21 @@
                     }
                 });
                 @endisset
-            });
+            }
 
             //NAVIGATIONS TAB-5
 
+            $(".step").on('click', '#step-5-nav', function (e) {
+                e.preventDefault();
+                nav5();
+            });
+
             $("#item-1-5-tab").click(function (e) {
                 e.preventDefault();
+                nav5();
+            });
+
+            var nav5 = function () {
                 $.ajaxSetup({
                     headers: {
                         "X-CSRF-TOKEN": $("meta[name='csrf-token']").attr('content')
@@ -431,7 +479,7 @@
                     }
                 });
                 @endisset
-            });
+            }
         });
     </script>
 

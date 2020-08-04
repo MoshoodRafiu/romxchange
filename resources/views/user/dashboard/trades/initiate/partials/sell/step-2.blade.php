@@ -30,6 +30,10 @@
     </div>
     <div class="mx-auto">
         <button type="reset" class="btn btn-danger mx-4">Cancel Transaction</button>
-        <button type="submit" id="step-2-proceed" class="btn btn-special mx-4">I Have Deposited</button>
+        @if($trade->seller_transaction_stage == 1)
+            <button type="submit" id="step-2-proceed" class="btn btn-special mx-4">I Have Deposited</button>
+        @else
+            <button type="submit" id="step-3-nav" class="btn btn-special mx-4">Proceed</button>
+        @endif
     </div>
 </form>

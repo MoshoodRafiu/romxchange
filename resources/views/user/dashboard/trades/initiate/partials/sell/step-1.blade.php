@@ -27,6 +27,6 @@
         </select>
     </div>
     <div class="mx-auto">
-        <button disabled id="step-1-disabled" class="btn btn-special px-5">Proceed</button>
+        <button id="step-2-nav" class="btn btn-special px-5">Proceed</button>
     </div>
 </form>

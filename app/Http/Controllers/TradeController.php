@@ -30,64 +30,101 @@ class TradeController extends Controller
         return view('user.dashboard.trades.accept.buy', compact('trade'));
     }
 
-    public function acceptBuyStep1(){
-        $html = view('user.dashboard.trades.accept.partials.buy.step-2')->render();
+    public function acceptBuyStep1(Trade $trade){
+
+        $trade->buyer_transaction_stage = 1;
+
+        $trade->update();
+
+        $html = view('user.dashboard.trades.accept.partials.buy.step-2', compact('trade'))->render();
 
         return response()->json(array('success' => true, 'html' => $html));
     }
 
-    public function acceptBuyStep2(){
+    public function acceptBuyStep2(Trade $trade){
 
-        $html = view('user.dashboard.trades.accept.partials.buy.step-3')->render();
+        $trade->buyer_transaction_stage = 2;
 
-        return response()->json(array('success' => true, 'html' => $html));
-    }
+        $trade->update();
 
-    public function acceptBuyStep3(){
-
-        $html = view('user.dashboard.trades.accept.partials.buy.step-4')->render();
+        $html = view('user.dashboard.trades.accept.partials.buy.step-3', compact('trade'))->render();
 
         return response()->json(array('success' => true, 'html' => $html));
     }
 
-    public function acceptBuyStep4(){
+    public function acceptBuyStep3(Trade $trade){
 
-        $html = view('user.dashboard.trades.accept.partials.buy.step-5')->render();
+        $trade->buyer_transaction_stage = 3;
 
-        return response()->json(array('success' => true, 'html' => $html));
-    }
+        $trade->update();
 
-    public function acceptBuyNavStep1(){
-
-        $html = view('user.dashboard.trades.accept.partials.buy.step-1')->render();
+        $html = view('user.dashboard.trades.accept.partials.buy.step-4', compact('trade'))->render();
 
         return response()->json(array('success' => true, 'html' => $html));
     }
 
-    public function acceptBuyNavStep2(){
+    public function acceptBuyStep4(Trade $trade){
 
-        $html = view('user.dashboard.trades.accept.partials.buy.step-2')->render();
+        $trade->buyer_transaction_stage = 4;
 
-        return response()->json(array('success' => true, 'html' => $html));
-    }
+        $trade->update();
 
-    public function acceptBuyNavStep3(){
-
-        $html = view('user.dashboard.trades.accept.partials.buy.step-3')->render();
+        $html = view('user.dashboard.trades.accept.partials.buy.step-5', compact('trade'))->render();
 
         return response()->json(array('success' => true, 'html' => $html));
     }
 
-    public function acceptBuyNavStep4(){
+    public function acceptBuyNavStep1(Trade $trade){
 
-        $html = view('user.dashboard.trades.accept.partials.buy.step-4')->render();
+        if (!$trade){
+            return;
+        }
+
+        $html = view('user.dashboard.trades.accept.partials.buy.step-1', compact('trade'))->render();
 
         return response()->json(array('success' => true, 'html' => $html));
     }
 
-    public function acceptBuyNavStep5(){
+    public function acceptBuyNavStep2(Trade $trade){
 
-        $html = view('user.dashboard.trades.accept.partials.buy.step-5')->render();
+        if (!$trade || $trade->buyer_transaction_stage < 1 ){
+            return;
+        }
+
+        $html = view('user.dashboard.trades.accept.partials.buy.step-2', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function acceptBuyNavStep3(Trade $trade){
+
+        if (!$trade || $trade->buyer_transaction_stage < 2 ){
+            return;
+        }
+
+        $html = view('user.dashboard.trades.accept.partials.buy.step-3', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function acceptBuyNavStep4(Trade $trade){
+
+        if (!$trade || $trade->buyer_transaction_stage < 3 ){
+            return;
+        }
+
+        $html = view('user.dashboard.trades.accept.partials.buy.step-4', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function acceptBuyNavStep5(Trade $trade){
+
+        if (!$trade || $trade->buyer_transaction_stage < 4 ){
+            return;
+        }
+
+        $html = view('user.dashboard.trades.accept.partials.buy.step-5', compact('trade'))->render();
 
         return response()->json(array('success' => true, 'html' => $html));
     }
@@ -109,64 +146,103 @@ class TradeController extends Controller
         if (!$request->has('company')){
             return response()->json(array('success' => false, 'error' => 'wallet company error'));
         }
+        $trade = Trade::findOrFail($request->trade);
 
-        $html = view('user.dashboard.trades.accept.partials.sell.step-2')->render();
+        $trade->seller_transaction_stage = 1;
+        $trade->seller_wallet_company = $request->company;
 
-        return response()->json(array('success' => true, 'html' => $html));
-    }
+        $trade->update();
 
-    public function acceptSellStep2(){
-
-        $html = view('user.dashboard.trades.accept.partials.sell.step-3')->render();
-
-        return response()->json(array('success' => true, 'html' => $html));
-    }
-
-    public function acceptSellStep3(){
-
-        $html = view('user.dashboard.trades.accept.partials.sell.step-4')->render();
+        $html = view('user.dashboard.trades.accept.partials.sell.step-2', compact('trade'))->render();
 
         return response()->json(array('success' => true, 'html' => $html));
     }
 
-    public function acceptSellStep4(){
+    public function acceptSellStep2(Trade $trade){
 
-        $html = view('user.dashboard.trades.accept.partials.sell.step-5')->render();
 
-        return response()->json(array('success' => true, 'html' => $html));
-    }
+        $trade->seller_transaction_stage = 2;
 
-    public function acceptSellNavStep1(){
+        $trade->update();
 
-        $html = view('user.dashboard.trades.accept.partials.sell.step-1')->render();
+        $html = view('user.dashboard.trades.accept.partials.sell.step-3', compact('trade'))->render();
 
         return response()->json(array('success' => true, 'html' => $html));
     }
 
-    public function acceptSellNavStep2(){
+    public function acceptSellStep3(Trade $trade){
 
-        $html = view('user.dashboard.trades.accept.partials.sell.step-2')->render();
+        $trade->seller_transaction_stage = 3;
 
-        return response()->json(array('success' => true, 'html' => $html));
-    }
+        $trade->update();
 
-    public function acceptSellNavStep3(){
-
-        $html = view('user.dashboard.trades.accept.partials.sell.step-3')->render();
+        $html = view('user.dashboard.trades.accept.partials.sell.step-4', compact('trade'))->render();
 
         return response()->json(array('success' => true, 'html' => $html));
     }
 
-    public function acceptSellNavStep4(){
+    public function acceptSellStep4(Trade $trade){
 
-        $html = view('user.dashboard.trades.accept.partials.sell.step-4')->render();
+        $trade->seller_transaction_stage = 4;
+
+        $trade->update();
+
+        $html = view('user.dashboard.trades.accept.partials.sell.step-5', compact('trade'))->render();
 
         return response()->json(array('success' => true, 'html' => $html));
     }
 
-    public function acceptSellNavStep5(){
+    public function acceptSellNavStep1(Trade $trade){
 
-        $html = view('user.dashboard.trades.accept.partials.sell.step-5')->render();
+        if (!$trade){
+            return;
+        }
+
+        $html = view('user.dashboard.trades.accept.partials.sell.step-1', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function acceptSellNavStep2(Trade $trade){
+
+        if (!$trade || $trade->seller_transaction_stage < 1 ){
+            return;
+        }
+
+        $html = view('user.dashboard.trades.accept.partials.sell.step-2', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function acceptSellNavStep3(Trade $trade){
+
+        if (!$trade || $trade->seller_transaction_stage < 2 ){
+            return;
+        }
+
+        $html = view('user.dashboard.trades.accept.partials.sell.step-3', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function acceptSellNavStep4(Trade $trade){
+
+        if (!$trade || $trade->seller_transaction_stage < 3 ){
+            return;
+        }
+
+        $html = view('user.dashboard.trades.accept.partials.sell.step-4', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function acceptSellNavStep5(Trade $trade){
+
+        if (!$trade || $trade->seller_transaction_stage < 4 ){
+            return;
+        }
+
+        $html = view('user.dashboard.trades.accept.partials.sell.step-5', compact('trade'))->render();
 
         return response()->json(array('success' => true, 'html' => $html));
     }
@@ -245,6 +321,8 @@ class TradeController extends Controller
 
         $trade->seller_transaction_stage = 2;
 
+        $trade->update();
+
         $html = view('user.dashboard.trades.initiate.partials.sell.step-3', compact('trade'))->render();
 
         return response()->json(array('success' => true, 'html' => $html));
@@ -255,6 +333,8 @@ class TradeController extends Controller
         $trade = Trade::findOrFail($request->trade);
 
         $trade->seller_transaction_stage = 3;
+
+        $trade->update();
 
         $html = view('user.dashboard.trades.initiate.partials.sell.step-4', compact('trade'))->render();
 
@@ -267,6 +347,8 @@ class TradeController extends Controller
 
         $trade->seller_transaction_stage = 4;
 
+        $trade->update();
+
         $html = view('user.dashboard.trades.initiate.partials.sell.step-5', compact('trade'))->render();
 
         return response()->json(array('success' => true, 'html' => $html));
@@ -277,6 +359,10 @@ class TradeController extends Controller
 
         $trade = Trade::findOrFail($request->trade);
 
+        if (!$trade){
+            return;
+        }
+
         $html = view('user.dashboard.trades.initiate.partials.sell.step-1', compact('trade'))->render();
 
         return response()->json(array('success' => true, 'html' => $html));
@@ -285,6 +371,10 @@ class TradeController extends Controller
     public function initiateSellNavStep2(Request $request){
 
         $trade = Trade::findOrFail($request->trade);
+
+        if (!$trade || $trade->seller_transaction_stage < 1 ){
+            return;
+        }
 
         $html = view('user.dashboard.trades.initiate.partials.sell.step-2', compact('trade'))->render();
 
@@ -295,6 +385,10 @@ class TradeController extends Controller
 
         $trade = Trade::findOrFail($request->trade);
 
+        if (!$trade || $trade->seller_transaction_stage < 2 ){
+            return;
+        }
+
         $html = view('user.dashboard.trades.initiate.partials.sell.step-3', compact('trade'))->render();
 
         return response()->json(array('success' => true, 'html' => $html));
@@ -304,6 +398,10 @@ class TradeController extends Controller
 
         $trade = Trade::findOrFail($request->trade);
 
+        if (!$trade || $trade->seller_transaction_stage < 3 ){
+            return;
+        }
+
         $html = view('user.dashboard.trades.initiate.partials.sell.step-4', compact('trade'))->render();
 
         return response()->json(array('success' => true, 'html' => $html));
@@ -312,6 +410,10 @@ class TradeController extends Controller
     public function initiateSellNavStep5(Request $request){
 
         $trade = Trade::findOrFail($request->trade);
+
+        if (!$trade || $trade->seller_transaction_stage < 4 ){
+            return;
+        }
 
         $html = view('user.dashboard.trades.initiate.partials.sell.step-5', compact('trade'))->render();
 
@@ -429,6 +531,10 @@ class TradeController extends Controller
 
         $trade = Trade::findOrFail($request->trade);
 
+        if (!$trade){
+            return;
+        }
+
         if ($trade->buyer_transaction_stage)
 
         $html = view('user.dashboard.trades.initiate.partials.buy.step-1', compact('trade'))->render();
@@ -440,6 +546,10 @@ class TradeController extends Controller
 
         $trade = Trade::findOrFail($request->trade);
 
+        if (!$trade || $trade->buyer_transaction_stage < 1 ){
+            return;
+        }
+
         $html = view('user.dashboard.trades.initiate.partials.buy.step-2', compact('trade'))->render();
 
         return response()->json(array('success' => true, 'html' => $html));
@@ -447,9 +557,11 @@ class TradeController extends Controller
 
     public function initiateBuyNavStep3(Request $request){
 
-
-
         $trade = Trade::findOrFail($request->trade);
+
+        if (!$trade || $trade->buyer_transaction_stage < 2 ){
+            return;
+        }
 
         $html = view('user.dashboard.trades.initiate.partials.buy.step-3', compact('trade'))->render();
 
@@ -460,6 +572,10 @@ class TradeController extends Controller
 
         $trade = Trade::findOrFail($request->trade);
 
+        if (!$trade || $trade->buyer_transaction_stage < 3 ){
+            return;
+        }
+
         $html = view('user.dashboard.trades.initiate.partials.buy.step-4', compact('trade'))->render();
 
         return response()->json(array('success' => true, 'html' => $html));
@@ -468,6 +584,10 @@ class TradeController extends Controller
     public function initiateBuyNavStep5(Request $request){
 
         $trade = Trade::findOrFail($request->trade);
+
+        if (!$trade || $trade->buyer_transaction_stage < 4 ){
+            return;
+        }
 
         $html = view('user.dashboard.trades.initiate.partials.buy.step-5', compact('trade'))->render();
 

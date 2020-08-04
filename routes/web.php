@@ -51,10 +51,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/trades/initiate/buy/step3', 'TradeController@initiateBuyStep3')->name('trade.initiate.buy.step3');
     Route::post('/trades/initiate/buy/step4', 'TradeController@initiateBuyStep4')->name('trade.initiate.buy.step4');
 
-    Route::get('/trades/accept/buy/step1', 'TradeController@acceptBuyStep1')->name('trade.accept.buy.step1');
-    Route::get('/trades/accept/buy/step2', 'TradeController@acceptBuyStep2')->name('trade.accept.buy.step2');
-    Route::get('/trades/accept/buy/step3', 'TradeController@acceptBuyStep3')->name('trade.accept.buy.step3');
-    Route::get('/trades/accept/buy/step4', 'TradeController@acceptBuyStep4')->name('trade.accept.buy.step4');
+    Route::get('/trades/{trade}/accept/buy/step1', 'TradeController@acceptBuyStep1')->name('trade.accept.buy.step1');
+    Route::get('/trades/{trade}/accept/buy/step2', 'TradeController@acceptBuyStep2')->name('trade.accept.buy.step2');
+    Route::get('/trades/{trade}/accept/buy/step3', 'TradeController@acceptBuyStep3')->name('trade.accept.buy.step3');
+    Route::get('/trades/{trade}/accept/buy/step4', 'TradeController@acceptBuyStep4')->name('trade.accept.buy.step4');
 
     Route::post('/trades/initiate/sell/step1', 'TradeController@initiateSellStep1')->name('trade.initiate.sell.step1');
     Route::post('/trades/initiate/sell/step2', 'TradeController@initiateSellStep2')->name('trade.initiate.sell.step2');
@@ -62,9 +62,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/trades/initiate/sell/step4', 'TradeController@initiateSellStep4')->name('trade.initiate.sell.step4');
 
     Route::post('/trades/accept/sell/step1', 'TradeController@acceptSellStep1')->name('trade.accept.sell.step1');
-    Route::get('/trades/accept/sell/step2', 'TradeController@acceptSellStep2')->name('trade.accept.sell.step2');
-    Route::get('/trades/accept/sell/step3', 'TradeController@acceptSellStep3')->name('trade.accept.sell.step3');
-    Route::get('/trades/accept/sell/step4', 'TradeController@acceptSellStep4')->name('trade.accept.sell.step4');
+    Route::get('/trades/{trade}/accept/sell/step2', 'TradeController@acceptSellStep2')->name('trade.accept.sell.step2');
+    Route::get('/trades/{trade}/accept/sell/step3', 'TradeController@acceptSellStep3')->name('trade.accept.sell.step3');
+    Route::get('/trades/{trade}/accept/sell/step4', 'TradeController@acceptSellStep4')->name('trade.accept.sell.step4');
 
     Route::post('/trades/initiate/buy/nav/step1', 'TradeController@initiateBuyNavStep1')->name('trade.initiate.buy.nav.step1');
     Route::post('/trades/initiate/buy/nav/step2', 'TradeController@initiateBuyNavStep2')->name('trade.initiate.buy.nav.step2');
@@ -78,17 +78,17 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/trades/initiate/sell/nav/step4', 'TradeController@initiateSellNavStep4')->name('trade.initiate.sell.nav.step4');
     Route::post('/trades/initiate/sell/nav/step5', 'TradeController@initiateSellNavStep5')->name('trade.initiate.sell.nav.step5');
 
-    Route::get('/trades/accept/buy/nav/step1', 'TradeController@acceptBuyNavStep1')->name('trade.accept.buy.nav.step1');
-    Route::get('/trades/accept/buy/nav/step2', 'TradeController@acceptBuyNavStep2')->name('trade.accept.buy.nav.step2');
-    Route::get('/trades/accept/buy/nav/step3', 'TradeController@acceptBuyNavStep3')->name('trade.accept.buy.nav.step3');
-    Route::get('/trades/accept/buy/nav/step4', 'TradeController@acceptBuyNavStep4')->name('trade.accept.buy.nav.step4');
-    Route::get('/trades/accept/buy/nav/step5', 'TradeController@acceptBuyNavStep5')->name('trade.accept.buy.nav.step5');
+    Route::get('/trades/{trade}/accept/buy/nav/step1', 'TradeController@acceptBuyNavStep1')->name('trade.accept.buy.nav.step1');
+    Route::get('/trades/{trade}/accept/buy/nav/step2', 'TradeController@acceptBuyNavStep2')->name('trade.accept.buy.nav.step2');
+    Route::get('/trades/{trade}/accept/buy/nav/step3', 'TradeController@acceptBuyNavStep3')->name('trade.accept.buy.nav.step3');
+    Route::get('/trades/{trade}/accept/buy/nav/step4', 'TradeController@acceptBuyNavStep4')->name('trade.accept.buy.nav.step4');
+    Route::get('/trades/{trade}/accept/buy/nav/step5', 'TradeController@acceptBuyNavStep5')->name('trade.accept.buy.nav.step5');
 
-    Route::get('/trades/accept/sell/nav/step1', 'TradeController@acceptSellNavStep1')->name('trade.accept.sell.nav.step1');
-    Route::get('/trades/accept/sell/nav/step2', 'TradeController@acceptSellNavStep2')->name('trade.accept.sell.nav.step2');
-    Route::get('/trades/accept/sell/nav/step3', 'TradeController@acceptSellNavStep3')->name('trade.accept.sell.nav.step3');
-    Route::get('/trades/accept/sell/nav/step4', 'TradeController@acceptSellNavStep4')->name('trade.accept.sell.nav.step4');
-    Route::get('/trades/accept/sell/nav/step5', 'TradeController@acceptSellNavStep5')->name('trade.accept.sell.nav.step5');
+    Route::get('/trades/{trade}/accept/sell/nav/step1', 'TradeController@acceptSellNavStep1')->name('trade.accept.sell.nav.step1');
+    Route::get('/trades/{trade}/accept/sell/nav/step2', 'TradeController@acceptSellNavStep2')->name('trade.accept.sell.nav.step2');
+    Route::get('/trades/{trade}/accept/sell/nav/step3', 'TradeController@acceptSellNavStep3')->name('trade.accept.sell.nav.step3');
+    Route::get('/trades/{trade}/accept/sell/nav/step4', 'TradeController@acceptSellNavStep4')->name('trade.accept.sell.nav.step4');
+    Route::get('/trades/{trade}/accept/sell/nav/step5', 'TradeController@acceptSellNavStep5')->name('trade.accept.sell.nav.step5');
 
 
 });

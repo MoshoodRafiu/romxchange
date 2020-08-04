@@ -13,11 +13,11 @@
                 <div class="card text-left">
                     <div class="card-header bg-special">
                         <ul class="nav nav-tabs card-header-tabs" role="tablist">
-                            <li class="nav-item"><a class="nav-link step-info active" id="item-1-1-tab" data-toggle="tab" role="tab" aria-controls="item-1-1" aria-selected="true" href="#item-1-1">Trade Details <i class="fa fa-check-circle text-success"></i></a></li>
-                            <li class="nav-item"><a class="nav-link step-info" id="item-1-2-tab" data-toggle="tab" role="tab" aria-controls="item-1-2" aria-selected="false" href="#item-1-2">Verify Wallet  <i class="fa fa-check-circle text-success"></i></a></li>
-                            <li class="nav-item"><a class="nav-link step-info" id="item-1-3-tab" data-toggle="tab" role="tab" aria-controls="item-1-3" aria-selected="false" href="#item-1-3">Make Payment <i class="fa fa-check-circle text-success"></i></a></li>
-                            <li class="nav-item"><a class="nav-link step-info" id="item-1-4-tab" data-toggle="tab" role="tab" aria-controls="item-1-4" aria-selected="false" href="#item-1-4">Receive Coin <i class="fa fa-check-circle text-success"></i></a></li>
-                            <li class="nav-item"><a class="nav-link step-info" id="item-1-5-tab" data-toggle="tab" role="tab" aria-controls="item-1-5" aria-selected="false" href="#item-1-5">Rate Seller <i class="fa fa-info-circle text-warning"></i></a></li>
+                            <li class="nav-item"><a class="nav-link step-info present" id="item-1-1-tab" data-toggle="tab" role="tab" aria-controls="item-1-1" aria-selected="true" href="#item-1-1">Trade Details <i id="step-icon-1" class="fa @isset($trade) @if($trade->buyer_transaction_stage >= 1) fa-check-circle text-success @else fa-info-circle text-danger @endif @else fa-info-circle text-danger @endisset"></i></a></li>
+                            <li class="nav-item"><a class="nav-link step-info" id="item-1-2-tab" data-toggle="tab" role="tab" aria-controls="item-1-2" aria-selected="false" href="#item-1-2">Verify Wallet  <i id="step-icon-2" class="fa @isset($trade) @if($trade->buyer_transaction_stage >= 2) fa-check-circle text-success @else fa-info-circle text-danger @endif @else fa-info-circle text-danger @endisset"></i></a></li>
+                            <li class="nav-item"><a class="nav-link step-info" id="item-1-3-tab" data-toggle="tab" role="tab" aria-controls="item-1-3" aria-selected="false" href="#item-1-3">Make Payment <i id="step-icon-3" class="fa @isset($trade) @if($trade->buyer_transaction_stage >= 3) fa-check-circle text-success @else fa-info-circle text-danger @endif @else fa-info-circle text-danger @endisset"></i></a></li>
+                            <li class="nav-item"><a class="nav-link step-info" id="item-1-4-tab" data-toggle="tab" role="tab" aria-controls="item-1-4" aria-selected="false" href="#item-1-4">Receive Coin <i id="step-icon-4" class="fa @isset($trade) @if($trade->buyer_transaction_stage >= 4) fa-check-circle text-success @else fa-info-circle text-danger @endif @else fa-info-circle text-danger @endisset"></i></a></li>
+                            <li class="nav-item"><a class="nav-link step-info" id="item-1-5-tab" data-toggle="tab" role="tab" aria-controls="item-1-5" aria-selected="false" href="#item-1-5">Rate Seller <i id="step-icon-5" class="fa @isset($trade) @if($trade->buyer_transaction_stage >= 5) fa-check-circle text-success @else fa-info-circle text-danger @endif @else fa-info-circle text-danger @endisset"></i></a></li>
                         </ul>
                     </div>
                     <div class="card-body">
@@ -25,6 +25,10 @@
                             <div id="item-1-1" class="tab-pane fade show active" role="tabpanel" aria-labelledby="item-1-1-tab">
                                 <div class="step">
                                     <h4 class="text-center my-4">Step 1</h4>
+                                    <div class="text-center">
+                                        <strong class="text-info" style="font-size: 23px">Waiting For Seller to Accept Trade </strong>
+                                        <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
+                                    </div>
                                     <form class="row mb-4">
                                         <div class="form-group col-md-6">
                                             <label for="volume">Coin Amount </label>
@@ -40,14 +44,18 @@
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="charges">Account Number</label>
-                                                                   <input type="text" name="accountNumber" id="charges" value="" class="form-control" disabled>
+                                                                   <input type="text" name="accountNumber" value="{{ \App\BankAccount::where('user_id', $trade->seller_id)->first()->account_number }}" class="form-control" disabled>
                                         </div>
                                         <div class="form-group col-md-12">
                                             <label for="charges">Bank Name</label>
-                                            <input type="text" name="bankName" value="" class="form-control" disabled>
+                                            <input type="text" name="bankName" value="{{ \App\BankAccount::where('user_id', $trade->seller_id)->first()->bank_name }}" class="form-control" disabled>
                                         </div>
                                         <div class="mx-auto">
-                                            <button type="submit" id="step-1-proceed" class="btn btn-special px-5">Proceed</button>
+                                            @if($trade->buyer_transaction_stage == null)
+                                                <button type="submit" id="step-1-proceed" class="btn btn-special mx-4">Accept Trade</button>
+                                            @else
+                                                <button type="submit" id="step-2-nav" class="btn btn-special mx-4">Proceed</button>
+                                            @endif
                                         </div>
                                     </form>
                                 </div>
@@ -77,7 +85,7 @@
                     }
                 });
                 $.ajax({
-                    url: "{{ route('trade.accept.buy.step1') }}",
+                    url: "{{ route('trade.accept.buy.step1', $trade) }}",
                     method: "GET",
                     cache: false,
                     beforeSend: function () {
@@ -89,8 +97,10 @@
                     success: function (result) {
                         if (result.success){
                             $(".step").fadeIn().html(result.html);
-                            $(".step-info").removeClass("active");
-                            $("#item-1-2-tab").addClass("active");
+                            $(".step-info").removeClass("present");
+                            $("#item-1-2-tab").addClass("present");
+                            $("#step-icon-1").removeClass("fa-info-circle text-danger");
+                            $("#step-icon-1").addClass("fa-check-circle text-success");
                         }
                     }
                 });
@@ -109,7 +119,7 @@
                     }
                 });
                 $.ajax({
-                    url: "{{ route('trade.accept.buy.step2') }}",
+                    url: "{{ route('trade.accept.buy.step2', $trade) }}",
                     method: "GET",
                     cache: false,
                     beforeSend: function () {
@@ -121,8 +131,10 @@
                     success: function (result) {
                         if (result.success) {
                             $(".step").fadeIn().html(result.html);
-                            $(".step-info").removeClass("active");
-                            $("#item-1-3-tab").addClass("active");
+                            $(".step-info").removeClass("present");
+                            $("#item-1-3-tab").addClass("present");
+                            $("#step-icon-2").removeClass("fa-info-circle text-danger");
+                            $("#step-icon-2").addClass("fa-check-circle text-success");
                         }
                     }
                 });
@@ -138,7 +150,7 @@
                     }
                 });
                 $.ajax({
-                    url: "{{ route('trade.accept.buy.step3') }}",
+                    url: "{{ route('trade.accept.buy.step3', $trade) }}",
                     method: "GET",
                     cache: false,
                     beforeSend: function () {
@@ -150,8 +162,10 @@
                     success: function (result) {
                         if (result.success) {
                             $(".step").fadeIn().html(result.html);
-                            $(".step-info").removeClass("active");
-                            $("#item-1-4-tab").addClass("active");
+                            $(".step-info").removeClass("present");
+                            $("#item-1-4-tab").addClass("present");
+                            $("#step-icon-3").removeClass("fa-info-circle text-danger");
+                            $("#step-icon-3").addClass("fa-check-circle text-success");
                         }
                     }
                 });
@@ -167,7 +181,7 @@
                     }
                 });
                 $.ajax({
-                    url: "{{ route('trade.accept.buy.step4') }}",
+                    url: "{{ route('trade.accept.buy.step4', $trade) }}",
                     method: "GET",
                     cache: false,
                     beforeSend: function () {
@@ -179,8 +193,10 @@
                     success: function (result) {
                         if (result.success) {
                             $(".step").fadeIn().html(result.html);
-                            $(".step-info").removeClass("active");
-                            $("#item-1-5-tab").addClass("active");
+                            $(".step-info").removeClass("present");
+                            $("#item-1-5-tab").addClass("present");
+                            $("#step-icon-4").removeClass("fa-info-circle text-danger");
+                            $("#step-icon-4").addClass("fa-check-circle text-success");
                         }
                     }
                 });
@@ -197,7 +213,7 @@
                     }
                 });
                 $.ajax({
-                    url: "{{ route('trade.accept.buy.nav.step1') }}",
+                    url: "{{ route('trade.accept.buy.nav.step1', $trade) }}",
                     method: "GET",
                     cache: false,
                     beforeSend: function () {
@@ -209,8 +225,8 @@
                     success: function (result) {
                         if (result.success) {
                             $(".step").fadeIn().html(result.html);
-                            $(".step-info").removeClass("active");
-                            $("#item-1-1-tab").addClass("active");
+                            $(".step-info").removeClass("present");
+                            $("#item-1-1-tab").addClass("present");
                         }
                     }
                 });
@@ -218,15 +234,24 @@
 
             //NAVIGATIONS TAB-2
 
+            $(".step").on("click", "#step-2-nav", function (e) {
+                e.preventDefault();
+                nav2();
+            });
+
             $("#item-1-2-tab").click(function (e) {
                 e.preventDefault();
+                nav2();
+            });
+
+            var nav2 = function(){
                 $.ajaxSetup({
                     headers: {
                         "X-CSRF-TOKEN": $("meta[name='csrf-token']").attr('content')
                     }
                 });
                 $.ajax({
-                    url: "{{ route('trade.accept.buy.nav.step2') }}",
+                    url: "{{ route('trade.accept.buy.nav.step2', $trade) }}",
                     method: "GET",
                     cache: false,
                     beforeSend: function () {
@@ -238,24 +263,33 @@
                     success: function (result) {
                         if (result.success) {
                             $(".step").fadeIn().html(result.html);
-                            $(".step-info").removeClass("active");
-                            $("#item-1-2-tab").addClass("active");
+                            $(".step-info").removeClass("present");
+                            $("#item-1-2-tab").addClass("present");
                         }
                     }
                 });
-            });
+            }
 
             //NAVIGATIONS TAB-3
 
+            $(".step").on("click", "#step-3-nav", function (e) {
+                e.preventDefault();
+                nav3();
+            });
+
             $("#item-1-3-tab").click(function (e) {
                 e.preventDefault();
+                nav3();
+            });
+
+            var nav3 = function(){
                 $.ajaxSetup({
                     headers: {
                         "X-CSRF-TOKEN": $("meta[name='csrf-token']").attr('content')
                     }
                 });
                 $.ajax({
-                    url: "{{ route('trade.accept.buy.nav.step3') }}",
+                    url: "{{ route('trade.accept.buy.nav.step3', $trade) }}",
                     method: "GET",
                     cache: false,
                     beforeSend: function () {
@@ -267,24 +301,33 @@
                     success: function (result) {
                         if (result.success) {
                             $(".step").fadeIn().html(result.html);
-                            $(".step-info").removeClass("active");
-                            $("#item-1-3-tab").addClass("active");
+                            $(".step-info").removeClass("present");
+                            $("#item-1-3-tab").addClass("present");
                         }
                     }
                 });
-            });
+            }
 
             //NAVIGATIONS TAB-4
 
+            $(".step").on("click", "#step-4-nav", function (e) {
+                e.preventDefault();
+                nav4();
+            });
+
             $("#item-1-4-tab").click(function (e) {
                 e.preventDefault();
+                nav4();
+            });
+
+            var nav4 = function(){
                 $.ajaxSetup({
                     headers: {
                         "X-CSRF-TOKEN": $("meta[name='csrf-token']").attr('content')
                     }
                 });
                 $.ajax({
-                    url: "{{ route('trade.accept.buy.nav.step4') }}",
+                    url: "{{ route('trade.accept.buy.nav.step4', $trade) }}",
                     method: "GET",
                     cache: false,
                     beforeSend: function () {
@@ -296,24 +339,33 @@
                     success: function (result) {
                         if (result.success) {
                             $(".step").fadeIn().html(result.html);
-                            $(".step-info").removeClass("active");
-                            $("#item-1-4-tab").addClass("active");
+                            $(".step-info").removeClass("present");
+                            $("#item-1-4-tab").addClass("present");
                         }
                     }
                 });
-            });
+            }
 
             //NAVIGATIONS TAB-5
 
+            $(".step").on("click", "#step-5-nav", function (e) {
+                e.preventDefault();
+                nav5();
+            });
+
             $("#item-1-5-tab").click(function (e) {
                 e.preventDefault();
+                nav5();
+            });
+
+            var nav5 = function () {
                 $.ajaxSetup({
                     headers: {
                         "X-CSRF-TOKEN": $("meta[name='csrf-token']").attr('content')
                     }
                 });
                 $.ajax({
-                    url: "{{ route('trade.accept.buy.nav.step5') }}",
+                    url: "{{ route('trade.accept.buy.nav.step5', $trade) }}",
                     method: "GET",
                     cache: false,
                     beforeSend: function () {
@@ -325,12 +377,12 @@
                     success: function (result) {
                         if (result.success) {
                             $(".step").fadeIn().html(result.html);
-                            $(".step-info").removeClass("active");
-                            $("#item-1-5-tab").addClass("active");
+                            $(".step-info").removeClass("present");
+                            $("#item-1-5-tab").addClass("present");
                         }
                     }
                 });
-            });
+            }
         });
     </script>
 

@@ -6,7 +6,7 @@
         <table id="example" class="table table-responsive-sm text-left col-md-10 mx-auto" width="100%">
             <tr>
                 <th>Username<th>
-                <td>{{ $trade->market->user->display_name }}<td>
+                <td>{{ \App\User::whereId($trade->buyer_id)->first()->display_name }}<td>
             </tr>
             <tr>
                 <th>Rate USD<th>

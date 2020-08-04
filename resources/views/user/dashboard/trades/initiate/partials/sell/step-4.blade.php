@@ -5,5 +5,9 @@
 </div>
 <p>Transaction completed, <strong class="text-info">{{ $trade->coin_amount }} {{ $trade->market->coin->abbr }}</strong> has been <strong class="text-danger">sold</strong> to <strong>{{ \App\User::whereId($trade->buyer_id)->first()->display_name }}</strong> at the rate of <strong class="text-success">NGN {{ number_format($trade->market->price_ngn) }}</strong> per {{ $trade->market->coin->abbr }}. Click the button below to go back to dashboard</p>
 <div class="text-center">
-    <button id="step-4-proceed" class="btn btn-special p-2" type="button">Rate Transaction & Finish</button>
+    @if($trade->seller_transaction_stage == 3)
+        <button id="step-4-proceed" class="btn btn-special p-2" type="button">Rate Transaction & Finish</button>
+    @else
+        <button id="step-5-nav" class="btn btn-special p-2" type="button">Proceed</button>
+    @endif
 </div>
