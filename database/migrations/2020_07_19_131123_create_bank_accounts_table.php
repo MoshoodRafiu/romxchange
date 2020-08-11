@@ -16,6 +16,7 @@ class CreateBankAccountsTable extends Migration
         Schema::create('bank_accounts', function (Blueprint $table) {
             $table->id();
             $table->integer('user_id');
+            $table->boolean('is_special')->default(0);
             $table->string('bank_name')->nullable();
             $table->string('account_number')->nullable();
             $table->string('account_name')->nullable();

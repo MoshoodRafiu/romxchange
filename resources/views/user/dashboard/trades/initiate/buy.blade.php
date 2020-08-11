@@ -25,10 +25,19 @@
                             <div class="tab-panel fade show active" role="tabpanel" aria-labelledby="item-1-1-tab">
                                 <div class="step">
                                     <h4 class="text-center my-4">Step 1</h4>
-                                    <div class="text-center">
-                                        <strong class="text-info" style="font-size: 23px">Waiting For Seller to Accept Trade </strong>
-                                        <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
-                                    </div>
+{{--                                    @isset($trade)--}}
+{{--                                        @if(($trade->buyer_transaction_stage == 1 && $trade->seller_transaction_stage == null) || ($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null))--}}
+{{--                                            <div class="text-center">--}}
+{{--                                                <strong class="text-info" style="font-size: 23px">Waiting For Seller to Accept Trade </strong>--}}
+{{--                                                <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">--}}
+{{--                                            </div>--}}
+{{--                                        @elseif($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == 1)--}}
+{{--                                            <div class="text-center">--}}
+{{--                                                <strong class="text-info" style="font-size: 23px">Trade Acccepted, Proceed with Trade Below </strong>--}}
+{{--                                                <img width="100px" src="{{ asset('assets/img/waiting.gif') }}" alt="proceed">--}}
+{{--                                            </div>--}}
+{{--                                        @endif--}}
+{{--                                    @endisset--}}
                                     <div><strong id="error" class="text-danger"></strong></div>
                                     <form class="row mb-4">
                                         @csrf
@@ -159,8 +168,8 @@
                     success: function (result) {
                         if (result.success) {
                             $(".step").fadeIn().html(result.html);
-                            $(".step-info").removeClass("present");
-                            $("#item-1-3-tab").addClass("present");
+                            // $(".step-info").removeClass("present");
+                            // $("#item-1-3-tab").addClass("present");
                             $("#step-icon-2").removeClass("fa-info-circle text-danger");
                             $("#step-icon-2").addClass("fa-check-circle text-success");
                         }
@@ -195,8 +204,8 @@
                     success: function (result) {
                         if (result.success) {
                             $(".step").fadeIn().html(result.html);
-                            $(".step-info").removeClass("present");
-                            $("#item-1-4-tab").addClass("present");
+                            // $(".step-info").removeClass("present");
+                            // $("#item-1-4-tab").addClass("present");
                             $("#step-icon-3").removeClass("fa-info-circle text-danger");
                             $("#step-icon-3").addClass("fa-check-circle text-success");
                         }

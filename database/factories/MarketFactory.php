@@ -16,8 +16,8 @@ $factory->define(Market::class, function (Faker $faker) {
             return Coin::all()->random();
         },
         "type" => $faker->randomElement(['buy', 'sell']),
-        "min" => 0.0035847863450,
-        "max" => 2,
+        "min" => $faker->numberBetween(0, 3),
+        "max" => $faker->numberBetween(10, 100),
         "price_usd" => 9345.56,
         "price_ngn" => 4567345.34,
     ];

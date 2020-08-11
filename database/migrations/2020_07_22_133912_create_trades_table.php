@@ -16,7 +16,7 @@ class CreateTradesTable extends Migration
         Schema::create('trades', function (Blueprint $table) {
             $table->id();
             $table->string('transaction_id');
-//            $table->integer('coin_id');
+            $table->integer('coin_id');
             $table->integer('market_id');
             $table->integer('buyer_id');
             $table->integer('seller_id');

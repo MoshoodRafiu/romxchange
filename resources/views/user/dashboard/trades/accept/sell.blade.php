@@ -25,11 +25,17 @@
                             <div id="item-1-1" class="tab-pane fade show active" role="tabpanel" aria-labelledby="item-1-1-tab">
                                 <div class="step">
                                     <h4 class="text-center my-4">Step 1</h4>
-                                    <div class="text-center">
-                                        <strong class="text-info" style="font-size: 23px">Waiting For Buyer to Accept Trade </strong>
-                                        <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
-                                    </div>
-                                    <div><strong id="error" class="text-danger"></strong></div>
+                                    @if($trade->buyer_transaction_stage == 1 && $trade->seller_transaction_stage == null)
+                                        <div class="text-center">
+                                            <strong class="text-info" style="font-size: 23px">Waiting For Buyer to Verify Wallet </strong>
+                                            <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
+                                        </div>
+                                    @elseif($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null)
+                                        <div class="text-center">
+                                            <strong class="text-success" style="font-size: 23px">Wallet Verified, Proceed with Transaction</strong>
+                                            <img width="100px" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
+                                        </div>
+                                    @endif
                                     <form class="row mb-4" id="step-1">
                                         <div class="form-group col-md-6">
                                             <label>Coin Amount</label>
@@ -49,6 +55,7 @@
                                         </div>
                                         <div class="form-group col-md-12">
                                             <label>Wallet Company</label>
+                                            <div><strong id="error" class="text-danger"></strong></div>
                                             @if(!$trade->seller_transaction_stage == null)
                                                 <select name="wallet" id="wallet-company" class="form-control" disabled>
                                                     <option value="">Select Wallet You Are Sending From</option>
@@ -159,8 +166,8 @@
                     success: function (result) {
                         if (result.success) {
                             $(".step").fadeIn().html(result.html);
-                            $(".step-info").removeClass("present");
-                            $("#item-1-3-tab").addClass("present");
+                            // $(".step-info").removeClass("present");
+                            // $("#item-1-3-tab").addClass("present");
                             $("#step-icon-2").removeClass("fa-info-circle text-danger");
                             $("#step-icon-2").addClass("fa-check-circle text-success");
                         }

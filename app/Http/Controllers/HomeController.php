@@ -24,4 +24,8 @@ class HomeController extends Controller
         $markets = Market::all()->take(10);
         return view('user.index', compact('markets'));
     }
+
+    public function adminDashboard(){
+        return view('admin.index');
+    }
 }

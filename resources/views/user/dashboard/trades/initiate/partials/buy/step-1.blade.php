@@ -1,9 +1,16 @@
 <h4 class="text-center my-4">Step 1</h4>
 <div><strong id="error" class="text-danger"></strong></div>
-<div class="text-center">
-    <strong class="text-info" style="font-size: 23px">Waiting For Buyer to Accept Trade </strong>
-    <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
-</div>
+{{--@if(($trade->buyer_transaction_stage == 1 && $trade->seller_transaction_stage == null) || ($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null))--}}
+{{--    <div class="text-center">--}}
+{{--        <strong class="text-info" style="font-size: 23px">Waiting For Seller to Accept Trade </strong>--}}
+{{--        <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">--}}
+{{--    </div>--}}
+{{--@elseif($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == 1)--}}
+{{--    <div class="text-center">--}}
+{{--        <strong class="text-info" style="font-size: 23px">Trade Acccepted, Proceed with Trade Below </strong>--}}
+{{--        <img width="100px" src="{{ asset('assets/img/waiting.gif') }}" alt="proceed">--}}
+{{--    </div>--}}
+{{--@endif--}}
 <form class="row mb-4" id="step-1">
     @csrf
     <div class="form-group col-md-6">

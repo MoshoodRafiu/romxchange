@@ -1,8 +1,4 @@
 <h4 class="text-center my-4">Step 1</h4>
-<div class="text-center">
-    <strong class="text-info" style="font-size: 23px">Waiting For Seller to Accept Trade </strong>
-    <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
-</div>
 <form class="row mb-4">
     <div class="form-group col-md-6">
         <label for="volume">Coin Amount </label>

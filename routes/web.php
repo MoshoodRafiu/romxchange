@@ -99,3 +99,24 @@ Route::get('/market/buy', 'MarketController@buy')->name('market.buy');
 Route::get('/market/sell', 'MarketController@sell')->name('market.sell');
 Route::get('/market/filter', 'MarketController@filterMarket')->name('market.filter');
 
+
+Route::group(['middleware' => ['auth']] , function () {
+    Route::get('/admin/dashboard', 'HomeController@adminDashboard')->name('admin.dashboard');
+
+    Route::get('/admin/transactions', 'TradeController@allTransactions')->name('admin.transactions');
+    Route::get('/admin/transactions/filter', 'TradeController@allTransactionsFilter')->name('admin.transactions.filter');
+
+    Route::get('/admin/markets', 'MarketController@adminMarket')->name('admin.markets');
+    Route::get('/admin/markets/filter', 'MarketController@adminMarketFilter')->name('admin.markets.filter');
+    Route::delete('/admin/markets/{market}', 'MarketController@adminMarketDelete')->name('admin.markets.destroy');
+    Route::get('/admin/markets/create', 'MarketController@adminMarketCreate')->name('admin.markets.create');
+    Route::post('/admin/markets/store', 'MarketController@adminMarketStore')->name('admin.markets.store');
+    Route::get('/admin/markets/{market}', 'MarketController@adminMarketEdit')->name('admin.markets.edit');
+    Route::put('/admin/markets/{market}', 'MarketController@adminMarketUpdate')->name('admin.markets.update');
+
+    Route::get('/admin/customers', 'CustomerController@index')->name('admin.customers');
+    Route::get('/admin/customers/filter', 'CustomerController@filter')->name('admin.customers.filter');
+    Route::get('/admin/customers/{customer}/restrict', 'CustomerController@restrict')->name('admin.customers.restrict');
+    Route::get('/admin/customers/{customer}/approve', 'CustomerController@approve')->name('admin.customers.approve');
+    Route::get('/admin/customers/{customer}', 'CustomerController@show')->name('admin.customers.show');
+});

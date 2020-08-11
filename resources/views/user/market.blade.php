@@ -38,7 +38,10 @@
                             <option class="text-capitalize" value="{{ $coin->id }}">{{ $coin->name }}</option>
                         @endforeach
                     </select>
-                    <input class="form-control col-12 my-2 mx-auto" name="volume" style="margin: 0px; height: 50px" placeholder="Coin Quantity">
+                    @error('volume')
+                        <strong class="text-danger">{{ $message }}</strong>
+                    @enderror
+                    <input type="text" class="form-control col-12 my-2 mx-auto @error('volume') is-invalid @enderror" name="volume" value="{{ old('volume') }}" style="margin: 0px; height: 50px" placeholder="Coin Quantity">
                     <button type="submit" class="btn mt-2 mb-4 btn-special">Filter Market</button>
                 </form>
             </div>
@@ -81,8 +84,10 @@
                     No Market Available
                 </div>
             @endif
-            <div class="my-2 mx-auto text-center">
-                {{ $markets->appends(Request::except('page'))->links() }}
+            <div class="row">
+                <div class="my-2 mx-auto text-center">
+                    {{ $markets->appends(Request::except('page'))->links() }}
+                </div>
             </div>
         </div>
     </section>

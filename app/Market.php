@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Market extends Model
 {
     protected $fillable = [
-        'user_id', 'coin_id', 'type', 'min', 'max', 'price_usd', 'price_ngn'
+        'user_id', 'coin_id', 'type', 'min', 'max', 'price_usd', 'price_ngn', 'is_special'
     ];
     public function user(){
         return $this->belongsTo('App\User');

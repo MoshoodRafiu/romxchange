@@ -41,7 +41,7 @@
                                 @elseif($trade->buyer_id === Auth::user()->id)
                                     <td>{{ \App\User::find($trade->seller_id)->display_name }}</td>
                                 @endif
-                                <td>{{ $trade->updated_at->diffForHumans() }}</td>
+                                <td>{{ $trade->created_at->diffForHumans() }}</td>
                                 @if($trade->transaction_status === "success")
                                     <td class="text-success font-weight-bold">{{ $trade->transaction_status }}</td>
                                 @elseif($trade->transaction_status === "cancelled")
@@ -51,15 +51,33 @@
                                 @endif
                                 <td>
                                     @if($trade->transaction_status === "pending")
-                                        @if($trade->seller_id === Auth::user()->id)
-                                            <a href="{{ route('trade.accept.sell', $trade) }}" class="btn btn-sm btn-success text-white">Accept</a>
-                                        @elseif($trade->buyer_id === Auth::user()->id)
-                                            <a href="{{ route('trade.accept.buy', $trade) }}" class="btn btn-sm btn-success text-white">Accept</a>
+                                        @if($trade->market->user_id === Auth::user()->id)
+                                            @if(($trade->market->type === "buy" && $trade->buyer_transaction_stage === null) || ($trade->market->type === "sell" && $trade->seller_transaction_stage === null))
+                                                @if($trade->seller_id === Auth::user()->id)
+                                                    <a href="{{ route('trade.accept.sell', $trade) }}" class="btn btn-sm btn-success text-white">Accept</a>
+                                                @elseif($trade->buyer_id === Auth::user()->id)
+                                                    <a href="{{ route('trade.accept.buy', $trade) }}" class="btn btn-sm btn-success text-white">Accept</a>
+                                                @endif
+                                                <a href="#" class="btn btn-sm btn-danger text-white">Decline</a>
+                                            @else
+                                                @if($trade->seller_id === Auth::user()->id)
+                                                    <a href="{{ route('trade.accept.sell', $trade) }}" class="btn btn-sm btn-success text-white">Continue</a>
+                                                @elseif($trade->buyer_id === Auth::user()->id)
+                                                    <a href="{{ route('trade.accept.buy', $trade) }}" class="btn btn-sm btn-success text-white">Continue</a>
+                                                @endif
+                                                <a href="#" class="btn btn-sm btn-danger text-white">Cancel</a>
+                                            @endif
+                                        @else
+                                            @if($trade->seller_id === Auth::user()->id)
+                                                <a href="{{ route('trade.accept.sell', $trade) }}" class="btn btn-sm btn-success text-white">Continue</a>
+                                            @elseif($trade->buyer_id === Auth::user()->id)
+                                                <a href="{{ route('trade.accept.buy', $trade) }}" class="btn btn-sm btn-success text-white">Continue</a>
+                                            @endif
+                                            <a href="#" class="btn btn-sm btn-danger text-white">Cancel</a>
                                         @endif
-                                        <a href="#" class="btn btn-sm btn-danger text-white">Decline</a>
                                     @else
-                                        <button class="btn btn-sm btn-success text-white" disabled>Accept</button>
-                                        <button class="btn btn-sm btn-danger text-white" disabled>Decline</button>
+                                        <button class="btn btn-sm btn-success text-white" disabled>Continue</button>
+                                        <button class="btn btn-sm btn-danger text-white" disabled>Cancel</button>
                                     @endif
                                 </td>
                             </tr>

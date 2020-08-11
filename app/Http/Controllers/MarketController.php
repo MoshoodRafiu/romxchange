@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Coin;
+use App\User;
 use App\Market;
 use App\Wallet;
 use Illuminate\Http\Request;
@@ -20,6 +21,57 @@ class MarketController extends Controller
         $markets = Market::paginate(5);
         return view('user.market', compact('markets'));
     }
+
+    public function adminMarket(){
+        $markets = Market::latest()->orderBy('is_special', 'DESC')->paginate(10);
+        return view('admin.market.index', ['markets' => $markets, 'search' => false]);
+    }
+
+    public function adminMarketFilter(Request $request){
+
+        $user = User::where('display_name', 'like', '%'.$request->val.'%')->first();
+        $coin = Coin::where('abbr', 'like', '%'.$request->val.'%')->first();
+
+        if ($user && $coin){
+            $markets = Market::latest()->
+            where('user_id', 'like', '%'.$user->id.'%')->
+            orWhere('coin_id', 'like', '%'.$coin->id.'%')->
+            orWhere('type', 'like', '%'.$request->val.'%')->
+            orWhere('min', 'like', '%'.$request->val.'%')->
+            orWhere('max', 'like', '%'.$request->val.'%')->
+            orWhere('price_ngn', 'like', '%'.$request->val.'%')->
+            orderBy('is_special', 'DESC')->
+            paginate(10);
+        }elseif ($user && !$coin){
+            $markets = Market::latest()->
+            where('user_id', 'like', '%'.$user->id.'%')->
+            orWhere('type', 'like', '%'.$request->val.'%')->
+            orWhere('min', 'like', '%'.$request->val.'%')->
+            orWhere('max', 'like', '%'.$request->val.'%')->
+            orWhere('price_ngn', 'like', '%'.$request->val.'%')->
+            orderBy('is_special', 'DESC')->
+            paginate(10);
+        }elseif (!$user && $coin){
+            $markets = Market::latest()->
+            where('coin_id', 'like', '%'.$coin->id.'%')->
+            orWhere('type', 'like', '%'.$request->val.'%')->
+            orWhere('min', 'like', '%'.$request->val.'%')->
+            orWhere('max', 'like', '%'.$request->val.'%')->
+            orWhere('price_ngn', 'like', '%'.$request->val.'%')->
+            orderBy('is_special', 'DESC')->
+            paginate(10);
+        }else{
+            $markets = Market::latest()->
+            where('type', 'like', '%'.$request->val.'%')->
+            orWhere('min', 'like', '%'.$request->val.'%')->
+            orWhere('max', 'like', '%'.$request->val.'%')->
+            orWhere('price_ngn', 'like', '%'.$request->val.'%')->
+            orderBy('is_special', 'DESC')->
+            paginate(10);
+        }
+        return view('admin.market.index', ['markets' => $markets, 'search' => true, 'val' => $request->val]);
+    }
+
     public function buy()
     {
         $markets = Market::where('type', 'sell')->paginate(5);
@@ -44,6 +96,11 @@ class MarketController extends Controller
     {
         $coins = Coin::all();
         return view('user.dashboard.adverts.create', compact('coins'));
+    }
+
+    public function adminMarketCreate(){
+        $coins = Coin::all();
+        return view('admin.market.create', compact('coins'));
     }
 
     /**
@@ -97,6 +154,44 @@ class MarketController extends Controller
         return redirect()->route('market.user')->with('message', 'Advert added successfully');
     }
 
+    public function adminMarketStore(Request $request){
+        $this->validate($request, [
+            "coin" => "required|min:1",
+            "type" => "required|string",
+            "min" => "required|numeric",
+            "max" => "required|numeric",
+            "price_usd" => "required|numeric",
+            "price_ngn" => "required|numeric"
+        ]);
+
+        if ($request->type === "buy"){
+            if (!$this->buyerWallet($request->coin)){
+                return back()->with('error', 'You do not have a wallet for this coin, please add a wallet and try again later');
+            }
+        }elseif ($request->type === "sell"){
+           if (!$this->sellerAccount()){
+                return back()->with('error', 'You need to update bank details before creating a market');
+            }
+        }
+
+        if (Market::where('user_id', Auth::user()->id)->where('is_special', 1)->where('coin_id', $request->coin)->where('type', $request->type)->first()){
+            return back()->with('error', 'You already have a '.$request->type.' advert for this coin');
+        }
+
+        Market::create([
+            'user_id' => Auth::user()->id,
+            'coin_id' => $request->coin,
+            'is_special' => 1,
+            'type' => $request->type,
+            'min' => $request->min,
+            'max' => $request->max,
+            'price_usd' => $request->price_usd,
+            'price_ngn' => $request->price_usd * $request->price_ngn
+        ]);
+
+        return redirect()->route('admin.markets')->with('message', 'Market created successfully');
+    }
+
     /**
      * Display the specified resource.
      *
@@ -112,6 +207,12 @@ class MarketController extends Controller
     {
         $coins = Coin::all();
         return view('user.dashboard.adverts.edit', compact(['market', 'coins']));
+    }
+
+    public function adminMarketEdit(Market $market)
+    {
+        $coins = Coin::all();
+        return view('admin.market.edit', compact(['market', 'coins']));
     }
 
     /**
@@ -139,6 +240,25 @@ class MarketController extends Controller
         return redirect()->route('market.user')->with('message', 'Advert updated successfully');
     }
 
+    public function adminMarketUpdate(Request $request, Market $market)
+    {
+        $this->validate($request, [
+            "min" => "required|numeric",
+            "max" => "required|numeric",
+            "price_usd" => "required|numeric",
+            "price_ngn" => "required|numeric"
+        ]);
+
+        $market->update([
+            'min' => $request->min,
+            'max' => $request->max,
+            'price_usd' => $request->price_usd,
+            'price_ngn' => $request->price_usd * $request->price_ngn
+        ]);
+
+        return redirect()->route('admin.markets')->with('message', 'Market updated successfully');
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -150,12 +270,21 @@ class MarketController extends Controller
         return redirect()->route('market.user')->with('message', 'Advert deleted successfully');
     }
 
+    public function adminMarketDelete(Market $market){
+        $market->delete();
+        return back()->with('message', 'Market deleted successfully');
+    }
+
     public function filterMarket(Request $request){
         if (!$request->volume){
             $markets = Market::where('type', '!=', $request->type)->where('coin_id', $request->coin)->paginate(5);
         }else{
-            $markets = Market::where('type', '!=', $request->type)->where('coin_id', $request->coin)->where('min', '>=', 10.5)
-                ->where('max', '<=', 10.5)->paginate(5);
+            $this->validate($request, [
+                'volume' => 'numeric'
+            ]);
+            $markets = Market::where('type', '!=', $request->type)->where('coin_id', $request->coin)
+                ->whereRaw('CAST(`min` AS SIGNED) <= ?', (int) $request->volume)
+                ->whereRaw('CAST(`max` AS SIGNED) >= ?', (int) $request->volume)->paginate(5);
         }
         return view('user.market', compact('markets'));
     }
