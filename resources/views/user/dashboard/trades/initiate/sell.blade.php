@@ -25,12 +25,12 @@
                                 <div class="step">
                                     <h4 class="text-center my-4">Step 1</h4>
                                     @if(isset($trade))
-                                        @if(($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == null) || ($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 1))
+                                        @if(($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == null) || ($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 1) || ($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 2 && $trade->ace_transaction_stage == null))
                                             <div class="text-center" id="transaction-message">
                                                 <strong class="text-info" style="font-size: 23px">Waiting For Buyer to Accept Trade </strong>
                                                 <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
                                             </div>
-                                        @elseif($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 2)
+                                        @elseif($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 2 && $trade->ace_transaction_stage == 1)
                                             <div class="text-center" id="transaction-message">
                                                 <strong class="text-success" style="font-size: 23px">Trade Accepted, Proceed with Trade Below</strong>
                                                 <img width="100px" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
@@ -58,11 +58,11 @@
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label>Transaction Charges</label>
-                                            <input type="number" name="charges" value="0.000056" class="form-control" disabled>
+                                            <input type="number" name="charges" id="charge" @isset($trade) value="{{ $trade->transaction_charge_coin }}" @endisset class="form-control" disabled>
                                         </div>
                                         <div class="form-group col-md-12">
                                             <div><strong id="error-wallet" class="text-danger"></strong></div>
-                                            <label>Wallet Compnay</label>
+                                            <label>Wallet Company</label>
                                             @isset($trade)
                                                 <select name="wallet" id="wallet-company" class="form-control" disabled>
                                                     <option value="">Select Wallet You Are Sending From</option>
@@ -113,10 +113,12 @@
                     $("#error").text("Please input a valid amount of coin")
                     $("#amount_usd").val("");
                     $("#amount_ngn").val("");
+                    $("#charge").val("");
                 }else{
                     $("#error").text("");
                     $("#amount_usd").val(($("#amount").val() * {{ $market->price_usd }}).toFixed(2) );
                     $("#amount_ngn").val(($("#amount").val() * {{ $market->price_ngn }}).toFixed(2) );
+                    $("#charge").val(($("#amount").val() * {{ \App\Setting::all()->first()->charges / 100 }}) );
                 }
             })
             $("#wallet-company").bind('keyup change', function () {
@@ -194,6 +196,7 @@
                         $(".ajax-loader").hide();
                     },
                     success: function (result) {
+                        $('#message').show();
                         if (result.success) {
                             $(".step").fadeIn().html(result.html);
                             // $(".step-info").removeClass("present");

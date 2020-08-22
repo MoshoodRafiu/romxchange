@@ -24,7 +24,7 @@
                                 <div id="card-title" class="card-title">
                                     <h5 class=""><i class="fa fa-envelope text-warning mx-1"></i>Email Verification<br /></h5>
                                     <div id="sub-title" class="sub-title">
-                                        <h6 class="card-subtitle my-2">{{ Auth::user()->email }}<br /></h6>
+                                        <h6 class="card-subtitle my-2">{{ substr(Auth::user()->email, 0, 20)."..." }}<br /></h6>
                                     </div>
                                     <div class="mt-3">
                                         @if(Auth::user()->verification)

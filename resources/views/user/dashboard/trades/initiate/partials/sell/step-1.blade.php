@@ -1,11 +1,11 @@
 <h4 class="text-center my-4">Step 1</h4>
 @if(isset($trade))
-    @if(($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == null) || ($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 1))
+    @if(($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == null) || ($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 1) || ($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 2 && $trade->ace_transaction_stage == null))
         <div class="text-center" id="transaction-message">
             <strong class="text-info" style="font-size: 23px">Waiting For Buyer to Accept Trade </strong>
             <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
         </div>
-    @elseif($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 2)
+    @elseif($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 2 && $trade->ace_transaction_stage == 1)
         <div class="text-center" id="transaction-message">
             <strong class="text-success" style="font-size: 23px">Trade Accepted, Proceed with Trade Below </strong>
             <img width="100px" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
@@ -30,7 +30,7 @@
                         <input type="number" name="charges" value="{{ $trade->transaction_charge_coin }}" class="form-control" disabled>
     </div>
     <div class="form-group col-md-12">
-        <label></label>
+        <label>Wallet Company</label>
         <select name="wallet" class="form-control" disabled>
             <option value="{{ $trade->seller_wallet_company }}">{{ $trade->seller_wallet_company }}</option>
         </select>

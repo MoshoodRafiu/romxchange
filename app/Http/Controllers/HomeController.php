@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Coin;
 use App\Market;
+use App\Trade;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -12,7 +14,6 @@ class HomeController extends Controller
      *
      * @return void
      */
-
 
     /**
      * Show the application dashboard.
@@ -26,6 +27,8 @@ class HomeController extends Controller
     }
 
     public function adminDashboard(){
-        return view('admin.index');
+        $trades = Trade::all();
+        $coins = Coin::all();
+        return view('admin.index', compact('trades', 'coins'));
     }
 }

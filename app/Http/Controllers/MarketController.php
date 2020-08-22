@@ -110,7 +110,6 @@ class MarketController extends Controller
      */
     public function store(Request $request)
     {
-
         if (!$this->userHasVerification()){
             return back()->with('error', 'You have to verify your account before creating an advert');
         }

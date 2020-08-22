@@ -44,25 +44,26 @@
                 <li role="presentation" class="nav-item"><a class=" {{ Request::is('/') ? "nav-link text-warning js-scroll-trigger" : "nav-link js-scroll-trigger" }} " href="{{ url('/') }}">Home</a></li>
 {{--                <li role="presentation" class="nav-item"><a class="nav-link js-scroll-trigger" href="buy.html">BUY</a></li>--}}
 {{--                <li role="presentation" class="nav-item"><a class="nav-link js-scroll-trigger" href="sell.html">SELL</a></li>--}}
-                <li role="presentation" class="nav-item"><a class="{{ Request::is('market') ? "nav-link text-warning js-scroll-trigger" : "nav-link js-scroll-trigger" }}" href="{{ route('market.index') }}">MARKet</a></li>
+                <li role="presentation" class="nav-item"><a class="{{ Request::routeIs(['market.index', 'market.filter']) ? "nav-link text-warning js-scroll-trigger" : "nav-link js-scroll-trigger" }}" href="{{ route('market.index') }}">MARKet</a></li>
                 @guest
                     <li role="presentation" class="nav-item"><a class="{{ Request::is('login') ? "nav-link text-warning js-scroll-trigger" : "nav-link js-scroll-trigger" }}" href="{{ route('login') }}">Login</a></li>
                     @if (Route::has('register'))
                         <li role="presentation" class="nav-item"><a class="{{ Request::is('register') ? "nav-link text-warning js-scroll-trigger" : "nav-link js-scroll-trigger" }}" href="{{ route('register') }}">register</a></li>
                     @endif
                 @else
-                    <li class="nav-item dropdown"><a data-toggle="dropdown" aria-expanded="false" class="dropdown-toggle nav-link" href="#">{{ Auth::user()->display_name }}</a>
-                        <div role="menu" class="dropdown-menu border-warning" style="background-color: #04122f;color: #ffffff;">
-                            <a class="{{ Request::is('profile') ? "dropdown-item text-warning" : "dropdown-item" }}" href="{{ route('profile.index') }}" style="  color: rgb(255,255,255);
+                    <li class="nav-item dropdown">
+                        <a data-toggle="dropdown" aria-expanded="false" id="toggle" class="{{ Request::routeIs(['profile.index', 'trades.index', 'trade.accept.buy', 'trade.accept.sell', 'trade.initiate.buy', 'trade.initiate.sell', 'verification.index', 'verification.phone', 'verification.document', 'wallet.index', 'wallet.create', 'wallet.edit', 'market.user', 'market.create', 'market.edit']) ? "dropdown-toggle nav-link text-warning" : "dropdown-toggle nav-link" }}" href="#dropdown">{{ Auth::user()->display_name }}</a>
+                        <div role="menu" id="dropdown" class="dropdown-menu border-warning" style="background-color: #04122f;color: #ffffff;">
+                            <a class="{{ Request::routeIs(['profile.index']) ? "dropdown-item text-warning" : "dropdown-item" }}" href="{{ route('profile.index') }}" style="  color: rgb(255,255,255);
 " onmouseover="this.style.backgroundColor='#04122f';">PROFILE</a>
-                            <a class="{{ Request::is('trades') ? "dropdown-item text-warning" : "dropdown-item" }}" href="{{ route('trade.index') }}" style="  color: rgb(255,255,255);" onmouseover="this.style.backgroundColor='#04122f';">TRADES</a>
-                            <a class="{{ Request::is('verification') ? "dropdown-item text-warning" : "dropdown-item" }}" href="{{ route('verification.index') }}" style="  color: rgb(255,255,255);
+                            <a class="{{ Request::routeIs(['trades.index', 'trade.accept.buy', 'trade.accept.sell', 'trade.initiate.buy', 'trade.initiate.sell']) ? "dropdown-item text-warning" : "dropdown-item" }}" href="{{ route('trade.index') }}" style="  color: rgb(255,255,255);" onmouseover="this.style.backgroundColor='#04122f';">TRADES</a>
+                            <a class="{{ Request::routeIs(['verification.index', 'verification.phone', 'verification.document']) ? "dropdown-item text-warning" : "dropdown-item" }}" href="{{ route('verification.index') }}" style="  color: rgb(255,255,255);
   font-family: inherit;
 " onmouseover="this.style.backgroundColor='#04122f';">VERIFICATION</a>
-                            <a class="{{ Request::is('wallets') ? "dropdown-item text-warning" : "dropdown-item" }}" href="{{ route('wallet.index') }}" style="  color: rgb(255,255,255);
+                            <a class="{{ Request::routeIs(['wallet.index', 'wallet.create', 'wallet.edit']) ? "dropdown-item text-warning" : "dropdown-item" }}" href="{{ route('wallet.index') }}" style="  color: rgb(255,255,255);
   font-family: inherit;
 " onmouseover="this.style.backgroundColor='#04122f';">WALLETS</a>
-                            <a class="{{ Request::is('market/user') ? "dropdown-item text-warning" : "dropdown-item" }}" href="{{ route('market.user') }}" style="  color: rgb(255,255,255);
+                            <a class="{{ Request::routeIs(['market.user', 'market.create', 'market.edit']) ? "dropdown-item text-warning" : "dropdown-item" }}" href="{{ route('market.user') }}" style="  color: rgb(255,255,255);
   font-family: inherit;
 " onmouseover="this.style.backgroundColor='#04122f';">MY ADVERTS</a>
                         </div>
@@ -124,13 +125,18 @@
 
 <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
 <script src="{{ asset('assets/bootstrap/js/bootstrap.min.js') }}"></script>
-{{--<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.js"></script>--}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.js"></script>
 <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
 {{--<script src="{{ asset('assets/js/script.min.js') }}"></script>--}}
 @yield('script')
 <script>
+
+    $('#toggle').click(function () {
+        $('#dropdown').toggle();
+    });
+
     function copyText(input) {
         /* Get the text field */
         var copyText = document.getElementById(input);

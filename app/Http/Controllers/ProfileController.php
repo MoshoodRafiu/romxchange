@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\BankAccount;
+use http\Client\Curl\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -73,18 +74,20 @@ class ProfileController extends Controller
         $user = Auth::user();
         $account = BankAccount::where('user_id', $user->id)->first();
 
-        if ($request->old_password || $request->password){
+        if ($account){
             $this->validate($request, [
-                "old_password" => "required",
-                "password" => "required|required_with:confirm_password |min:8|max:255"
+                'account_name' => 'required',
+                'account_number' => 'required',
+                'bank_name' => 'required',
             ]);
-
-            if (Hash::check($request->old_password, $user->password)){
-                $user->password = bcrypt($request->password);
-            }else{
-                return back()->with('error', 'Invalid Old Password Provided');
-            }
         }
+
+        if ($user->phone){
+            $this->validate($request, [
+                'phone' => 'required'
+            ]);
+        }
+
         if (!$account){
             BankAccount::create(
                 [
@@ -108,6 +111,24 @@ class ProfileController extends Controller
         $user->update();
 
         return back()->with('message', 'Profile Updated Successfully');
+    }
+
+    public function updatePassword(Request $request){
+        $this->validate($request, [
+            "old_password" => "required",
+            "password" => "required|required_with:confirm_password |min:8|max:255"
+        ]);
+
+        $user = Auth::user();
+
+        if (Hash::check($request->old_password, $user->password)){
+            $user->password = bcrypt($request->password);
+            $user->update();
+        }else{
+            return back()->with('error', 'Invalid Old Password Provided');
+        }
+
+        return back()->with('message', 'Password Changed Successfully');
     }
 
     /**

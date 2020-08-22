@@ -76,49 +76,60 @@
                     </div>
                     <hr />
                     <div class="col-12">
-                        <h6 class="text-center mt-5">CHANGE PASSWORD</h6>
-                        <hr />
-                        <div class="form-group text-left">
-                            <label>Old Password </label>
-                            @error('old_password')
+                        <div class="form-row">
+                            <div class="col-md-12 mt-3 mb-5 content-right"><button class="btn btn-special form-btn" type="submit">UPDATE PROFILE </button></div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <form action="{{ route('profile.password.update') }}" method="post">
+                @csrf
+                @method('PUT')
+                <div class="col-12">
+                    <h6 class="text-center mt-5">CHANGE PASSWORD</h6>
+                    <hr />
+                    <div class="form-group text-left">
+                        <label>Old Password </label>
+                        @error('old_password')
+                        <div>
+                            <span class="text-danger small" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                        </div>
+                        @enderror
+                        <input type="password" class="form-control @error('old_password') is-invalid @enderror" autocomplete="off" name="old_password" />
+                    </div>
+                    <div class="form-row">
+                        <div class="col-sm-12 col-md-6">
+                            <div class="form-group text-left">
+                                <label>New Password </label>
+                                @error('password')
                                 <div>
                                     <span class="text-danger small" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 </div>
-                            @enderror
-                            <input type="password" class="form-control @error('old_password') is-invalid @enderror" autocomplete="off" name="old_password" />
-                        </div>
-                        <div class="form-row">
-                            <div class="col-sm-12 col-md-6">
-                                <div class="form-group text-left">
-                                    <label>New Password </label>
-                                    @error('password')
-                                        <div>
-                                            <span class="text-danger small" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        </div>
-                                    @enderror
-                                    <input type="password" class="form-control @error('password') is-invalid @enderror" name="password" autocomplete="off"/>
-                                </div>
-                            </div>
-                            <div class="col-sm-12 col-md-6">
-                                <div class="form-group text-left">
-                                    <label>Confirm New Password</label>
-                                    @error('password')
-                                        <div>
-                                            <span class="text-danger small" role="alert">
-                                                <strong>{{ $message }}</strong>
-                                            </span>
-                                        </div>
-                                    @enderror
-                                    <input type="password" class="form-control @error('password') is-invalid @enderror" name="confirm_password" autocomplete="off"/>
-                                </div>
+                                @enderror
+                                <input type="password" class="form-control @error('password') is-invalid @enderror" name="password" autocomplete="off"/>
                             </div>
                         </div>
-                        <div class="form-row">
-                            <div class="col-md-12 mt-3 mb-5 content-right"><button class="btn btn-special form-btn" type="submit">UPDATE PROFILE </button></div>
+                        <div class="col-sm-12 col-md-6">
+                            <div class="form-group text-left">
+                                <label>Confirm New Password</label>
+                                @error('password')
+                                <div>
+                                    <span class="text-danger small" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                </div>
+                                @enderror
+                                <input type="password" class="form-control @error('password') is-invalid @enderror" name="confirm_password" autocomplete="off"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="col-md-12 mt-3 mb-5 content-right">
+                            <button class="btn btn-special" type="submit">CHANGE PASSWORD </button>
                         </div>
                     </div>
                 </div>

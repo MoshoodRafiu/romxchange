@@ -25,12 +25,17 @@
                             <div id="item-1-1" class="tab-pane fade show active" role="tabpanel" aria-labelledby="item-1-1-tab">
                                 <div class="step">
                                     <h4 class="text-center my-4">Step 1</h4>
-                                    @if($trade->buyer_transaction_stage == 1 && $trade->seller_transaction_stage == null)
+                                    @if($trade->buyer_transaction_stage == 1 && $trade->seller_transaction_stage == null && $trade->ace_transaction_stage == null)
                                         <div class="text-center">
                                             <strong class="text-info" style="font-size: 23px">Waiting For Buyer to Verify Wallet </strong>
                                             <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
                                         </div>
-                                    @elseif($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null)
+                                    @elseif($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null && $trade->ace_transaction_stage == null)
+                                        <div class="text-center">
+                                            <strong class="text-info" style="font-size: 23px">Waiting For Buyer to Verify Wallet </strong>
+                                            <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
+                                        </div>
+                                    @elseif($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null && $trade->ace_transaction_stage == 1)
                                         <div class="text-center">
                                             <strong class="text-success" style="font-size: 23px">Wallet Verified, Proceed with Transaction</strong>
                                             <img width="100px" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
@@ -104,8 +109,10 @@
             $("#step-1").submit(function (e) {
                 e.preventDefault();
                 if(!$("#wallet-company").val()){
-                    $("#error").text("Please select where your coin is coming from")
+                    $("#error").text("Please select where your coin is coming from");
                     return
+                }else{
+                    $("#error").text("");
                 }
                 $.ajaxSetup({
                     headers: {
@@ -133,7 +140,7 @@
                             $("#item-1-2-tab").addClass("present");
                             $("#step-icon-1").removeClass("fa-info-circle text-danger");
                             $("#step-icon-1").addClass("fa-check-circle text-success");
-                        }else{
+                        }else if (result.success == false){
                             $("#error").text("Please select where your coin is coming from")
                         }
                     }

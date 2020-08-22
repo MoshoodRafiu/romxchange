@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Ace World</title>
     <link rel="icon" type="image/png" sizes="218x250" href="{{asset('assets/img/logo.png')}}">
     <link rel="stylesheet" href="{{ asset('sidebar-assets/bootstrap/css/bootstrap.min.css') }}">
@@ -16,6 +17,9 @@
 </head>
 
 <body id="page-top">
+<div class="ajax-loader">
+    <div class="loader"></div>
+</div>
 <div id="wrapper">
     <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion sidebar p-0" style="background-color: rgb(1,7,24);">
         <div class="container-fluid d-flex flex-column p-0">
@@ -26,52 +30,50 @@
             <hr class="sidebar-divider my-0">
             <ul class="nav navbar-nav text-light" id="accordionSidebar">
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link active" href="{{ route('admin.dashboard') }}"><i class="fas fa-tachometer-alt" style="width: 20px"></i><span>Dashboard</span></a>
+                    <a class="{{ Request::is('admin/dashboard') ? "nav-link active" : "nav-link" }}" href="{{ route('admin.dashboard') }}"><i class="fas fa-tachometer-alt" style="width: 30px; text-align: center;"></i><span>Dashboard</span></a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link" href="{{ route('admin.markets') }}"><i class="fas fa-store" style="width: 20px"></i><span>Market</span></a>
+                    <a class="{{ Request::routeIs(['admin.markets', 'admin.markets.filter', 'admin.markets.create', 'admin.markets.edit']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.markets') }}"><i class="fas fa-store" style="width: 30px; text-align: center;"></i><span>Market</span></a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link" href="{{ route('admin.transactions') }}"><i class="fas fa-dollar-sign" style="width: 17px"></i><span>Transactions</span></a>
+                    <a class="{{ Request::routeIs(['admin.transactions', 'admin.transactions.filter']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.transactions') }}"><i class="fas fa-dollar-sign" style="width: 30px; text-align: center;"></i><span>Transactions</span></a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link" href="{{ route('admin.customers') }}"><i class="fas fa-users" style="width: 20px"></i><span>Customers</span></a>
+                    <a class="{{ Request::routeIs(['admin.customers','admin.customers.filter', 'admin.customers.show']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.customers') }}"><i class="fas fa-users" style="width: 30px; text-align: center;"></i><span>Customers</span></a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link" href="verifications.html"><i class="fas fa-file-alt" style="width: 20px"></i><span>Verifications</span></a>
+                    <a class="{{ Request::routeIs(['admin.verifications', 'admin.verifications.show']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.verifications') }}"><i class="fas fa-file-alt" style="width: 30px; text-align: center;"></i><span>Verifications</span></a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link" href="encrow.html"><i class="far fa-credit-card" style="width: 20px"></i><span>Enscrow</span></a>
+                    <a class="{{ Request::routeIs(['admin.transactions.enscrow', 'admin.transactions.accept', 'admin.transactions.proceed']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.transactions.enscrow') }}"><i class="far fa-credit-card" style="width: 30px; text-align: center;"></i><span>Enscrow</span></a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link" href="agents.html"><i class="fas fa-user-friends" style="width: 20px"></i><span>Agents</span></a>
+                    <a class="{{ Request::routeIs(['admin.agents', 'admin.agents.create']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.agents') }}"><i class="fas fa-user-friends" style="width: 30px; text-align: center;"></i><span>Agents</span></a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link" href="trades.html"><i class="fas fa-exchange-alt" style="width: 20px"></i><span>Trades</span></a>
+                    <a class="{{ Request::routeIs(['admin.trades', 'admin.trade.accept.buy', 'admin.trade.accept.sell']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.trades') }}"><i class="fas fa-exchange-alt" style="width: 30px; text-align: center;"></i><span>Trades</span></a>
                 </li>
                 <li class="nav-item" role="presentation">
                     <div>
-                        <a class="btn btn-link nav-link" data-toggle="collapse" aria-expanded="false" aria-controls="collapse-1" href="#collapse-1" role="button">
-                            <i class="fas fa-wallet"  style="width: 20px"></i>&nbsp;<span>Wallets</span>
+                        <a class="btn btn-link nav-link {{ Request::routeIs(['admin.wallets.all','admin.wallets.single']) ? "active" : "" }}" data-toggle="collapse" aria-expanded="false" aria-controls="collapse-1" href="#collapse-1" role="button">
+                            <i class="fas fa-wallet"  style="width: 30px; text-align: center;"></i>&nbsp;<span>Wallets</span>
                         </a>
-                        <div class="collapse" id="collapse-1">
+                        <div class="collapse" id="collapse-1">p
                             <div class="bg-white border rounded py-2 collapse-inner">
                                 <h6 class="collapse-header">wallets:</h6>
-                                <a class="collapse-item" href="wallets.html">All&nbsp;</a>
-                                <a class="collapse-item" href="bitcoin-wallets.html">Bitcoin</a>
-                                <a class="collapse-item" href="ethereum-wallets.html">Ethereum</a>
-                                <a class="collapse-item" href="litecoin-wallets.html">Litecoin</a>
-                                <a class="collapse-item" href="tether-wallets.html">Tether</a>
-                                <a class="collapse-item" href="ripple-wallets.html">Ripple</a>
+                                <a class="collapse-item" href="{{ route('admin.wallets.all') }}">All&nbsp;</a>
+                                @foreach(\App\Coin::all() as $coin)
+                                    <a class="collapse-item text-capitalize" href="{{ route('admin.wallets.single', $coin->name) }}">{{ $coin->name }}</a>
+                                @endforeach
                             </div>
                         </div>
                     </div>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link" href="analysis.html"><i class="fas fa-chart-bar"  style="width: 20px"></i><span>Analysis</span></a>
+                    <a class="nav-link" href="#"><i class="fas fa-chart-bar"  style="width: 30px; text-align: center;"></i><span>Analysis</span></a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link" href="settings.html"><i class="fas fa-cog"  style="width: 20px"></i><span>Settings</span></a>
+                    <a class="{{ Request::routeIs(['admin.settings']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.settings') }}"><i class="fas fa-cog"  style="width: 30px; text-align: center;"></i><span>Settings</span></a>
                 </li>
             </ul>
             <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
@@ -119,7 +121,7 @@
                     </ul>
                 </div>
             </nav>
-            <div class="container-fluid">
+            <div class="container">
 
                 @yield('content')
 
@@ -139,6 +141,21 @@
 <script src="{{ asset('sidebar-assets/datatables/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('sidebar-assets/datatables/dataTables.bootstrap4.min.js') }}"></script>
 <script src="{{ asset('sidebar-assets/js/datatables.js') }}"></script>
+@yield('script')
+<script>
+    function copyText(input) {
+        /* Get the text field */
+        var copyText = document.getElementById(input);
+
+        /* Select the text field */
+        copyText.select();
+        copyText.setSelectionRange(0, 99999); /*For mobile devices*/
+
+        /* Copy the text inside the text field */
+        document.execCommand("copy");
+        $("#" + input + "").siblings(".clipboard-message").fadeIn().delay(1000).fadeOut();
+    }
+</script>
 </body>
 
 </html>

@@ -1,10 +1,10 @@
 <h4 class="text-center my-4">Step 2</h4>
-@if($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 2)
+@if(($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 2) || ($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage == 2 && $trade->ace_transaction_stage == 1))
     <div class="text-center" id="transaction-message-waiting">
         <strong class="text-info" style="font-size: 23px">Waiting For Seller's Coin Verification</strong>
         <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
     </div>
-@elseif($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage == 2 && $trade->ace_transaction_stage == null)
+@elseif($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage == 2 && $trade->ace_transaction_stage == 2)
     <div class="text-center" id="transaction-message-proceed">
         <strong class="text-success" style="font-size: 23px">Coin Verified, Proceed with Trade Below </strong>
         <img width="100px" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">

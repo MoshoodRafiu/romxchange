@@ -1,14 +1,28 @@
 <h4 class="text-center my-4">Step 3</h4>
-@if($trade->buyer_transaction_stage == 3 && $trade->seller_transaction_stage == 2)
-    <div class="text-center">
-        <strong class="text-info" style="font-size: 23px">Waiting For Seller to Verify Payment </strong>
-        <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
-    </div>
-@elseif($trade->buyer_transaction_stage == 3 && $trade->seller_transaction_stage == 3)
-    <div class="text-center">
-        <strong class="text-success" style="font-size: 23px">Payment Verified, Proceed with Transaction</strong>
-        <img width="100px" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
-    </div>
+@if($trade->is_special == 1)
+    @if($trade->buyer_transaction_stage == 3 && $trade->seller_transaction_stage == 1)
+        <div class="text-center">
+            <strong class="text-info" style="font-size: 23px">Waiting For Seller to Verify Payment </strong>
+            <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
+        </div>
+    @elseif($trade->buyer_transaction_stage == 3 && $trade->seller_transaction_stage == 2)
+        <div class="text-center">
+            <strong class="text-success" style="font-size: 23px">Payment Verified, Proceed with Transaction</strong>
+            <img width="100px" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
+        </div>
+    @endif
+@else
+    @if($trade->buyer_transaction_stage == 3 && $trade->seller_transaction_stage == 2)
+        <div class="text-center">
+            <strong class="text-info" style="font-size: 23px">Waiting For Seller to Verify Payment </strong>
+            <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
+        </div>
+    @elseif($trade->buyer_transaction_stage == 3 && $trade->seller_transaction_stage == 3)
+        <div class="text-center">
+            <strong class="text-success" style="font-size: 23px">Payment Verified, Proceed with Transaction</strong>
+            <img width="100px" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
+        </div>
+    @endif
 @endif
 <form class="mb-4">
     <div class="form-row">

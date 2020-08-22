@@ -7,7 +7,8 @@ use Faker\Generator as Faker;
 
 $factory->define(Coin::class, function (Faker $faker) {
     return [
-        "name" => $faker->unique()->randomElement(['bitcoin', 'ethereum']),
-        "abbr" => $faker->unique()->randomElement(['BTC', 'ETH']),
+        "name" => $faker->randomElement(['bitcoin', 'ethereum']),
+        "abbr" => $faker->randomElement(['BTC', 'ETH']),
+        "logo" => $faker->imageUrl(640, 640),
     ];
 });

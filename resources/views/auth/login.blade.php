@@ -5,7 +5,7 @@
         <div class="container profile profile-view" id="profile">
             <div class="row">
                 <div class="col-md-12 mb-3">
-                    <h2 class="text-uppercase text-center section-heading" style="  font-size: 30px;">login</h2>
+                    <h1 class="text-uppercase text-center section-heading" style="  font-size: 25px;">login</h1>
                 </div>
             </div>
             <div class="col-md-5 mx-auto text-left">

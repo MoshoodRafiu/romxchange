@@ -16,6 +16,8 @@ class CustomerController extends Controller
 
     public function filter(Request $request){
         $users = User::latest()->
+                        where('is_agent', 0)->
+                        where('is_admin', 0)->
                         where('display_name', 'like', '%'.$request->val.'%')->
                         orWhere('email', 'like', '%'.$request->val.'%')->
                         orWhere('first_name', 'like', '%'.$request->val.'%')->
@@ -33,7 +35,7 @@ class CustomerController extends Controller
 
         $user->save();
 
-        return back()->with('message', 'User account restricted successfully');
+        return back()->with('message', 'Account restricted successfully');
     }
 
     public function approve($id){
@@ -44,7 +46,7 @@ class CustomerController extends Controller
 
         $user->save();
 
-        return back()->with('message', 'User account approved successfully');
+        return back()->with('message', 'Account approved successfully');
     }
 
     public function show($name){

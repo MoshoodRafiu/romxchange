@@ -23,6 +23,7 @@ $factory->define(Trade::class, function (Faker $faker) {
         "coin_amount" => $faker->numberBetween(10, 100),
         "coin_amount_usd" => "108",
         "coin_amount_ngn" => "56000",
+        "transaction_charge_ngn" => $faker->numberBetween(1000, 100000),
         "transaction_status" => $faker->randomElement(["success", "cancelled", "pending"]),
     ];
 });

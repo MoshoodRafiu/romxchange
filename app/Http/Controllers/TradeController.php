@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Coin;
 use App\Market;
+use App\Setting;
 use App\Trade;
 use App\Wallet;
 use App\User;
@@ -23,10 +24,241 @@ class TradeController extends Controller
         return view('user.dashboard.trades.index', compact('trades'));
     }
 
+    public function adminTrades(){
+        $trades = Trade::latest()->where('is_special', 1)->where('transaction_status', 'pending')->get();
+        return view('admin.trades.index', compact('trades'));
+    }
+
+    public function enscrow(){
+        $trades = Trade::latest()->where('is_special', 0)->where('transaction_status', 'pending')->get();
+        return view('admin.enscrow.index', compact('trades'));
+    }
+
+    public function aceAccept(Trade $trade){
+        if (!$trade->ace_transaction_stage == null){
+            return view('admin.enscrow.panel', compact('trade'));
+        }
+        $trade->ace_transaction_stage = 1;
+        $trade->update();
+
+        return view('admin.enscrow.panel', compact('trade'));
+    }
+
+    public function aceProceed(Trade $trade){
+        return view('admin.enscrow.panel', compact('trade'));
+    }
+
     public function allTransactions(){
         $trades = Trade::latest()->paginate(10);
 
         return view('admin.trades', ['trades' => $trades, 'search' => false]);
+    }
+
+    public function aceStep2(Trade $trade){
+
+        if (!($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage == 2 && $trade->ace_transaction_stage == 1)){
+            return;
+        }
+
+        $trade->ace_transaction_stage = 2;
+        $trade->update();
+
+        $html = view('admin.enscrow.partials.step-1', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+
+    }
+
+    public function aceStep3(Trade $trade){
+
+        if (!($trade->seller_transaction_stage >= 3 && $trade->buyer_transaction_stage >= 3 && $trade->ace_transaction_stage == 2)){
+            return;
+        }
+
+        $trade->ace_transaction_stage = 3;
+        $trade->transaction_status = "success";////
+        $trade->update();
+
+        $html = view('admin.enscrow.partials.step-3', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+
+    }
+
+    public function aceNavStep1(Trade $trade){
+        if (!($trade->seller_transaction_stage >= 2 && $trade->buyer_transaction_stage >= 2 && $trade->ace_transaction_stage >= 1)){
+            return;
+        }
+
+        $html = view('admin.enscrow.partials.step-1', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function aceNavStep2(Trade $trade){
+
+        if (!($trade->seller_transaction_stage >= 3 && $trade->buyer_transaction_stage >= 3 && $trade->ace_transaction_stage >= 2)){
+            return;
+        }
+
+        $html = view('admin.enscrow.partials.step-2', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function aceNavStep3(Trade $trade){
+
+        if (!($trade->seller_transaction_stage >= 3 && $trade->buyer_transaction_stage >= 3 && $trade->ace_transaction_stage >= 2)){
+            return;
+        }
+
+        $html = view('admin.enscrow.partials.step-3', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    /**
+     * ACE ADMIN ACCEPT TRADE BUY
+     *
+     */
+
+    public function adminAcceptBuy(Trade $trade){
+        return view('admin.trades.accept.buy', compact('trade'));
+    }
+
+    public function adminAcceptBuyStep1(Trade $trade){
+
+        $trade->buyer_transaction_stage = 1;
+
+        $trade->update();
+
+        $html = view('admin.trades.accept.partials.buy.step-2', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function adminAcceptBuyStep2(Trade $trade){
+
+        if (!($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 1)){
+            return;
+        }
+
+        $trade->buyer_transaction_stage = 2;
+
+        $trade->update();
+
+//        if ($trade->buyer_transaction_stage == 2){
+//            return;
+//        }
+
+        $html = view('admin.trades.accept.partials.buy.step-3', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function adminAcceptBuyStep3(Trade $trade){
+
+        if (!($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage == 2)){
+            return;
+        }
+
+        $trade->buyer_transaction_stage = 3;
+
+        $trade->update();
+
+        $html = view('admin.trades.accept.partials.buy.step-4', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function adminAcceptBuyStep4(Trade $trade){
+
+        $trade->buyer_transaction_stage = 4;
+
+        $trade->update();
+
+        $html = view('admin.trades.accept.partials.buy.step-4', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function adminAcceptBuyNavStep1(Trade $trade){
+
+        if (!$trade){
+            return;
+        }
+
+        $html = view('admin.trades.accept.partials.buy.step-1', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function adminAcceptBuyNavStep2(Trade $trade){
+
+        if (!$trade || $trade->buyer_transaction_stage < 1 ){
+            return;
+        }
+
+        $html = view('admin.trades.accept.partials.buy.step-2', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function adminAcceptBuyNavStep3(Trade $trade){
+
+        if (!$trade || $trade->buyer_transaction_stage < 2 ){
+            return;
+        }
+
+        $html = view('admin.trades.accept.partials.buy.step-3', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function adminAcceptBuyNavStep4(Trade $trade){
+
+        if (!$trade || $trade->buyer_transaction_stage < 3 ){
+            return;
+        }
+
+        if ($trade->seller_transaction_stage < 2 || $trade->buyer_transaction_stage < 3){
+            return;
+        }
+
+        $html = view('admin.trades.accept.partials.buy.step-4', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function adminAcceptBuyNavStep5(Trade $trade){
+
+        if (!$trade || $trade->buyer_transaction_stage < 4 || $trade->seller_transaction_stage < 3){
+            return;
+        }
+
+        if ($trade->buyer_transaction_stage == 4){
+
+            $trade->transaction_status = "success";
+
+            $trade->update();
+        }
+
+        $html = view('admin.trades.accept.partials.buy.step-5', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+
+
+
+
+    /**
+     * ACE ADMIN ACCEPT TRADE SElL
+     *
+     */
+
+    public function adminAcceptSell(Trade $trade){
+        return view('admin.trades.accept.sell', compact('trade'));
     }
 
     public function allTransactionsFilter(Request $request){
@@ -48,6 +280,123 @@ class TradeController extends Controller
 
         return view('admin.trades', ['trades' => $trades, 'search' => true, 'val' => $request->val]);
     }
+
+    public function adminAcceptSellStep1(Request $request){
+        $trade = Trade::findOrFail($request->trade);
+
+        if (!($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null)){
+            return;
+        }
+
+        $trade->seller_transaction_stage = 1;
+
+        $trade->update();
+
+        $html = view('admin.trades.accept.partials.sell.step-2', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function adminAcceptSellStep2(Trade $trade){
+
+
+        if (!($trade->buyer_transaction_stage == 3 && $trade->seller_transaction_stage == 1)){
+            return;
+        }
+
+        $trade->seller_transaction_stage = 2;
+
+        $trade->update();
+
+        $html = view('admin.trades.accept.partials.sell.step-3', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function adminAcceptSellStep3(Trade $trade){
+
+        if (!($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage >= 3)){
+            return;
+        }
+
+        $trade->seller_transaction_stage = 3;
+
+        $trade->update();
+
+        $html = view('admin.trades.accept.partials.sell.step-4', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function adminAcceptSellStep4(Trade $trade){
+
+        $trade->seller_transaction_stage = 4;
+
+        $trade->transaction_status = "success";
+
+        $trade->update();
+
+        $html = view('admin.trades.accept.partials.sell.step-5', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function adminAcceptSellNavStep1(Trade $trade){
+
+        if ($trade->seller_transaction_stage < 1){
+            return;
+        }
+
+        $html = view('admin.trades.accept.partials.sell.step-1', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function adminAcceptSellNavStep2(Trade $trade){
+
+        if (!$trade || $trade->seller_transaction_stage < 1 ){
+            return;
+        }
+
+        $html = view('admin.trades.accept.partials.sell.step-2', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function adminAcceptSellNavStep3(Trade $trade){
+
+        if (!$trade || $trade->seller_transaction_stage < 2 ){
+            return;
+        }
+
+        $html = view('admin.trades.accept.partials.sell.step-3', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function adminAcceptSellNavStep4(Trade $trade){
+
+        if (!$trade || $trade->seller_transaction_stage < 3 ){
+            return;
+        }
+
+        $html = view('admin.trades.accept.partials.sell.step-4', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+    public function adminAcceptSellNavStep5(Trade $trade){
+
+        if (!$trade || $trade->seller_transaction_stage < 4 ){
+            return;
+        }
+
+        $html = view('admin.trades.accept.partials.sell.step-5', compact('trade'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
+
+
 
     /**
      * ACCEPT TRADE BUY
@@ -90,7 +439,7 @@ class TradeController extends Controller
 
     public function acceptBuyStep3(Trade $trade){
 
-        if (!($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage == 2)){
+        if (!($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage == 2 && $trade->ace_transaction_stage == 2)){
             return;
         }
 
@@ -142,7 +491,7 @@ class TradeController extends Controller
             return;
         }
 
-        if ($trade->seller_transaction_stage < 2 || $trade->seller_transaction_stage < 2 || $trade->ace_transaction_stage != null){
+        if ($trade->seller_transaction_stage < 2 || $trade->seller_transaction_stage < 2 || $trade->ace_transaction_stage < 2){
             return;
         }
 
@@ -196,7 +545,7 @@ class TradeController extends Controller
         }
         $trade = Trade::findOrFail($request->trade);
 
-        if (!($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null)){
+        if (!($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null && $trade->ace_transaction_stage == 1)){
             return;
         }
 
@@ -276,7 +625,7 @@ class TradeController extends Controller
             return;
         }
 
-        if ($trade->buyer_transaction_stage < 2 || $trade->seller_transaction_stage < 2 || $trade->ace_transaction_stage != null){
+        if ($trade->buyer_transaction_stage < 2 || $trade->seller_transaction_stage < 2 || $trade->ace_transaction_stage < 2){
             return;
         }
 
@@ -353,6 +702,8 @@ class TradeController extends Controller
             return;
         }
 
+        $charge = Setting::all()->first()->charges / 100;
+
         $trade = new Trade;
         $trade->transaction_id = "ACE".$market->user_id.Auth::user()->id.time();
         $trade->coin_id = $market->coin->id;
@@ -363,11 +714,15 @@ class TradeController extends Controller
         $trade->coin_amount = $request->amount;
         $trade->coin_amount_usd = $request->amount * $market->price_usd;
         $trade->coin_amount_ngn = $request->amount * $market->price_ngn;
-        $trade->transaction_charge_coin = $request->amount * 0.01;
-        $trade->transaction_charge_usd = $request->amount * 0.01 * $market->price_usd;
-        $trade->transaction_charge_ngn = $request->amount * 0.01 * $market->price_ngn;
+        $trade->transaction_charge_coin = $request->amount * $charge;
+        $trade->transaction_charge_usd = $request->amount * $charge * $market->price_usd;
+        $trade->transaction_charge_ngn = $request->amount * $charge * $market->price_ngn;
         $trade->seller_wallet_company = $request->company;
         $trade->transaction_status = "pending";
+
+        if ($market->is_special == 1){
+            $trade->is_special = 1;
+        }
 
         $trade->save();
 
@@ -380,7 +735,23 @@ class TradeController extends Controller
 
         $trade = Trade::findOrFail($request->trade);
 
-        if (!($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 2)){
+        if ($trade->is_special == 1){
+
+            if (!($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 2)){
+                return;
+            }
+
+            $trade->seller_transaction_stage = 2;
+
+            $trade->update();
+
+            $html = view('user.dashboard.trades.initiate.partials.sell.step-2', compact('trade'))->render();
+
+            return response()->json(array('success' => true, 'html' => $html));
+
+        }
+
+        if (!($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 2 && $trade->ace_transaction_stage == 1)){
             return;
         }
 
@@ -397,7 +768,21 @@ class TradeController extends Controller
 
         $trade = Trade::findOrFail($request->trade);
 
-        if (!($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage == 3)){
+        if ($trade->is_special == 1){
+            if (!($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage >= 4)){
+                return;
+            }
+
+            $trade->seller_transaction_stage = 3;
+
+            $trade->update();
+
+            $html = view('user.dashboard.trades.initiate.partials.sell.step-4', compact('trade'))->render();
+
+            return response()->json(array('success' => true, 'html' => $html));
+        }
+
+        if (!($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage == 3 && $trade->ace_transaction_stage == 2)){
             return;
         }
 
@@ -441,7 +826,20 @@ class TradeController extends Controller
 
         $trade = Trade::findOrFail($request->trade);
 
-        if (!$trade || $trade->seller_transaction_stage < 1 || !$trade->buyer_transaction_stage){
+        if ($trade->is_special == 1){
+            if ($trade->seller_transaction_stage < 1 || !$trade->buyer_transaction_stage){
+                return;
+            }
+
+            if ($trade->seller_transaction_stage < 1 || $trade->buyer_transaction_stage < 2){
+                return;
+            }
+            $html = view('user.dashboard.trades.initiate.partials.sell.step-2', compact('trade'))->render();
+
+            return response()->json(array('success' => true, 'html' => $html));
+        }
+
+        if (!$trade || $trade->seller_transaction_stage < 1 || !$trade->buyer_transaction_stage || $trade->ace_transaction_stage == null){
             return;
         }
 
@@ -458,11 +856,22 @@ class TradeController extends Controller
 
         $trade = Trade::findOrFail($request->trade);
 
-        if (!$trade || $trade->seller_transaction_stage < 2 ){
+        if ($trade->is_special == 1){
+
+            if ($trade->seller_transaction_stage < 2 || $trade->buyer_transaction_stage < 3){
+                return;
+            }
+
+            $html = view('user.dashboard.trades.initiate.partials.sell.step-3', compact('trade'))->render();
+
+            return response()->json(array('success' => true, 'html' => $html));
+        }
+
+        if (!$trade){
             return;
         }
 
-        if ($trade->seller_transaction_stage < 2 || $trade->seller_transaction_stage < 2 || $trade->ace_transaction_stage != null){
+        if ($trade->seller_transaction_stage < 2 || $trade->seller_transaction_stage < 2 || $trade->ace_transaction_stage < 2){
             return;
         }
 
@@ -544,6 +953,8 @@ class TradeController extends Controller
             return response()->json(array('success' => false, 'error' => 'amount error'));
         }
 
+        $charge = Setting::all()->first()->charges / 100;
+
         $trade = new Trade;
         $trade->transaction_id = "ACE".$market->user_id.Auth::user()->id.time();
         $trade->coin_id = $market->coin->id;
@@ -554,10 +965,14 @@ class TradeController extends Controller
         $trade->coin_amount = $request->amount;
         $trade->coin_amount_usd = $request->amount * $market->price_usd;
         $trade->coin_amount_ngn = $request->amount * $market->price_ngn;
-        $trade->transaction_charge_coin = $request->amount * 0.01;
-        $trade->transaction_charge_usd = $request->amount * 0.01 * $market->price_usd;
-        $trade->transaction_charge_ngn = $request->amount * 0.01 * $market->price_ngn;
+        $trade->transaction_charge_coin = $request->amount * $charge;
+        $trade->transaction_charge_usd = $request->amount * $charge * $market->price_usd;
+        $trade->transaction_charge_ngn = $request->amount * $charge * $market->price_ngn;
         $trade->transaction_status = "pending";
+
+        if ($market->is_special == 1){
+            $trade->is_special = 1;
+        }
 
         $trade->save();
 
@@ -637,11 +1052,22 @@ class TradeController extends Controller
 
         $trade = Trade::findOrFail($request->trade);
 
+        if ($trade->is_special == 1){
+            if ($trade->buyer_transaction_stage < 2 || $trade->seller_transaction_stage < 1 || !$trade->seller_transaction_stage ){
+                return;
+            }
+
+
+            $html = view('user.dashboard.trades.initiate.partials.buy.step-3', compact('trade'))->render();
+
+            return response()->json(array('success' => true, 'html' => $html));
+        }
+
         if (!$trade || $trade->buyer_transaction_stage < 2 ){
             return;
         }
 
-        if ($trade->buyer_transaction_stage < 2 || $trade->seller_transaction_stage < 2 || !$trade->seller_transaction_stage || $trade->ace_transaction_stage != null){
+        if ($trade->buyer_transaction_stage < 2 || $trade->seller_transaction_stage < 2 || !$trade->seller_transaction_stage || $trade->ace_transaction_stage < 2){
             return;
         }
 
@@ -654,6 +1080,16 @@ class TradeController extends Controller
     public function initiateBuyNavStep4(Request $request){
 
         $trade = Trade::findOrFail($request->trade);
+
+        if ($trade->is_special == 1){
+            if (!$trade || $trade->buyer_transaction_stage < 3 || $trade->seller_transaction_stage < 2 ){
+                return;
+            }
+
+            $html = view('user.dashboard.trades.initiate.partials.buy.step-4', compact('trade'))->render();
+
+            return response()->json(array('success' => true, 'html' => $html));
+        }
 
         if (!$trade || $trade->buyer_transaction_stage < 3 || $trade->seller_transaction_stage < 3 ){
             return;

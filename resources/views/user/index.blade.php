@@ -18,8 +18,8 @@
                 </div>
                 <div class="intro-heading text-uppercase"></div>
                 <div class="d-flex justify-content-center">
-                    <a class="btn btn-danger btn-xl text-uppercase" href="{{ route('market.sell') }}" style="margin: 0 30px; z-index: 3;">SELL</a>
-                    <a class="btn btn-success btn-xl text-uppercase" href="{{ route('market.buy') }}" style="margin: 0 30px; z-index: 3;">BUY</a>
+                    <a class="btn btn-danger btn-xl text-uppercase" href="{{ route('market.sell') }}" style="margin: 0 15px; z-index: 3;">SELL</a>
+                    <a class="btn btn-success btn-xl text-uppercase" href="{{ route('market.buy') }}" style="margin: 0 15px; z-index: 3;">BUY</a>
                 </div>
             </div>
         </div>
@@ -94,9 +94,9 @@
                                     <i class="fa fa-star rating text-secondary"></i>
                                 </div>
                                 @if($market->type === "buy")
-                                    <a href="{{ route('trade.initiate.sell', $market) }}" class="btn btn-danger">Sell Now</a>
+                                    <a href="{{ route('trade.initiate.sell', $market) }}" class="d-none d-md-block btn btn-danger">Sell Now</a>
                                 @elseif($market->type === "sell")
-                                    <a href="{{ route('trade.initiate.buy', $market) }}" class="btn btn-success">Buy Now</a>
+                                    <a href="{{ route('trade.initiate.buy', $market) }}" class="d-none d-md-block btn btn-success">Buy Now</a>
                                 @endif
                             </div>
                             <div class="d-md-none d-block align-self-center">

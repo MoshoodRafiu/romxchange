@@ -31,11 +31,29 @@ class CoinController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request,[
+            'name' => 'required|unique:coins,name',
+            'short_name' => 'required|unique:coins,abbr',
+            'logo' => 'required|mimes:png,jpeg,jpg'
+        ]);
+
+        $file = $request->logo;
+        $file_name = $file->getClientOriginalName();
+
+        $destinationPath = public_path('/images');
+
+        $file->move($destinationPath, $file_name);
+
+        $coin = new Coin;
+
+        $coin->name = $request->name;
+        $coin->abbr = $request->short_name;
+        $coin->logo = $file_name;
+        $coin->save();
+        return back()->with('message', 'Coin added successfully');
     }
 
     /**
@@ -76,10 +94,10 @@ class CoinController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  \App\Coin  $coin
-     * @return \Illuminate\Http\Response
      */
     public function destroy(Coin $coin)
     {
-        //
+        $coin->delete();
+        return back()->with('message', 'Coin deleted successfully');
     }
 }
