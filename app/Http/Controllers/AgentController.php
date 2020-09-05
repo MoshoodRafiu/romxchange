@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\User;
+use App\Verification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class AgentController extends Controller
 {
@@ -40,9 +43,9 @@ class AgentController extends Controller
             'last_name' => 'required',
             'display_name' => 'required|unique:users',
             'email' => 'required|unique:users',
-            'password' => 'required|min:8|same:confirm_password',
-            'confirm_password' => 'same:password',
         ]);
+
+        $password = Str::random(10);
 
         $user = new User;
 
@@ -50,10 +53,20 @@ class AgentController extends Controller
         $user->last_name = $request->last_name;
         $user->display_name = $request->display_name;
         $user->email = $request->email;
-        $user->password = Hash::make($request->password);
+        $user->password = Hash::make($password);
         $user->is_agent = 1;
+        $user->verification_code = sha1($request->email.time());
 
         $user->save();
+
+        $verification = new Verification();
+        $verification->user_id = $user->id;
+        $verification->is_email_verified = 1;
+        $verification->email_verified_at = now();
+
+        $verification->save();
+
+        MailController::sendAgentInvitationEmail($user->display_name, $user->email, $password);
 
         return redirect()->route('admin.agents')->with('message', 'Agent registered successfully');
     }

@@ -6,6 +6,7 @@ use App\Verification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Intervention\Image\Facades\Image;
 
 class VerificationController extends Controller
 {
@@ -25,6 +26,7 @@ class VerificationController extends Controller
     public function approveVerification(Verification $verification){
         $verification->document_verification_status = "approved";
         $verification->is_document_verified = 1;
+        $verification->document_verified_at = now();
         $verification->update();
         return back()->with('message', 'Verification for '.$verification->user->display_name.' approved successfully');
     }
@@ -66,7 +68,7 @@ class VerificationController extends Controller
         $response = Http::post('https://termii.com/api/sms/otp/send', [
             "api_key" => env('TERMI_KEY'),
             "message_type" => env('TERMI_MESSAGE_TYPE'),
-            "to" => '234'.$request->phone,
+            "to" => $request->phone,
             "from" => env('TERMII_FROM'),
             "channel" => env('TERMII_CHANNEL'),
             "pin_attempts" => env('TERMII_PIN_ATTEMPT'),
@@ -115,14 +117,16 @@ class VerificationController extends Controller
                 $user = Auth::user();
                 if ($user->verification){
                     $user->verification->is_phone_verified = 1;
+                    $user->verification->phone_verified_at = now();
                     $user->verification->update();
                 }else{
                     $verification = new Verification;
                     $verification->user_id = $user->id;
                     $verification->is_phone_verified = 1;
+                    $verification->phone_verified_at = now();
                     $verification->save();
                 }
-                return back()->with('pin-success', 'Phone number verified');
+                return redirect()->route('verification.index')->with('message', 'Phone number verified');
             }elseif ($response['verified'] === "Expired"){
                 return back()->with('pin-error', 'Pin Expired');
             }
@@ -147,7 +151,7 @@ class VerificationController extends Controller
         if (Auth::user()->verification){
             if (Auth::user()->verification->document_verification_status === "pending"){
                 return back()->with('error', 'Documents undergoing verification, please do not resend');
-            }elseif (Auth::user()->verification->status === "approved"){
+            }elseif (Auth::user()->verification->document_verification_status === "approved" || Auth::user()->verification->is_document_verified == 1){
                 return back()->with('error', 'Documents already verified');
             }
         }
@@ -157,12 +161,18 @@ class VerificationController extends Controller
         $photo_name = time().'-'.$photo->getClientOriginalName();
         $document_name = time().'-'.$document->getClientOriginalName();
 
-        $destinationPath = public_path('/images');
+        $photoDestinationPath = 'documents/'.$photo_name;
+        $documentDestinationPath = 'documents/'.$document_name;
 
-        $photo->move($destinationPath, $photo_name);
-        $document->move($destinationPath, $document_name);
+        Image::make($photo->getRealPath())->resize(500, 700)->save($photoDestinationPath);
+        Image::make($document->getRealPath())->resize(500, 700)->save($documentDestinationPath);
 
-        Auth::user()->verification()->create(['document_verification_status' => 'pending']);
+        $verification = Auth::user()->verification;
+
+        $verification->document_verification_status = "pending";
+
+        $verification->update();
+
         Auth::user()->documents()->create(['document_url' => $document_name, 'photo_url' => $photo_name]);
 
         return back()->with('message', 'Documents submitted successfully');

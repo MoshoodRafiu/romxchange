@@ -29,8 +29,7 @@
                             <th>Type</th>
                             <th>Min</th>
                             <th>Max</th>
-                            <th>Price(USD)</th>
-                            <th>Price(NGN)</th>
+                            <th>Rate</th>
                             <th>Action</th>
                         </tr>
                         </thead>
@@ -47,8 +46,7 @@
                                     @endif
                                     <td>{{ $market->min }}</td>
                                     <td>{{ $market->max }}</td>
-                                    <td>{{ $market->price_usd }}</td>
-                                    <td>{{ $market->price_ngn }}</td>
+                                    <td>{{ $market->rate }}</td>
                                     <td>
                                         <a href="{{ route('market.edit', $market) }}" class="btn btn-warning"><i class="fas fa-pencil-alt d-xl-flex justify-content-xl-center align-items-xl-center"></i></a>
                                         <button type="button" data-toggle="modal" data-target="#deleteModal{{ $market->id }}" class="btn btn-danger"><i class="far fa-trash-alt d-xl-flex justify-content-xl-center align-items-xl-center"></i></button>

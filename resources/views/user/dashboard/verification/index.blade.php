@@ -29,7 +29,7 @@
                                     <div class="mt-3">
                                         @if(Auth::user()->verification)
                                             @if(Auth::user()->verification->is_email_verified)
-                                                <h6 id="card-text" class="small">Verified: {{ Auth::user()->verification->email_verified_at }}<br /></h6>
+                                                <h6 id="card-text" class="small">Verified: {{ \Carbon\Carbon::parse(Auth::user()->verification->email_verified_at)->diffForHumans() }}<br /></h6>
                                                 <button class="btn btn-warning px-4" disabled>Verified</button>
                                             @else
                                                 <h6 id="card-text" class="small">Not Verified<br /></h6>
@@ -67,7 +67,7 @@
                                     <div class="mt-3">
                                         @if(Auth::user()->verification)
                                             @if(Auth::user()->verification->is_phone_verified)
-                                                <h6 id="card-text" class="small">Verified: {{ Auth::user()->verification->phone_verified_at }}<br /></h6>
+                                                <h6 id="card-text" class="small">Verified: {{ \Carbon\Carbon::parse(Auth::user()->verification->phone_verified_at)->diffForHumans() }}<br /></h6>
                                                 <button class="btn btn-warning px-4" disabled>Verified</button>
                                             @else
                                                 <h6 id="card-text" class="small">Not Verified<br /></h6>
@@ -104,7 +104,7 @@
                                     <div class="mt-3">
                                         @if(Auth::user()->verification)
                                             @if(Auth::user()->verification->is_document_verified)
-                                                <h6 id="card-text" class="small">Verified: {{ Auth::user()->verification->document_verified_at }}<br /></h6>
+                                                <h6 id="card-text" class="small">Verified: {{ \Carbon\Carbon::parse(Auth::user()->verification->document_verified_at)->diffForHumans() }}<br /></h6>
                                                 <button class="btn btn-warning px-4" disabled>Verified</button>
                                             @else
                                                 <h6 id="card-text" class="small">Not Verified<br /></h6>
@@ -117,7 +117,7 @@
                                     </div>
                                 </div>
                                 @if(Auth::user()->verification)
-                                    @if(Auth::user()->verification->is_email_verified)
+                                    @if(Auth::user()->verification->is_document_verified)
                                         <div><i class="fa fa-check-circle text-warning fa-4x"></i></div>
                                     @else
                                         <div><i class="fa fa-info-circle text-warning fa-4x"></i></div>

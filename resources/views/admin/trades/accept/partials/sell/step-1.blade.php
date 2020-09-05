@@ -14,9 +14,10 @@
     </div>
     <div class="form-group col-md-6">
         <label>Transaction Charges</label>
-                                <input type="number" name="charges" value="{{ $trade->transaction_charge_coin }}" class="form-control" disabled>
+        <input type="number" name="charges" value="{{ $trade->transaction_charge_coin }}" class="form-control" disabled>
     </div>
     <div class="mx-auto">
+        <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn px-4 btn-danger">Cancel Trade</button>
         <button type="submit" id="step-1-nav" class="btn btn-special px-5">Proceed</button>
     </div>
 </form>

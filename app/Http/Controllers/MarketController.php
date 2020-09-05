@@ -110,6 +110,7 @@ class MarketController extends Controller
      */
     public function store(Request $request)
     {
+
         if (!$this->userHasVerification()){
             return back()->with('error', 'You have to verify your account before creating an advert');
         }
@@ -119,19 +120,18 @@ class MarketController extends Controller
             "type" => "required|string",
             "min" => "required|numeric",
             "max" => "required|numeric",
-            "price_usd" => "required|numeric",
-            "price_ngn" => "required|numeric"
+            "rate" => "required|numeric",
         ]);
 
         if ($request->type === "buy"){
             if (!$this->userBuyVerified()){
-                return back()->with('error', 'You have to verify your phone number before creating a buy advert');
+                return back()->with('error', 'You have to verify your phone number and documents before creating a buy advert');
             }elseif (!$this->buyerWallet($request->coin)){
                 return back()->with('error', 'You do not have a wallet for this coin, please add a wallet and try again later');
             }
         }elseif ($request->type === "sell"){
             if (!$this->userSellVerified()){
-                return back()->with('error', 'You have to verify your phone number and documents before creating a sell advert');
+                return back()->with('error', 'You have to verify your phone number before creating a sell advert');
             }elseif (!$this->sellerAccount()){
                 return back()->with('error', 'Cant create advert, fill in your BANK DETAILS in PROFILE and try again');
             }
@@ -146,8 +146,7 @@ class MarketController extends Controller
             'type' => $request->type,
             'min' => $request->min,
             'max' => $request->max,
-            'price_usd' => $request->price_usd,
-            'price_ngn' => $request->price_usd * $request->price_ngn
+            'rate' => $request->rate,
         ]);
 
         return redirect()->route('market.user')->with('message', 'Advert added successfully');
@@ -159,8 +158,7 @@ class MarketController extends Controller
             "type" => "required|string",
             "min" => "required|numeric",
             "max" => "required|numeric",
-            "price_usd" => "required|numeric",
-            "price_ngn" => "required|numeric"
+            "rate" => "required|numeric",
         ]);
 
         if ($request->type === "buy"){
@@ -184,8 +182,7 @@ class MarketController extends Controller
             'type' => $request->type,
             'min' => $request->min,
             'max' => $request->max,
-            'price_usd' => $request->price_usd,
-            'price_ngn' => $request->price_usd * $request->price_ngn
+            'rate' => $request->rate,
         ]);
 
         return redirect()->route('admin.markets')->with('message', 'Market created successfully');
@@ -225,15 +222,13 @@ class MarketController extends Controller
         $this->validate($request, [
             "min" => "required|numeric",
             "max" => "required|numeric",
-            "price_usd" => "required|numeric",
-            "price_ngn" => "required|numeric"
+            "rate" => "required|numeric",
         ]);
 
         $market->update([
             'min' => $request->min,
             'max' => $request->max,
-            'price_usd' => $request->price_usd,
-            'price_ngn' => $request->price_usd * $request->price_ngn
+            'rate' => $request->price_usd,
         ]);
 
         return redirect()->route('market.user')->with('message', 'Advert updated successfully');
@@ -244,15 +239,13 @@ class MarketController extends Controller
         $this->validate($request, [
             "min" => "required|numeric",
             "max" => "required|numeric",
-            "price_usd" => "required|numeric",
-            "price_ngn" => "required|numeric"
+            "rate" => "required|numeric",
         ]);
 
         $market->update([
             'min' => $request->min,
             'max' => $request->max,
-            'price_usd' => $request->price_usd,
-            'price_ngn' => $request->price_usd * $request->price_ngn
+            'rate' => $request->rate,
         ]);
 
         return redirect()->route('admin.markets')->with('message', 'Market updated successfully');
@@ -294,13 +287,13 @@ class MarketController extends Controller
         }
     }
 
-    protected function userBuyVerified(){
+    protected function userSellVerified(){
         if (Auth::user()->verification->is_email_verified && Auth::user()->verification->is_phone_verified){
             return true;
         }
     }
 
-    protected function userSellVerified(){
+    protected function userBuyVerified(){
         if (Auth::user()->verification->is_email_verified && Auth::user()->verification->is_phone_verified && Auth::user()->verification->is_document_verified){
             return true;
         }

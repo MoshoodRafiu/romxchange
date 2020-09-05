@@ -2,13 +2,13 @@
 @if(isset($trade))
     @if(($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == null) || ($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 1) || ($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 2 && $trade->ace_transaction_stage == null))
         <div class="text-center" id="transaction-message">
-            <strong class="text-info" style="font-size: 23px">Waiting For Buyer to Accept Trade </strong>
-            <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
+            <strong class="text-info" id="info-1-text" style="font-size: 23px">Waiting For Buyer to Accept Trade </strong>
+            <img width="50px" id="info-1-img" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
         </div>
     @elseif($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 2 && $trade->ace_transaction_stage == 1)
         <div class="text-center" id="transaction-message">
-            <strong class="text-success" style="font-size: 23px">Trade Accepted, Proceed with Trade Below </strong>
-            <img width="100px" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
+            <strong class="text-success" id="info-1-text" style="font-size: 23px">Trade Accepted, Proceed with Trade Below </strong>
+            <img width="100px" id="info-1-img" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
         </div>
     @endif
 @endisset

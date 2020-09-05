@@ -30,7 +30,7 @@
                                         @error('phone')
                                         <div class="text-danger"><strong>{{ $message }}</strong></div>
                                         @enderror
-                                        <label>Phone Number</label>
+                                        <label>Phone Number <span class="text-info font-weight-bold">(phone number should be in format 2348090000000)</span></label>
                                         <div class="d-flex justify-content-between">
                                             <input type="tel" name="phone" class="form-control col-md-10 col-sm-8 col-6" value="{{ Auth::user()->phone }}"
                                                 @if(Auth::user()->verification)

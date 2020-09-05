@@ -3,7 +3,7 @@
 @section('content')
 
     <section class="text-right bg-light pb-5" id="profile">
-        <div class="container profile profile-view" id="profile">
+        <div class="profile profile-view" id="profile">
             <div class="row">
                 <div class="col-md-12 mb-3">
                     <h2 class="text-uppercase text-center section-heading" style="  font-size: 30px;">Process Transaction</h2>
@@ -28,30 +28,30 @@
                                     @if($trade->is_special == 1)
                                         @if($trade->buyer_transaction_stage == 1 && $trade->seller_transaction_stage == null)
                                             <div class="text-center">
-                                                <strong class="text-info" style="font-size: 23px">Waiting For Buyer to Verify Wallet </strong>
-                                                <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
+                                                <strong class="text-info" id="info-1-text" style="font-size: 23px">Waiting For Buyer to Verify Wallet </strong>
+                                                <img width="50px" id="info-1-img" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
                                             </div>
                                         @elseif($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null)
                                             <div class="text-center">
-                                                <strong class="text-success" style="font-size: 23px">Wallet Verified, Proceed with Transaction</strong>
-                                                <img width="100px" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
+                                                <strong class="text-success" id="info-1-text" style="font-size: 23px">Wallet Verified, Proceed with Transaction</strong>
+                                                <img width="100px" id="info-1-img" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
                                             </div>
                                         @endif
                                     @else
                                         @if($trade->buyer_transaction_stage == 1 && $trade->seller_transaction_stage == null && $trade->ace_transaction_stage == null)
                                             <div class="text-center">
-                                                <strong class="text-info" style="font-size: 23px">Waiting For Buyer to Verify Wallet </strong>
-                                                <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
+                                                <strong class="text-info" id="info-1-text" style="font-size: 23px">Waiting For Buyer to Verify Wallet </strong>
+                                                <img width="50px" id="info-1-img" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
                                             </div>
                                         @elseif($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null && $trade->ace_transaction_stage == null)
                                             <div class="text-center">
-                                                <strong class="text-info" style="font-size: 23px">Waiting For Buyer to Verify Wallet </strong>
-                                                <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
+                                                <strong class="text-info" id="info-1-text" style="font-size: 23px">Waiting For Buyer to Verify Wallet </strong>
+                                                <img width="50px" id="info-1-img" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
                                             </div>
                                         @elseif($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null && $trade->ace_transaction_stage == 1)
                                             <div class="text-center">
-                                                <strong class="text-success" style="font-size: 23px">Wallet Verified, Proceed with Transaction</strong>
-                                                <img width="100px" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
+                                                <strong class="text-success" id="info-1-text" style="font-size: 23px">Wallet Verified, Proceed with Transaction</strong>
+                                                <img width="100px" id="info-1-img" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
                                             </div>
                                         @endif
                                     @endif
@@ -73,6 +73,7 @@
                                             <input type="number" name="charges" value="{{ $trade->transaction_charge_coin }}" class="form-control" disabled>
                                         </div>
                                         <div class="mx-auto">
+                                            <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn px-4 btn-danger">Cancel Trade</button>
                                             @if(!$trade->seller_transaction_stage == null)
                                                 <button type="submit" id="step-2-nav"  class="btn btn-special px-5">Proceed</button>
                                             @else
@@ -81,10 +82,40 @@
                                         </div>
                                     </form>
                                 </div>
-                                <div class="col-12 mx-auto">
+                                <div id="chat-field" class="col-12 mx-auto p-0 mb-5">
+                                    @isset($trade)
+                                        @if($trade->is_dispute == 1)
+                                            @include('admin.trades.accept.partials.sell.chat')
+                                        @endif
+                                    @endisset
+                                </div>
+                                <div class="col-12 mx-auto p-0">
                                     @include('admin.trades.accept.partials.sell.info')
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal -->
+            <div class="modal fade text-left" id="cancelModal" tabindex="-1" role="dialog" aria-labelledby="cancelModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="cancelModalLabel">Confirm</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Are you sure you want to cancel this trade?
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <form method="get" action="{{ route('trade.cancel', $trade) }}">
+                                @csrf
+                                <button type="submit" class="btn btn-danger">Cancel Trade</button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -98,6 +129,8 @@
 
     <script>
         $(document).ready(function () {
+
+            $(".chat-field").animate({ scrollTop: 999999 }, 1000);
             // STEP 1
             $("#step-1").submit(function (e) {
                 e.preventDefault();
@@ -412,6 +445,180 @@
                     }
                 });
             }
+
+            $(".tab-pane").on('click', '#message-1', function (e) {
+                e.preventDefault();
+                sendMessage("1");
+            });
+
+            $(".tab-pane").on('click', '#message-2', function (e) {
+                e.preventDefault();
+                sendMessage("2");
+            });
+            $(".tab-pane").on('click', '#message-3', function (e) {
+                e.preventDefault();
+                sendMessage("3");
+            });
+
+            $(".tab-pane").on('click', '#message-4', function (e) {
+                e.preventDefault();
+                sendMessage("4");
+            });
+
+                @isset($trade)
+            var sendMessage = function (val) {
+                    $.ajaxSetup({
+                        headers: {
+                            "X-CSRF-TOKEN": $("meta[name='csrf-token']").attr('content')
+                        }
+                    });
+                    $.ajax({
+                        url: "{{ route('message.send') }}",
+                        method: "POST",
+                        data: {
+                            trade: {{ $trade->id }},
+                            message: val,
+                        },
+                        cache: false,
+                        beforeSend: function () {
+                            $(".ajax-loader").show();
+                        },
+                        complete: function () {
+                            $(".ajax-loader").hide();
+                        },
+                        success: function (result) {
+                            if (result.success) {
+                                $("#chat-field").fadeIn().html(result.html);
+                                $(".chat-field").animate({ scrollTop: 999999 }, 1000);
+                                // document.querySelector('.chat-field').scrollTo({ left: 0, top: document.body.scrollHeight});
+                            }
+                        }
+                    });
+                }
+            @endisset
+
+            $(".tab-pane").on('click', '#payment-proof-button', function (e) {
+                e.preventDefault();
+                $("#payment-proof-file").click();
+            });
+
+            $(".tab-pane").on('change', '#payment-proof-form', function (e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                $.ajaxSetup({
+                    headers: {
+                        "X-CSRF-TOKEN": $("meta[name='csrf-token']").attr('content')
+                    }
+                });
+                $.ajax({
+                    url: "{{ route('message.file.send') }}",
+                    method: "POST",
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    cache: false,
+                    beforeSend: function () {
+                        $(".ajax-loader").show();
+                    },
+                    complete: function () {
+                        $(".ajax-loader").hide();
+                    },
+                    success: function (result) {
+                        if (result.success) {
+                            $("#chat-field").fadeIn().html(result.html);
+                            $(".chat-field").animate({scrollTop: 999999}, 1000);
+                            // document.querySelector('.chat-field').scrollTo({ left: 0, top: document.body.scrollHeight});
+                        }
+                    }
+
+                });
+            });
+
+                @isset($trade)
+            var channel = Echo.private('trade.{{ $trade->id }}');
+            channel.listen('.coin-verified', function() {
+                $("#info-2-text").text('Coin Verified, Proceed with Transaction');
+                $("#info-2-text").removeClass('text-info');
+                $("#info-2-text").addClass('text-success');
+                $("#info-2-img").attr('src', '{{ asset('assets/img/proceed.gif') }}');
+                $("#info-2-img").width('100');
+            });
+
+            channel.listen('.payment-made', function() {
+                $("#info-3-text").text('Payment Made, Verify Payment and Proceed');
+                $("#info-3-text").removeClass('text-info');
+                $("#info-3-text").addClass('text-success');
+                $("#info-3-img").attr('src', '{{ asset('assets/img/proceed.gif') }}');
+                $("#info-3-img").width('100');
+            });
+
+            channel.listen('.trade-accepted', function() {
+                $("#info-1-text").text('Wallet Verified, Proceed with Transaction');
+                $("#info-1-text").removeClass('text-info');
+                $("#info-1-text").addClass('text-success');
+                $("#info-1-img").attr('src', '{{ asset('assets/img/proceed.gif') }}');
+                $("#info-1-img").width('100');
+            });
+
+            channel.listen('.message-sent', function(data) {
+
+                if(data.id !== {{ \Illuminate\Support\Facades\Auth::user()->id }}){
+                    const div = document.createElement('div');
+
+                    if(data.sender === "agent"){
+                        div.className = 'agent';
+                    }else {
+                        div.className = 'received';
+                    }
+
+
+                    if(data.type === "text"){
+                        div.innerHTML = `
+                    <span class="owner">${data.sender}</span>
+                    <span>${data.message}</span>
+                    <span class="time">${data.time}</span>`;
+                    }else{
+                        var getUrl = window.location;
+                        var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[0];
+                        var imgUrl = baseUrl+'proofs/'+data.message
+                        div.innerHTML = `
+                    <span class="owner">${data.sender}</span>
+                    <div class="text-center"><img class="img img-fluid p-3" src="${imgUrl}" alt="img"></div>
+                    <span class="time">${data.time}</span>`;
+                    }
+
+                    document.querySelector('.chat-field').appendChild(div);
+                    $(".chat-field").animate({ scrollTop: 999999 }, 1000);
+                }
+            });
+
+            $(".step").on("click", ".star-rating .fa", function () {
+                $('.star-rating .fa').removeClass('fa-star-o')
+                $('.star-rating .fa').removeClass('fa-star')
+                $('.star-rating .fa').removeClass('fa-3x')
+                $('.star-rating .fa').addClass('fa-2x')
+                $(this).addClass('fa-star');
+                $(this).removeClass('fa-2x');
+                $(this).addClass('fa-3x');
+                $(this).addClass('fa-3x').delay(500).queue(function( next ){
+                    $(this).removeClass('fa-3x');
+                    $(this).addClass('fa-2x');
+                    next();
+                });
+
+                $id = $(this).data('rating');
+                $(this).siblings('span').each(function () {
+                    if ($(this).data('rating') < $id){
+                        $(this).addClass('fa-star');
+                    }else{
+                        $(this).addClass('fa-star-o');
+                    }
+                })
+
+            });
+
+            @endisset
+
         });
     </script>
 

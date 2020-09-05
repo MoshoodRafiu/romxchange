@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 
-Route::group(['middleware' => ['auth']], function () {
+Route::group(['middleware' => ['auth', 'email_verified', 'active']], function () {
 
     Route::get('/profile', 'ProfileController@index')->name('profile.index');
     Route::put('/profile/update', 'ProfileController@update')->name('profile.update');
@@ -28,6 +28,14 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/market/{market}/user/edit', 'MarketController@edit')->name('market.edit');
     Route::put('/market/{market}/user/update', 'MarketController@update')->name('market.update');
     Route::delete('/market/{market}/user/destroy', 'MarketController@destroy')->name('market.destroy');
+
+    Route::post('/chat/message/send', 'MessageController@sendRegular')->name('message.send');
+    Route::post('/chat/message/file/send', 'MessageController@sendRegularFile')->name('message.file.send');
+
+    Route::post('/trades/reviews/store', 'ReviewController@store')->name('review.store');
+    Route::get('/trades/{trade}/dispute', 'TradeController@dispute')->name('trade.dispute');
+    Route::get('/trades/{trade}/switch', 'TradeController@switch')->name('trade.switch');
+    Route::get('/trades/{trade}/cancel', 'TradeController@cancel')->name('trade.cancel');
 
     Route::get('/wallets', 'WalletController@index')->name('wallet.index');
     Route::get('/wallets/create', 'WalletController@create')->name('wallet.create');
@@ -97,23 +105,29 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 Route::get('/', 'HomeController@index')->name('home');
+Route::get('/email/verify', 'HomeController@verifyEmail')->name('email.verify')->middleware('auth');
+Route::post('/email/verify/resend', 'HomeController@resendEmail')->name('verify.resend')->middleware('auth');
+Route::get('/verify', 'HomeController@verifyUser')->name('verify.user');
 Route::get('/market', 'MarketController@index')->name('market.index');
 Route::get('/market/buy', 'MarketController@buy')->name('market.buy');
 Route::get('/market/sell', 'MarketController@sell')->name('market.sell');
 Route::get('/market/filter', 'MarketController@filterMarket')->name('market.filter');
 
 
-Route::group(['middleware' => ['auth']] , function () {
+Route::group(['middleware' => ['auth', 'admin']] , function () {
     Route::get('/admin/dashboard', 'HomeController@adminDashboard')->name('admin.dashboard');
-
     Route::get('/admin/transactions', 'TradeController@allTransactions')->name('admin.transactions');
     Route::get('/admin/transactions/filter', 'TradeController@allTransactionsFilter')->name('admin.transactions.filter');
     Route::get('/admin/transactions/enscrow', 'TradeController@enscrow')->name('admin.transactions.enscrow');
     Route::get('/admin/trades', 'TradeController@adminTrades')->name('admin.trades');
+    Route::get('/admin/trades/disputes', 'TradeController@tradeDispute')->name('admin.trades.disputes');
+    Route::get('/admin/trades/{trade}/disputes/chat', 'TradeController@tradeDisputeJoin')->name('admin.trades.dispute.join');
     Route::get('/admin/trades/{trade}/accept', 'TradeController@aceAccept')->name('admin.transactions.accept');
     Route::get('/admin/trades/{trade}/proceed', 'TradeController@aceProceed')->name('admin.transactions.proceed');
     Route::get('/admin/trades/{trade}/step2', 'TradeController@aceStep2')->name('admin.enscrow.step2');
     Route::get('/admin/trades/{trade}/step3', 'TradeController@aceStep3')->name('admin.enscrow.step3');
+
+    Route::post('/admin/chat/message/send', 'MessageController@sendAdmin')->name('admin.message.send');
 
     Route::get('/admin/trades/{trade}/nav/step1', 'TradeController@aceNavStep1')->name('admin.enscrow.nav.step1');
     Route::get('/admin/trades/{trade}/nav/step2', 'TradeController@aceNavStep2')->name('admin.enscrow.nav.step2');

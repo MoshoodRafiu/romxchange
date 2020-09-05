@@ -33,7 +33,16 @@
         </div>
     </div>
     <div class="mx-auto">
-        <button type="reset" id="step-2-cancel" class="btn btn-danger mx-4">Cancel Transaction</button>
+        <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn px-4 btn-danger">Cancel Trade</button>
+        @if($trade->buyer_transaction_stage == 3 || $trade->seller_transaction_stage == 2)
+            @if($trade->is_dispute == 1)
+                <button type="button" disabled class="btn btn-info p-2">Dispute Trade</button>
+            @else
+                <a href="{{ route('trade.dispute', $trade) }}" class="btn btn-info p-2">Dispute Trade</a>
+            @endif
+        @else
+            <button type="button" disabled class="btn btn-info p-2">Dispute Trade</button>
+        @endif
         @if($trade->seller_transaction_stage == 2)
             <button type="submit" id="step-3-proceed" class="btn btn-special mx-4">I Have Sent Coin</button>
         @else

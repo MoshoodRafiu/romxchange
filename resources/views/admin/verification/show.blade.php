@@ -44,13 +44,21 @@
                     </td>
                 </tr>
             </table>
-            <div class="col-md-10">
+            <div class="col-md-12">
                 <h5>Document:</h5>
-                <div>
-                    <img src="{{ asset('/documents/IMG_20191123_105106_026.jpg') }}" alt="document" class="img img-fluid">
-{{--                    <div class="text-right my-2">--}}
-{{--                        <a href="#" class="btn btn-special"><i class="fa fa-save"></i> Save</a>--}}
-{{--                    </div>--}}
+                <div class="row">
+                    <div class="col-md-6">
+                        <img src="{{ asset('/documents/'.$verification->user->documents()->latest()->first()->photo_url) }}" alt="document" class="img img-fluid">
+                        <div class="text-center my-2">
+                            <a href="#" class="btn btn-special btn-sm"><i class="fa fa-save"></i> Save</a>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <img src="{{ asset('/documents/'.$verification->user->documents()->latest()->first()->document_url) }}" alt="document" class="img img-fluid">
+                        <div class="text-center my-2">
+                            <a href="#" class="btn btn-special btn-sm"><i class="fa fa-save"></i> Save</a>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-12 d-flex justify-content-around my-4">

@@ -1,13 +1,13 @@
 <h4 class="text-center my-4">Step 4</h4>
 @if($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage == 4)
     <div class="text-center" id="transaction-message-waiting">
-        <strong class="text-info" style="font-size: 23px">Waiting For Seller to Verify Payment</strong>
-        <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
+        <strong class="text-info" id="info-4-text" style="font-size: 23px">Waiting For Seller to Verify Payment</strong>
+        <img width="50px" id="info-4-img" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
     </div>
 @elseif($trade->seller_transaction_stage == 3 && $trade->buyer_transaction_stage == 4)
     <div class="text-center" id="transaction-message-proceed">
-        <strong class="text-success" style="font-size: 23px">Payment Verified, Proceed with Trade Below </strong>
-        <img width="100px" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
+        <strong class="text-success" id="info-4-text" style="font-size: 23px">Payment Verified, Proceed with Trade Below </strong>
+        <img width="100px" id="info-4-img" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
     </div>
 @endif
 <form class="mb-4">
@@ -40,11 +40,21 @@
                 <a onclick="copyText('accountNumber')" class="col-sm-1 text-white col-2 btn btn-secondary"><i class="fa fa-copy"></i></a>
             </div>
         </div>
-        <div class="mx-auto">
-            @if($trade->buyer_transaction_stage == 3)
-                <button type="submit" id="step-4-proceed" class="btn btn-special mx-4">I Have Made Payment</button>
+        <div class="mx-auto text-center">
+            <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn px-4 m-2 btn-danger">Cancel Trade</button>
+            @if($trade->buyer_transaction_stage == 4 || $trade->seller_transaction_stage == 2)
+                @if($trade->is_dispute == 1)
+                    <button type="button" disabled class="btn m-2 btn-info p-2">Dispute Trade</button>
+                @else
+                    <a href="{{ route('trade.dispute', $trade) }}" class="btn m-2 btn-info p-2">Dispute Trade</a>
+                @endif
             @else
-                <button type="submit" id="step-5-nav" class="btn btn-special mx-4">Proceed</button>
+                <button type="button" disabled class="btn btn-info p-2">Dispute Trade</button>
+            @endif
+            @if($trade->buyer_transaction_stage == 3)
+                <button type="submit" id="step-4-proceed" class="btn btn-special m-2">I Have Made Payment</button>
+            @else
+                <button type="submit" id="step-5-nav" class="btn btn-special m-2">Proceed</button>
             @endif
         </div>
     </div>

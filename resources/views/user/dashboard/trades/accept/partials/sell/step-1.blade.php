@@ -37,6 +37,6 @@
         @endif
     </div>
     <div class="mx-auto">
-        <button type="submit" id="step-1-nav" class="btn btn-special px-5">Proceed</button>
+        <button type="button" id="step-2-nav" class="btn btn-special px-5">Proceed</button>
     </div>
 </form>

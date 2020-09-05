@@ -12,6 +12,11 @@
                 <div class="mx-auto text-center">
                     <i class="fa fa-user-circle" style="font-size: 50px; color: #04122f;"></i>
                 </div>
+                @if(Session::has('message'))
+                    <div class="alert col-12 w-100 my-3 alert-success text-left" role="alert">{{ session('message') }}</div>
+                @elseif(Session::has('error'))
+                    <div class="alert col-12 w-100 my-3 alert-danger text-left" role="alert">{{ session('error') }}</div>
+                @endif
                 <form method="post" action="{{ route('login') }}">
                     @csrf
                     <div class="form-group">

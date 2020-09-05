@@ -11,14 +11,12 @@
                 </div>
             </div>
             <div class="row">
-                @if(Session::has('message'))
-                    <div class="alert col-md-10 mx-auto alert-success text-left" role="alert">{{ session('message') }}</div>
-                @elseif(Session::has('error'))
-                    <div class="alert col-md-10 mx-auto alert-danger text-left" role="alert">{{ session('error') }}</div>
-                @endif
-            </div>
-            <div class="row">
                 <div class="col-md-10 mx-auto my-5">
+                    @if(Session::has('message'))
+                        <div class="alert w-100 mx-auto alert-success text-left" role="alert">{{ session('message') }}</div>
+                    @elseif(Session::has('error'))
+                        <div class="alert w-100 mx-auto alert-danger text-left" role="alert">{{ session('error') }}</div>
+                    @endif
                     <div class="card shadow">
                         <div class="card-body text-left">
                             @if(Auth::user()->verification)
@@ -58,8 +56,8 @@
                                 </div>
                                 <div class="form-group text-center mt-3">
                                     @if(Auth::user()->verification)
-                                        @if(Auth::user()->verification->document_verification_status === "pending")
-                                            <button onclick="event.preventDefault();" type="submit" class="btn btn-special" disabled>Upload Document</button>
+                                        @if(Auth::user()->verification->document_verification_status === "pending" || Auth::user()->verification->is_document_verified == 1)
+                                            <button onclick="event.preventDefault();" type="button" class="btn btn-special" disabled>Upload Document</button>
                                         @else
                                             <button type="submit" class="btn btn-special">Upload Document</button>
                                         @endif

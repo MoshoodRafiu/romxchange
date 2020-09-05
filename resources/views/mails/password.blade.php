@@ -21,7 +21,7 @@
 </head>
     <body>
         <div class="header">
-            <h1>Ace<span class="ace">X</span>world</h1>
+            <h1>Acexworld</h1>
         </div>
         <p>Hi {{ \App\User::where('email', $email)->first()->display_name }},</p>
         <p>You are receiving this email because we received a password reset request for your account.</p>

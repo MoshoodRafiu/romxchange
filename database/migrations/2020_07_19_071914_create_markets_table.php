@@ -21,8 +21,7 @@ class CreateMarketsTable extends Migration
             $table->string('type');
             $table->string('min');
             $table->string('max');
-            $table->string('price_usd');
-            $table->string('price_ngn');
+            $table->string('rate');
             $table->boolean('is_active')->default(0);
             $table->timestamps();
         });

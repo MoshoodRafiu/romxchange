@@ -3,6 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Coin;
+use App\Events\AgentJoined;
+use App\Events\CoinDeposited;
+use App\Events\CoinVerified;
+use App\Events\PaymentMade;
+use App\Events\PaymentVerified;
+use App\Events\TradeAccepted;
 use App\Market;
 use App\Setting;
 use App\Trade;
@@ -14,14 +20,77 @@ use Illuminate\Support\Facades\Auth;
 class TradeController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource.i
      *
      */
     public function index()
     {
-        $trades = Trade::where('seller_id', Auth::user()->id)->orwhere('buyer_id', Auth::user()->id)->paginate(5);
+        $trades = Trade::latest()->where('seller_id', Auth::user()->id)->orwhere('buyer_id', Auth::user()->id)->paginate(5);
 
         return view('user.dashboard.trades.index', compact('trades'));
+    }
+
+    public function tradeDispute(){
+        $trades = Trade::latest()->where('transaction_status', 'pending')->where('is_dispute', 1)->where('is_special', 0)->paginate(10);
+
+        return view('admin.trades.disputes.index', compact('trades'));
+    }
+
+    public function dispute(Trade $trade){
+        $trade->is_dispute = 1;
+        $trade->update();
+
+        return back();
+    }
+
+    public function switch(Trade $trade){
+        if (!(Auth::user()->id == $trade->buyer_id || Auth::user()->is_admin == 1 || Auth::user()->is_agent == 1)){
+            return back()->with('error', 'Unauthorized');
+        }
+
+        $user = User::where('is_admin', 1)->first();
+        $market = Market::where('is_special', 1)->where('coin_id', $trade->coin->id)->where('type', 'buy')->first();
+
+        if (!$market){
+            return back()->with('error', 'Error cancelling trade');
+        }
+
+
+        $trade->is_special = 1;
+        $trade->is_dispute = 0;
+        $trade->market_id = $market->id;
+        $trade->buyer_id = $user->id;
+        $trade->seller_transaction_stage = 2;
+        $trade->buyer_transaction_stage = 3;
+        $trade->update();
+
+        if (Auth::user()->is_admin == 0 && Auth::user()->is_agent == 0){
+            return redirect()->route('trade.index')->with('success', 'Trade cancelled successfully');
+        }
+
+        return back()->with('message', 'Trade cancelled successfully');
+    }
+
+    public function cancel(Trade $trade){
+        $trade->transaction_status = "cancelled";
+        $trade->update();
+
+        return redirect()->route('admin.trades')->with('message', 'Trade cancelled successfully');
+    }
+
+    public function tradeDisputeJoin(Trade $trade){
+        if(!$trade->agent_id == null && $trade->agent_id != Auth::user()->id){
+            return back()->with('error', 'An agent is already attending to the trade');
+        }
+
+        if ($trade->agent_id == null){
+            event(new AgentJoined($trade));
+
+            $trade->agent_id = Auth::user()->id;
+            $trade->update();
+        }
+
+        return view('admin.trades.disputes.chat', compact('trade'));
     }
 
     public function adminTrades(){
@@ -40,6 +109,10 @@ class TradeController extends Controller
         }
         $trade->ace_transaction_stage = 1;
         $trade->update();
+
+        if ($trade->buyer_transaction_stage == 2){
+            event(new TradeAccepted($trade));
+        }
 
         return view('admin.enscrow.panel', compact('trade'));
     }
@@ -64,6 +137,8 @@ class TradeController extends Controller
         $trade->update();
 
         $html = view('admin.enscrow.partials.step-1', compact('trade'))->render();
+
+        event(new CoinVerified($trade));
 
         return response()->json(array('success' => true, 'html' => $html));
 
@@ -153,6 +228,8 @@ class TradeController extends Controller
 
         $html = view('admin.trades.accept.partials.buy.step-3', compact('trade'))->render();
 
+        event(new TradeAccepted($trade));
+
         return response()->json(array('success' => true, 'html' => $html));
     }
 
@@ -168,6 +245,8 @@ class TradeController extends Controller
 
         $html = view('admin.trades.accept.partials.buy.step-4', compact('trade'))->render();
 
+        event(new CoinVerified($trade));
+
         return response()->json(array('success' => true, 'html' => $html));
     }
 
@@ -178,6 +257,8 @@ class TradeController extends Controller
         $trade->update();
 
         $html = view('admin.trades.accept.partials.buy.step-4', compact('trade'))->render();
+
+        event(new PaymentMade($trade));
 
         return response()->json(array('success' => true, 'html' => $html));
     }
@@ -294,6 +375,8 @@ class TradeController extends Controller
 
         $html = view('admin.trades.accept.partials.sell.step-2', compact('trade'))->render();
 
+        event(new CoinVerified($trade));
+
         return response()->json(array('success' => true, 'html' => $html));
     }
 
@@ -309,6 +392,8 @@ class TradeController extends Controller
         $trade->update();
 
         $html = view('admin.trades.accept.partials.sell.step-3', compact('trade'))->render();
+
+        event(new PaymentVerified($trade));
 
         return response()->json(array('success' => true, 'html' => $html));
     }
@@ -433,7 +518,9 @@ class TradeController extends Controller
 //        }
 
         $html = view('user.dashboard.trades.accept.partials.buy.step-2', compact('trade'))->render();
-
+        if ($trade->ace_transaction_stage == 1){
+            event(new TradeAccepted($trade));
+        }
         return response()->json(array('success' => true, 'html' => $html));
     }
 
@@ -448,6 +535,8 @@ class TradeController extends Controller
         $trade->update();
 
         $html = view('user.dashboard.trades.accept.partials.buy.step-3', compact('trade'))->render();
+
+        event(new PaymentMade($trade));
 
         return response()->json(array('success' => true, 'html' => $html));
     }
@@ -568,6 +657,8 @@ class TradeController extends Controller
 
         $html = view('user.dashboard.trades.accept.partials.sell.step-2', compact('trade'))->render();
 
+        event(new CoinDeposited($trade));
+
         return response()->json(array('success' => true, 'html' => $html));
     }
 
@@ -582,6 +673,8 @@ class TradeController extends Controller
         $trade->update();
 
         $html = view('user.dashboard.trades.accept.partials.sell.step-4', compact('trade'))->render();
+
+        event(new PaymentVerified($trade));
 
         return response()->json(array('success' => true, 'html' => $html));
     }
@@ -676,11 +769,11 @@ class TradeController extends Controller
         }
 
         if (!$this->userHasVerification()){
-            return back()->with('error', 'You have to verify your phone number and documents before SELL trade can be carried out');
+            return back()->with('error', 'You have to verify your phone number before SELL trade can be carried out');
         }
 
         if (!$this->userSellVerified()){
-            return back()->with('error', 'You have to verify your phone number and documents before SELL trade can be carried out');
+            return back()->with('error', 'You have to verify your phone number before SELL trade can be carried out');
         }elseif (!$this->sellerAccount()){
             return back()->with('error', 'please proceed to fill in your BANK DETAILS in PROFILE and try again');
         }
@@ -746,7 +839,7 @@ class TradeController extends Controller
             $trade->update();
 
             $html = view('user.dashboard.trades.initiate.partials.sell.step-2', compact('trade'))->render();
-
+            event(new CoinDeposited($trade));
             return response()->json(array('success' => true, 'html' => $html));
 
         }
@@ -760,6 +853,8 @@ class TradeController extends Controller
         $trade->update();
 
         $html = view('user.dashboard.trades.initiate.partials.sell.step-2', compact('trade'))->render();
+
+        event(new CoinDeposited($trade));
 
         return response()->json(array('success' => true, 'html' => $html));
     }
@@ -779,6 +874,8 @@ class TradeController extends Controller
 
             $html = view('user.dashboard.trades.initiate.partials.sell.step-4', compact('trade'))->render();
 
+            event(new PaymentVerified($trade));
+
             return response()->json(array('success' => true, 'html' => $html));
         }
 
@@ -791,6 +888,8 @@ class TradeController extends Controller
         $trade->update();
 
         $html = view('user.dashboard.trades.initiate.partials.sell.step-4', compact('trade'))->render();
+
+        event(new PaymentVerified($trade));
 
         return response()->json(array('success' => true, 'html' => $html));
     }
@@ -927,11 +1026,11 @@ class TradeController extends Controller
         }
 
         if (!$this->userHasVerification()){
-            return back()->with('error', 'You have to verify your phone number before BUY trade can be carried out');
+            return back()->with('error', 'You have to verify your phone number and documents before BUY trade can be carried out');
         }
 
         if (!$this->userBuyVerified()){
-            return back()->with('error', 'You have to verify your phone number before BUY trade can be carried out');
+            return back()->with('error', 'You have to verify your phone number and documents before BUY trade can be carried out');
         }elseif (!$this->buyerWallet($market->coin->id)){
             return back()->with('error', 'please add a wallet for this coin before carrying out a BUY trade');
         }
@@ -991,6 +1090,14 @@ class TradeController extends Controller
 
         $html = view('user.dashboard.trades.initiate.partials.buy.step-2', compact('trade'))->render();
 
+        if ($trade->is_special == 1){
+            event(new TradeAccepted($trade));
+        }else{
+            if ($trade->ace_transaction_stage == 1){
+                event(new TradeAccepted($trade));
+            }
+        }
+
         return response()->json(array('success' => true, 'html' => $html));
     }
 
@@ -1003,6 +1110,8 @@ class TradeController extends Controller
         $trade->update();
 
         $html = view('user.dashboard.trades.initiate.partials.buy.step-3', compact('trade'))->render();
+
+        event(new PaymentMade($trade));
 
         return response()->json(array('success' => true, 'html' => $html));
     }
@@ -1056,7 +1165,6 @@ class TradeController extends Controller
             if ($trade->buyer_transaction_stage < 2 || $trade->seller_transaction_stage < 1 || !$trade->seller_transaction_stage ){
                 return;
             }
-
 
             $html = view('user.dashboard.trades.initiate.partials.buy.step-3', compact('trade'))->render();
 
@@ -1178,21 +1286,19 @@ class TradeController extends Controller
         //
     }
 
-
-
     protected function userHasVerification(){
         if (Auth::user()->verification){
             return true;
         }
     }
 
-    protected function userBuyVerified(){
+    protected function userSellVerified(){
         if (Auth::user()->verification->is_email_verified && Auth::user()->verification->is_phone_verified){
             return true;
         }
     }
 
-    protected function userSellVerified(){
+    protected function userBuyVerified(){
         if (Auth::user()->verification->is_email_verified && Auth::user()->verification->is_phone_verified && Auth::user()->verification->is_document_verified){
             return true;
         }

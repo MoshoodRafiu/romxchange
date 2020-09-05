@@ -12,4 +12,11 @@ class Trade extends Model
     public function market(){
         return $this->belongsTo('App\Market');
     }
+    public function messages(){
+        return $this->hasMany('App\Message');
+    }
+
+    public function reviews(){
+        return $this->hasMany('App\Review');
+    }
 }

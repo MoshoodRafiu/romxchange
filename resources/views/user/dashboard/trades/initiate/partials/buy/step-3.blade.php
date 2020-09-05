@@ -2,25 +2,25 @@
 @if($trade->is_special == 1)
     @if($trade->buyer_transaction_stage == 3 && $trade->seller_transaction_stage == 1)
         <div class="text-center">
-            <strong class="text-info" style="font-size: 23px">Waiting For Seller to Verify Payment </strong>
-            <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
+            <strong class="text-info" id="info-3-text" style="font-size: 23px">Waiting For Seller to Verify Payment </strong>
+            <img width="50px" id="info-3-img" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
         </div>
     @elseif($trade->buyer_transaction_stage == 3 && $trade->seller_transaction_stage == 2)
         <div class="text-center">
-            <strong class="text-success" style="font-size: 23px">Payment Verified, Proceed with Transaction</strong>
-            <img width="100px" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
+            <strong class="text-success" id="info-3-text" style="font-size: 23px">Payment Verified, Proceed with Transaction</strong>
+            <img width="100px" id="info-3-img" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
         </div>
     @endif
 @else
     @if($trade->buyer_transaction_stage == 3 && $trade->seller_transaction_stage == 2)
         <div class="text-center">
-            <strong class="text-info" style="font-size: 23px">Waiting For Seller to Verify Payment </strong>
-            <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
+            <strong class="text-info" id="info-3-text" style="font-size: 23px">Waiting For Seller to Verify Payment </strong>
+            <img width="50px" id="info-3-img" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
         </div>
     @elseif($trade->buyer_transaction_stage == 3 && $trade->seller_transaction_stage == 3)
         <div class="text-center">
-            <strong class="text-success" style="font-size: 23px">Payment Verified, Proceed with Transaction</strong>
-            <img width="100px" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
+            <strong class="text-success" id="info-3-text" style="font-size: 23px">Payment Verified, Proceed with Transaction</strong>
+            <img width="100px" id="info-3-img" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
         </div>
     @endif
 @endif
@@ -54,11 +54,21 @@
                 <a onclick="copyText('accountNumber')" class="col-sm-1 col-2 btn btn-secondary"><i class="fa fa-copy"></i></a>
             </div>
         </div>
-        <div class="mx-auto">
-            @if($trade->buyer_transaction_stage == 2)
-                <button type="submit" id="step-3-proceed" class="btn btn-special px-4">I Have Made Payment</button>
+        <div class="mx-auto text-center">
+            <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn m-2 px-4 btn-danger">Cancel Trade</button>
+            @if($trade->buyer_transaction_stage == 3 && $trade->seller_transaction_stage == 2)
+                @if($trade->is_dispute == 1)
+                    <button type="button" disabled class="btn btn-info m-2 p-2">Dispute Trade</button>
+                @else
+                    <a href="{{ route('trade.dispute', $trade) }}" class="btn m-2 btn-info p-2">Dispute Trade</a>
+                @endif
             @else
-                <button type="submit" id="step-4-nav" class="btn btn-special mx-4">Proceed</button>
+                <button type="button" disabled class="btn btn-info m-2 p-2">Dispute Trade</button>
+            @endif
+            @if($trade->buyer_transaction_stage == 2)
+                <button type="submit" id="step-3-proceed" class="btn btn-special m-2 px-4">I Have Made Payment</button>
+            @else
+                <button type="submit" id="step-4-nav" class="btn btn-special m-2 px-4">Proceed</button>
             @endif
         </div>
     </div>

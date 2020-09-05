@@ -1,23 +1,23 @@
 <h4 class="text-center my-4">Acknowledge Coin</h4>
-@if(($trade->buyer_transaction_stage < 2 && $trade->seller_transaction_stage < 2))
+@if(($trade->buyer_transaction_stage <= 2 && $trade->seller_transaction_stage < 2))
     <div class="text-center">
-        <strong class="text-info" style="font-size: 23px">Waiting For Seller to Deposit Coin </strong>
-        <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
+        <strong class="text-info" id="info-1-text" style="font-size: 23px">Waiting For Seller to Deposit Coin </strong>
+        <img width="50px" id="info-1-img" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
     </div>
 @elseif($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == 2 && $trade->ace_transaction_stage == 1)
     <div class="text-center">
-        <strong class="text-success" style="font-size: 23px">Coin Deposited, Verify Coin and Proceed</strong>
-        <img width="100px" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
+        <strong class="text-success" id="info-1-text" style="font-size: 23px">Coin Deposited, Verify Coin and Proceed</strong>
+        <img width="100px" id="info-1-img" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
     </div>
 @elseif(($trade->buyer_transaction_stage < 3 && $trade->seller_transaction_stage < 3 && $trade->ace_transaction_stage == 2) || ($trade->buyer_transaction_stage == 3 && $trade->seller_transaction_stage < 3 && $trade->ace_transaction_stage == 2) || ($trade->buyer_transaction_stage < 3 && $trade->seller_transaction_stage == 3 && $trade->ace_transaction_stage == 2))
     <div class="text-center">
-        <strong class="text-info" style="font-size: 23px">Waiting for Traders to Settle Payment</strong>
-        <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="proceed">
+        <strong class="text-info" id="info-1-text" style="font-size: 23px">Waiting for Traders to Settle Payment</strong>
+        <img width="50px" id="info-1-img" src="{{ asset('assets/img/waiting.gif') }}" alt="proceed">
     </div>
 @elseif($trade->buyer_transaction_stage == 3 && $trade->seller_transaction_stage == 3 && $trade->ace_transaction_stage == 2)
     <div class="text-center">
-        <strong class="text-success" style="font-size: 23px">Payment Settled, Proceed and Settle</strong>
-        <img width="100px" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
+        <strong class="text-success" id="info-1-text" style="font-size: 23px">Payment Settled, Proceed and Settle</strong>
+        <img width="100px" id="info-1-img" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
     </div>
 @endif
 

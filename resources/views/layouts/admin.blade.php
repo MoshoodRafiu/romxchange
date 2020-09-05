@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="{{ asset('sidebar-assets/fonts/fontawesome5-overrides.min.css') }}">
     <link rel="stylesheet" href="{{ asset('sidebar-assets/css/styles.min.css') }}">
     <link href="{{ asset('sidebar-assets/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+    <script src="{{ asset('js/app.js') }}"></script>
 </head>
 
 <body id="page-top">
@@ -24,7 +25,7 @@
     <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion sidebar p-0" style="background-color: rgb(1,7,24);">
         <div class="container-fluid d-flex flex-column p-0">
             <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="index.html">
-                <div><img src="{{ asset('sidebar-assets/img/ACE%20LOGO.png') }}" width="40px"></div>
+                <div><img src="{{ asset('assets/img/logo.png') }}" width="37px"></div>
                 <div class="sidebar-brand-text mx-3"><span style="font-size: 20px;">ACE WORLD</span></div>
             </a>
             <hr class="sidebar-divider my-0">
@@ -54,11 +55,14 @@
                     <a class="{{ Request::routeIs(['admin.trades', 'admin.trade.accept.buy', 'admin.trade.accept.sell']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.trades') }}"><i class="fas fa-exchange-alt" style="width: 30px; text-align: center;"></i><span>Trades</span></a>
                 </li>
                 <li class="nav-item" role="presentation">
+                    <a class="{{ Request::routeIs(['admin.trades.disputes', 'admin.trades.dispute.join']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.trades.disputes') }}"><i class="fas fa-exclamation-triangle" style="width: 30px; text-align: center;"></i><span>Disputes</span></a>
+                </li>
+                <li class="nav-item" role="presentation">
                     <div>
                         <a class="btn btn-link nav-link {{ Request::routeIs(['admin.wallets.all','admin.wallets.single']) ? "active" : "" }}" data-toggle="collapse" aria-expanded="false" aria-controls="collapse-1" href="#collapse-1" role="button">
                             <i class="fas fa-wallet"  style="width: 30px; text-align: center;"></i>&nbsp;<span>Wallets</span>
                         </a>
-                        <div class="collapse" id="collapse-1">p
+                        <div class="collapse" id="collapse-1">
                             <div class="bg-white border rounded py-2 collapse-inner">
                                 <h6 class="collapse-header">wallets:</h6>
                                 <a class="collapse-item" href="{{ route('admin.wallets.all') }}">All&nbsp;</a>
@@ -75,6 +79,16 @@
                 <li class="nav-item" role="presentation">
                     <a class="{{ Request::routeIs(['admin.settings']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.settings') }}"><i class="fas fa-cog"  style="width: 30px; text-align: center;"></i><span>Settings</span></a>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" href="{{ route('home') }}"><i class="fas fa-globe"  style="width: 30px; text-align: center;"></i><span>Website</span></a>
+                </li>
+                <l1 role="presentation" class="nav-item">
+                    <a class="nav-link" href="{{ route('logout') }}"
+                                                            onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();"><i class="fa fa-sign-out"  style="width: 30px; text-align: center;"></i><span>Logout</span></a></l1>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
             </ul>
             <div class="text-center d-none d-md-inline"><button class="btn rounded-circle border-0" id="sidebarToggle" type="button"></button></div>
         </div>
@@ -121,7 +135,7 @@
                     </ul>
                 </div>
             </nav>
-            <div class="container">
+            <div class="p-md-4 p-3">
 
                 @yield('content')
 

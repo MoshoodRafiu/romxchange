@@ -10,6 +10,13 @@
                 </div>
             </div>
             <div class="row">
+                @if(Session::has('success'))
+                    <div class="alert col-12 alert-success text-left" role="alert">{{ session('success') }}</div>
+                @elseif(Session::has('error'))
+                    <div class="alert col-12 alert-danger text-left" role="alert">{{ session('error') }}</div>
+                @endif
+            </div>
+            <div class="row">
                 <div class="col-md-12 mt-5">
                     <table id="example" class="table table-responsive-md text-left" width="100%">
                         <thead>
@@ -69,9 +76,9 @@
                                             @endif
                                         @else
                                             @if($trade->seller_id === Auth::user()->id)
-                                                <a href="{{ route('trade.accept.sell', $trade) }}" class="btn btn-sm btn-success text-white">Continue</a>
+                                                <a href="{{ route('trade.initiate.sell', $trade->market->id) }}" class="btn btn-sm btn-success text-white">Continue</a>
                                             @elseif($trade->buyer_id === Auth::user()->id)
-                                                <a href="{{ route('trade.accept.buy', $trade) }}" class="btn btn-sm btn-success text-white">Continue</a>
+                                                <a href="{{ route('trade.initiate.buy', $trade->market->id) }}" class="btn btn-sm btn-success text-white">Continue</a>
                                             @endif
                                             <a href="#" class="btn btn-sm btn-danger text-white">Cancel</a>
                                         @endif

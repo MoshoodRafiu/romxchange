@@ -54,7 +54,7 @@ class WalletController extends Controller
         $this->validate($request, [
             "coin" => "required",
             "company" => "required",
-            "wallet_address" => "required|min:32|max:32"
+            "wallet_address" => "required"
         ]);
         if (Wallet::where('user_id', Auth::user()->id)->where('coin_id', $request->coin)->first()){
             return back()->with('error', 'You already have a wallet for this coin');
@@ -76,7 +76,7 @@ class WalletController extends Controller
         $this->validate($request, [
             "coin" => "required",
             "company" => "required",
-            "wallet_address" => "required|min:32|max:32"
+            "wallet_address" => "required"
         ]);
         if (Wallet::where('is_special', 1)->where('coin_id', $request->coin)->where('company', $request->company)->first()){
             return back()->with('error', 'You already have a '.$request->company.' wallet for this coin');

@@ -1,13 +1,13 @@
 <h4 class="text-center my-4">Step 2</h4>
 @if($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == 2 && $trade->ace_transaction_stage != null)
     <div class="text-center">
-        <strong class="text-info" style="font-size: 23px">Waiting For Coin Verification </strong>
-        <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
+        <strong class="text-info" id="info-2-text" style="font-size: 23px">Waiting For Coin Verification </strong>
+        <img width="50px" id="info-2-img" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
     </div>
 @elseif($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == 2 && $trade->ace_transaction_stage == null)
     <div class="text-center">
-        <strong class="text-success" style="font-size: 23px">Coin Verified, Proceed with Transaction</strong>
-        <img width="100px" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
+        <strong class="text-success" id="info-2-text" style="font-size: 23px">Coin Verified, Proceed with Transaction</strong>
+        <img width="100px" id="info-2-img" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
     </div>
 @endif
 <form class="row mb-4">

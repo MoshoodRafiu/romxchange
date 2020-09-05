@@ -27,13 +27,13 @@
                                     @if(isset($trade))
                                         @if(($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == null) || ($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 1) || ($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 2 && $trade->ace_transaction_stage == null))
                                             <div class="text-center" id="transaction-message">
-                                                <strong class="text-info" style="font-size: 23px">Waiting For Buyer to Accept Trade </strong>
-                                                <img width="50px" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
+                                                <strong class="text-info" id="info-1-text" style="font-size: 23px">Waiting For Buyer to Accept Trade </strong>
+                                                <img width="50px" id="info-1-img" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
                                             </div>
                                         @elseif($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 2 && $trade->ace_transaction_stage == 1)
                                             <div class="text-center" id="transaction-message">
-                                                <strong class="text-success" style="font-size: 23px">Trade Accepted, Proceed with Trade Below</strong>
-                                                <img width="100px" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
+                                                <strong class="text-success" id="info-1-text" style="font-size: 23px">Trade Accepted, Proceed with Trade Below</strong>
+                                                <img width="100px" id="info-1-img" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
                                             </div>
                                         @endif
                                     @endisset
@@ -90,7 +90,14 @@
                                         </div>
                                     </form>
                                 </div>
-                                <div class="col-12 mx-auto">
+                                <div id="chat-field" class="col-12 mx-auto p-0">
+                                    @isset($trade)
+                                        @if($trade->is_dispute == 1)
+                                            @include('user.dashboard.trades.initiate.partials.sell.chat')
+                                        @endif
+                                    @endisset
+                                </div>
+                                <div class="col-12 mx-auto p-0">
                                     @include('user.dashboard.trades.initiate.partials.sell.info')
                                 </div>
                             </div>
@@ -107,6 +114,8 @@
 
     <script>
         $(document).ready(function () {
+
+            $(".chat-field").animate({ scrollTop: 999999 }, 1000);
             // STEP 1
             $("#amount").bind('keyup change', function () {
                 if (isNaN($("#amount").val()) || parseFloat($("#amount").val()) < {{ $market->min }} || parseFloat($("#amount").val()) > {{ $market->max }}){
@@ -160,7 +169,6 @@
                     success: function (result) {
                         if (result.success){
                             location.reload();
-                            console.log(result)
                         }else{
                             $("#error").text("Please fill all fields")
                         }
@@ -494,6 +502,190 @@
                 @endisset
             }
         });
+
+        $(".tab-pane").on('click', '#message-1', function (e) {
+            e.preventDefault();
+            sendMessage("1");
+        });
+
+        $(".tab-pane").on('click', '#message-2', function (e) {
+            e.preventDefault();
+            sendMessage("2");
+        });
+        $(".tab-pane").on('click', '#message-3', function (e) {
+            e.preventDefault();
+            sendMessage("3");
+        });
+
+        $(".tab-pane").on('click', '#message-4', function (e) {
+            e.preventDefault();
+            sendMessage("4");
+        });
+
+            @isset($trade)
+        var sendMessage = function (val) {
+                $.ajaxSetup({
+                    headers: {
+                        "X-CSRF-TOKEN": $("meta[name='csrf-token']").attr('content')
+                    }
+                });
+                $.ajax({
+                    url: "{{ route('message.send') }}",
+                    method: "POST",
+                    data: {
+                        trade: {{ $trade->id }},
+                        message: val,
+                    },
+                    cache: false,
+                    beforeSend: function () {
+                        $(".ajax-loader").show();
+                    },
+                    complete: function () {
+                        $(".ajax-loader").hide();
+                    },
+                    success: function (result) {
+                        if (result.success) {
+                            $("#chat-field").fadeIn().html(result.html);
+                            $(".chat-field").animate({ scrollTop: 999999 }, 1000);
+                            // document.querySelector('.chat-field').scrollTo({ left: 0, top: document.body.scrollHeight});
+                        }
+                    }
+                });
+            }
+        @endisset
+
+        $(".tab-pane").on('click', '#payment-proof-button', function (e) {
+            e.preventDefault();
+            $("#payment-proof-file").click();
+        });
+
+        $(".tab-pane").on('change', '#payment-proof-form', function (e) {
+            e.preventDefault();
+            var formData = new FormData(this);
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRF-TOKEN": $("meta[name='csrf-token']").attr('content')
+                }
+            });
+            $.ajax({
+                url: "{{ route('message.file.send') }}",
+                method: "POST",
+                processData: false,
+                contentType: false,
+                data: formData,
+                cache: false,
+                beforeSend: function () {
+                    $(".ajax-loader").show();
+                },
+                complete: function () {
+                    $(".ajax-loader").hide();
+                },
+                success: function (result) {
+                    if (result.success) {
+                        $("#chat-field").fadeIn().html(result.html);
+                        $(".chat-field").animate({scrollTop: 999999}, 1000);
+                        // document.querySelector('.chat-field').scrollTo({ left: 0, top: document.body.scrollHeight});
+                    }
+                }
+
+            });
+        });
+
+        @isset($trade)
+        var channel = Echo.private('trade.{{ $trade->id }}');
+        channel.listen('.coin-verified', function() {
+            $("#info-2-text").text('Coin Verified, Proceed with Transaction');
+            $("#info-2-text").removeClass('text-info');
+            $("#info-2-text").addClass('text-success');
+            $("#info-2-img").attr('src', '{{ asset('assets/img/proceed.gif') }}');
+            $("#info-2-img").width('100');
+        });
+
+        channel.listen('.payment-made', function() {
+            $("#info-3-text").text('Payment Made, Verify Payment and Proceed');
+            $("#info-3-text").removeClass('text-info');
+            $("#info-3-text").addClass('text-success');
+            $("#info-3-img").attr('src', '{{ asset('assets/img/proceed.gif') }}');
+            $("#info-3-img").width('100');
+        });
+
+        channel.listen('.trade-accepted', function() {
+            $("#info-1-text").text('Wallet Verified, Proceed with Transaction');
+            $("#info-1-text").removeClass('text-info');
+            $("#info-1-text").addClass('text-success');
+            $("#info-1-img").attr('src', '{{ asset('assets/img/proceed.gif') }}');
+            $("#info-1-img").width('100');
+        });
+
+        channel.listen('.agent-joined', function() {
+
+            const div = document.createElement('div');
+            div.innerHTML = `<div class="chat-info">Agent joined the chat</div>`;
+
+            document.querySelector('.chat-field').appendChild(div);
+            $(".chat-field").animate({ scrollTop: 999999 }, 1000);
+        });
+
+        channel.listen('.message-sent', function(data) {
+
+            if(data.id !== {{ \Illuminate\Support\Facades\Auth::user()->id }}){
+                const div = document.createElement('div');
+
+                if(data.sender === "agent"){
+                    div.className = 'agent';
+                }else {
+                    div.className = 'received';
+                }
+
+                if(data.type === "text"){
+                    div.innerHTML = `
+                    <span class="owner">${data.sender}</span>
+                    <span>${data.message}</span>
+                    <span class="time">${data.time}</span>`;
+                }else{
+                    var getUrl = window.location;
+                    var baseUrl = getUrl .protocol + "//" + getUrl.host + "/" + getUrl.pathname.split('/')[0];
+                    var imgUrl = baseUrl+'proofs/'+data.message
+                    div.innerHTML = `
+                    <span class="owner">${data.sender}</span>
+                    <div class="text-center"><img class="img img-fluid p-3" src="${imgUrl}" alt="img"></div>
+                    <span class="time">${data.time}</span>`;
+                }
+
+                document.querySelector('.chat-field').appendChild(div);
+                $(".chat-field").animate({ scrollTop: 999999 }, 1000);
+            }
+        });
+
+        $(".step").on("click", ".star-rating .fa", function () {
+            $('.star-rating .fa').removeClass('fa-star-o')
+            $('.star-rating .fa').removeClass('fa-star')
+            $('.star-rating .fa').removeClass('fa-3x')
+            $('.star-rating .fa').addClass('fa-2x')
+            $(this).addClass('fa-star');
+            $(this).removeClass('fa-2x');
+            $(this).addClass('fa-3x');
+            $(this).addClass('fa-3x').delay(500).queue(function( next ){
+                $(this).removeClass('fa-3x');
+                $(this).addClass('fa-2x');
+                next();
+            });
+
+            var id = $(this).data('rating');
+            $(this).siblings('span').each(function () {
+                if ($(this).data('rating') < id){
+                    $(this).addClass('fa-star');
+                }else{
+                    $(this).addClass('fa-star-o');
+                }
+            })
+
+            $('#star-rating').val(id);
+
+        });
+
+        @endisset
+
     </script>
 
 @endsection

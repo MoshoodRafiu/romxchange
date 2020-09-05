@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Kaushan+Script">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700">
+    <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cookie">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
     <link rel="stylesheet" href="{{ asset('assets/fonts/fontawesome-all.min.css') }}">
@@ -33,30 +34,31 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/app.js') }}"></script>
 </head>
 
 <body id="page-top"><nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-dark" id="mainNav" style="background-color: rgb(2,12,31);">
-    <div class="container"><a class="navbar-brand" href="{{ url('/') }}" style="font-family: Poppins, sans-serif;"><img src="{{asset('assets/img/logo.png?h=9a916f4afca54245be0a963ea50ede06')}}" width="40px"> ACE WORLD</a><button data-toggle="collapse" data-target="#navbarResponsive" class="navbar-toggler navbar-toggler-right" type="button" data-toogle="collapse" aria-controls="navbarResponsive"
+    <div class="container"><a class="navbar-brand d-flex justify-content-center align-items-center" href="{{ url('/') }}" style="font-family: Poppins, sans-serif;"><img src="{{asset('assets/img/clogo.png')}}" height="45px"></a><button data-toggle="collapse" data-target="#navbarResponsive" class="navbar-toggler navbar-toggler-right" type="button" data-toogle="collapse" aria-controls="navbarResponsive"
                                                                                                                                                                                                                    aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i></button>
         <div class="collapse navbar-collapse" id="navbarResponsive" style="font-family: Poppins, sans-serif;">
             <ul class="nav navbar-nav ml-auto text-uppercase">
-                <li role="presentation" class="nav-item"><a class=" {{ Request::is('/') ? "nav-link text-warning js-scroll-trigger" : "nav-link js-scroll-trigger" }} " href="{{ url('/') }}">Home</a></li>
+                <li role="presentation" class="nav-item"><a class=" {{ Request::is('/') ? "nav-link text-warning font-weight-bold js-scroll-trigger" : "nav-link font-weight-bold js-scroll-trigger" }} " href="{{ url('/') }}">Home</a></li>
 {{--                <li role="presentation" class="nav-item"><a class="nav-link js-scroll-trigger" href="buy.html">BUY</a></li>--}}
 {{--                <li role="presentation" class="nav-item"><a class="nav-link js-scroll-trigger" href="sell.html">SELL</a></li>--}}
-                <li role="presentation" class="nav-item"><a class="{{ Request::routeIs(['market.index', 'market.filter']) ? "nav-link text-warning js-scroll-trigger" : "nav-link js-scroll-trigger" }}" href="{{ route('market.index') }}">MARKet</a></li>
+                <li role="presentation" class="nav-item"><a class="{{ Request::routeIs(['market.index', 'market.filter']) ? "nav-link text-warning font-weight-bold js-scroll-trigger" : "nav-link font-weight-bold js-scroll-trigger" }}" href="{{ route('market.index') }}">MARKet</a></li>
                 @guest
-                    <li role="presentation" class="nav-item"><a class="{{ Request::is('login') ? "nav-link text-warning js-scroll-trigger" : "nav-link js-scroll-trigger" }}" href="{{ route('login') }}">Login</a></li>
+                    <li role="presentation" class="nav-item"><a class="{{ Request::is('login') ? "nav-link text-warning font-weight-bold js-scroll-trigger" : "nav-link font-weight-bold js-scroll-trigger" }}" href="{{ route('login') }}">Login</a></li>
                     @if (Route::has('register'))
-                        <li role="presentation" class="nav-item"><a class="{{ Request::is('register') ? "nav-link text-warning js-scroll-trigger" : "nav-link js-scroll-trigger" }}" href="{{ route('register') }}">register</a></li>
+                        <li role="presentation" class="nav-item"><a class="{{ Request::is('register') ? "nav-link font-weight-bold text-warning js-scroll-trigger" : "nav-link font-weight-bold js-scroll-trigger" }}" href="{{ route('register') }}">register</a></li>
                     @endif
                 @else
+                    @if(!(Auth::user()->is_admin == 1 || Auth::user()->is_agent == 1))
                     <li class="nav-item dropdown">
-                        <a data-toggle="dropdown" aria-expanded="false" id="toggle" class="{{ Request::routeIs(['profile.index', 'trades.index', 'trade.accept.buy', 'trade.accept.sell', 'trade.initiate.buy', 'trade.initiate.sell', 'verification.index', 'verification.phone', 'verification.document', 'wallet.index', 'wallet.create', 'wallet.edit', 'market.user', 'market.create', 'market.edit']) ? "dropdown-toggle nav-link text-warning" : "dropdown-toggle nav-link" }}" href="#dropdown">{{ Auth::user()->display_name }}</a>
+                        <a data-toggle="dropdown" aria-expanded="false" id="toggle" class="{{ Request::routeIs(['profile.index', 'trade.index', 'trade.accept.buy', 'trade.accept.sell', 'trade.initiate.buy', 'trade.initiate.sell', 'verification.index', 'verification.phone', 'verification.document', 'wallet.index', 'wallet.create', 'wallet.edit', 'market.user', 'market.create', 'market.edit']) ? "dropdown-toggle font-weight-bold nav-link text-warning" : "font-weight-bold dropdown-toggle nav-link" }}" href="#dropdown">{{ Auth::user()->display_name }}</a>
                         <div role="menu" id="dropdown" class="dropdown-menu border-warning" style="background-color: #04122f;color: #ffffff;">
                             <a class="{{ Request::routeIs(['profile.index']) ? "dropdown-item text-warning" : "dropdown-item" }}" href="{{ route('profile.index') }}" style="  color: rgb(255,255,255);
 " onmouseover="this.style.backgroundColor='#04122f';">PROFILE</a>
-                            <a class="{{ Request::routeIs(['trades.index', 'trade.accept.buy', 'trade.accept.sell', 'trade.initiate.buy', 'trade.initiate.sell']) ? "dropdown-item text-warning" : "dropdown-item" }}" href="{{ route('trade.index') }}" style="  color: rgb(255,255,255);" onmouseover="this.style.backgroundColor='#04122f';">TRADES</a>
+                            <a class="{{ Request::routeIs(['trade.index', 'trade.accept.buy', 'trade.accept.sell', 'trade.initiate.buy', 'trade.initiate.sell']) ? "dropdown-item text-warning" : "dropdown-item" }}" href="{{ route('trade.index') }}" style="  color: rgb(255,255,255);" onmouseover="this.style.backgroundColor='#04122f';">TRADES</a>
                             <a class="{{ Request::routeIs(['verification.index', 'verification.phone', 'verification.document']) ? "dropdown-item text-warning" : "dropdown-item" }}" href="{{ route('verification.index') }}" style="  color: rgb(255,255,255);
   font-family: inherit;
 " onmouseover="this.style.backgroundColor='#04122f';">VERIFICATION</a>
@@ -68,20 +70,23 @@
 " onmouseover="this.style.backgroundColor='#04122f';">MY ADVERTS</a>
                         </div>
                     </li>
-                    <l1 role="presentation" class="nav-item"><a class="nav-link" href="{{ route('logout') }}"
+                    @else
+                        <li role="presentation" class="nav-item"><a class="nav-link font-weight-bold js-scroll-trigger" href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                    @endif
+                    <l1 role="presentation" class="nav-item"><a class="nav-link font-weight-bold" href="{{ route('logout') }}"
                                                                 onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">LOGOUT</a></l1>
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                         @csrf
                     </form>
                 @endguest
-                <li role="presentation" class="nav-item"><a class="nav-link js-scroll-trigger" href="#contact">Contact</a></li>
+                <li role="presentation" class="nav-item"><a class="nav-link font-weight-bold js-scroll-trigger" href="#contact">Contact</a></li>
             </ul>
         </div>
     </div>
 </nav>
 
-<div id="" style="min-height: 60vh">
+<div id="app" style="min-height: 60vh">
     <div class="ajax-loader">
         <div class="loader"></div>
     </div>
@@ -92,9 +97,9 @@
 <footer id="contact" class="company_footer">
     <div class="row">
         <div class="col-sm-6 col-md-4 footer-navigation">
-            <h3><a href="#" style="font-family: Poppins, sans-serif;color: rgb(254,209,54);font-size: 28px;">ACE WORLD</a></h3>
+            <h3><a href="#" style="font-family: Poppins, sans-serif;color: rgb(254,209,54);font-size: 20px;"><img src="{{asset('assets/img/clogo.png')}}" height="28px"></a></h3>
             <p class="links"><a href="#">Home</a><strong> · </strong><a href="#">Buy</a><strong> · </strong><a href="#">Sell</a><strong> · </strong><a href="#">Market</a></p>
-            <p class="company-name">ACE WORLD © 2020 </p>
+            <p class="company-name">ACExWORLD © 2020 </p>
         </div>
         <div class="col-sm-6 col-md-4 footer-contacts">
             <div><i class="fa fa-phone emphasis footer-contacts-icon"></i>
@@ -110,7 +115,7 @@
         <div class="clearfix"></div>
         <div class="col-md-4 footer-about">
             <h4>About Us</h4>
-            <p> <span class="emphasis">ACEWORLD</span> is an enscrowed online cryptocurrency peer-to-peer exchange platform that bridges the gap between cryptocurrency buyers and sellers at <span class="emphasis">zero risk.</span> </p>
+            <p> <span class="emphasis">ACExWORLD</span> is an enscrowed online cryptocurrency peer-to-peer exchange platform that bridges the gap between cryptocurrency buyers and sellers at <span class="emphasis">zero risk.</span> </p>
             <div class="social-links social-icons"><a href="#"><i class="fa fa-facebook emphasis"></i></a><a href="#"><i class="fa fa-twitter emphasis"></i></a><a href="#"><i class="fa fa-instagram emphasis"></i></a><a href="#"><i class="fa fa-envelope emphasis"></i></a></div>
         </div>
     </div>
@@ -129,7 +134,7 @@
 <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-{{--<script src="{{ asset('assets/js/script.min.js') }}"></script>--}}
+<script src="{{ asset('assets/js/script.min.js') }}"></script>
 @yield('script')
 <script>
 

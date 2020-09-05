@@ -34,7 +34,7 @@
                             <div class="col-sm-12 col-md-6">
                                 <div class="form-group text-left">
                                     <label class="text-justify">Select Coin</label>
-                                    <select name="coin" id="coin" class="form-control @error('coin') is-invalid @enderror text-capitalize" required>
+                                    <select name="coin" id="coin" class="form-control @error('coin') is-invalid @enderror text-capitalize">
                                         <option value="">Select Coin</option>
                                         @foreach($coins as $coin)
                                             <option class="text-capitalize" value="{{ $coin->id }}">{{ $coin->name }}</option>
@@ -52,7 +52,7 @@
                             <div class="col-sm-12 col-md-6">
                                 <div class="form-group text-left">
                                     <label>Select Advert Type </label>
-                                    <select name="type" id="type" class="form-control @error('type') is-invalid @enderror" required>
+                                    <select name="type" id="type" class="form-control @error('type') is-invalid @enderror">
                                         <option value="">Advert Type</option>
                                         <option value="buy" class="text-success font-weight-bold">I want to buy</option>
                                         <option value="sell" class="text-danger font-weight-bold">I want to sell</option>
@@ -71,7 +71,7 @@
                             <div class="col-sm-12 col-md-6">
                                 <div class="form-group text-left">
                                     <label>Minimum Trade</label>
-                                    <input type="text" class="form-control @error('min') is-invalid @enderror" name="min" value="{{ old('min') }}" autocomplete="off" required />
+                                    <input type="text" class="form-control @error('min') is-invalid @enderror" name="min" value="{{ old('min') }}" autocomplete="off"/>
                                     @error('min')
                                     <div>
                                         <span class="text-danger small" role="alert">
@@ -84,7 +84,7 @@
                             <div class="col-sm-12 col-md-6">
                                 <div class="form-group text-left">
                                     <label>Maximun Trade</label>
-                                    <input type="text" class="form-control @error('max') is-invalid @enderror" name="max" value="{{ old('max') }}" autocomplete="off" required />
+                                    <input type="text" class="form-control @error('max') is-invalid @enderror" name="max" value="{{ old('max') }}" autocomplete="off"/>
                                     @error('max')
                                     <div>
                                         <span class="text-danger small" role="alert">
@@ -96,24 +96,11 @@
                             </div>
                         </div>
                         <div class="form-row">
-                            <div class="col-sm-12 col-md-6">
-                                <div class="form-group text-left">
-                                    <label>Price/Coin <strong>(USD)</strong></label>
-                                    <input type="text" placeholder="9760.99" class="form-control  @error('price_usd') is-invalid @enderror" name="price_usd" value="{{ old('price_usd') }}" autocomplete="off" required />
-                                    @error('price_usd')
-                                    <div>
-                                        <span class="text-danger small" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                    </div>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-sm-12 col-md-6">
+                            <div class="col-sm-12">
                                 <div class="form-group text-left">
                                     <label>USD/NGN Rate</label>
-                                    <input type="text" class="form-control @error('price_ngn') is-invalid @enderror" placeholder="380.78" value="{{ old('price_ngn') }}" name="price_ngn" autocomplete="off" required />
-                                    @error('price_ngn')
+                                    <input type="text" class="form-control @error('rate') is-invalid @enderror" placeholder="e.g 420" value="{{ old('rate') }}" name="rate" autocomplete="off"/>
+                                    @error('rate')
                                     <div>
                                         <span class="text-danger small" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -128,11 +115,11 @@
                             <div class="col-md-12 mt-3 mb-5 content-right">
                                 @if(!Auth::user()->verification)
                                     <button class="btn btn-special form-btn" type="submit" disabled>Create Advert </button>
-                                @else()
+                                @else
                                     @if(!Auth::user()->verification->is_email_verified || !Auth::user()->verification->is_phone_verified || !Auth::user()->verification->is_document_verified)
                                         <button class="btn btn-special form-btn" type="submit" disabled>Create Advert </button>
                                     @else
-                                        <button class="btn btn-special form-btn" type="submit">Create Advert </button>
+                                        <button class="btn btn-special form-btn" type="submit">Create Advert</button>
                                     @endif
                                 @endif
                             </div>

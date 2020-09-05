@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Coin;
+use App\Market;
+use App\Trade;
 use Illuminate\Http\Request;
 
 class CoinController extends Controller
@@ -97,7 +99,14 @@ class CoinController extends Controller
      */
     public function destroy(Coin $coin)
     {
+        if (Market::where('coin_id', $coin->id)->count() > 0){
+            return back()->with('error', 'Coin already used in transaction records');
+        }
+        if (Trade::where('coin_id', $coin->id)->count() > 0){
+            return back()->with('error', 'Coin already used in transaction records');
+        }
         $coin->delete();
+        unlink('/images/'.$coin->logo);
         return back()->with('message', 'Coin deleted successfully');
     }
 }

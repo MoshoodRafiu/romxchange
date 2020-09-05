@@ -49,6 +49,11 @@ class User extends Authenticatable
         });
     }
 
+//    public function sendEmailVerificationNotification()
+//    {
+//        $this->notify(new App\Notifications\CustomVerifyEmail);
+//    }
+
     public function markets(){
         return $this->hasMany('App\Market');
     }
@@ -64,4 +69,12 @@ class User extends Authenticatable
     public function documents(){
         return $this->hasMany('App\Document');
     }
+    public function messages(){
+        return $this->hasMany('App\Message');
+    }
+
+    public function reviews(){
+        return $this->hasMany('App\Review');
+    }
+
 }

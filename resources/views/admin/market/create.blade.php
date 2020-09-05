@@ -93,24 +93,11 @@
                                     </div>
                                 </div>
                                 <div class="form-row">
-                                    <div class="col-sm-12 col-md-6">
-                                        <div class="form-group text-left">
-                                            <label>Price/Coin <strong>(USD)</strong></label>
-                                            <input type="text" placeholder="9760.99" class="form-control  @error('price_usd') is-invalid @enderror" name="price_usd" value="{{ old('price_usd') }}" autocomplete="off" required />
-                                            @error('price_usd')
-                                            <div>
-                                        <span class="text-danger small" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                            </div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-12 col-md-6">
+                                    <div class="col-sm-12">
                                         <div class="form-group text-left">
                                             <label>USD/NGN Rate</label>
-                                            <input type="text" class="form-control @error('price_ngn') is-invalid @enderror" placeholder="380.78" value="{{ old('price_ngn') }}" name="price_ngn" autocomplete="off" required />
-                                            @error('price_ngn')
+                                            <input type="text" class="form-control @error('rate') is-invalid @enderror" placeholder="e.g 420" value="{{ old('rate') }}" name="rate" autocomplete="off" required />
+                                            @error('rate')
                                             <div>
                                         <span class="text-danger small" role="alert">
                                             <strong>{{ $message }}</strong>

@@ -16,33 +16,80 @@
         </div>
         <div class="card-body">
             @if(count($trades) > 0)
-                @foreach($trades as $trade)
-                    <div class="col-md-12 col-12 mx-auto bg-white d-md-block d-flex justify-content-between align-items-center shadow py-md-4 border-left border-dark my-2">
-                        <div class="d-md-flex justify-content-between">
-                            <div><p class="small my-1 font-weight-bold">Transaction ID</p><p class="my-0">{{ $trade->transaction_id }}</p></div>
-                            <div><p class="small my-1 font-weight-bold">Coin Volume</p><p class="my-0">{{ $trade->coin_amount }} <strong class="text-uppercase">{{ $trade->coin->abbr }}</strong></p></div>
-                            <div><p class="small my-1 font-weight-bold">Status</p><p class="my-0 text-warning font-weight-bold">{{ $trade->transaction_status }}</p></div>
-                            @if($trade->buyer_transaction_stage == null)
-                                <div class="d-md-block  my-2"><button type="button" class="btn btn-danger">Cancel</button></div>
-                            @else
-                                <div class="d-md-block  my-2"><button type="button" disabled class="btn btn-danger">Cancel</button></div>
-                            @endif
-                            @if($trade->market->type == "buy")
-                                @if($trade->buyer_transaction_stage == null)
-                                    <div class="d-md-block  my-2"><a href="{{ route('admin.trade.accept.buy', $trade) }}" class="btn btn-success">Accept</a></div>
-                                @else
-                                    <div class="d-md-block  my-2"><a href="{{ route('admin.trade.accept.buy', $trade) }}" class="btn btn-success">Continue</a></div>
+                <table class="table bg-white shadow table-responsive-lg d-none d-md-table">
+                    @foreach($trades as $trade)
+                        <tr>
+                            <td><div><p class="small my-1 font-weight-bold">Transaction ID</p><p class="my-0">{{ $trade->transaction_id }}</p></div></td>
+                            <td><div><p class="small my-1 font-weight-bold">Coin Volume</p><p class="my-0">{{ $trade->coin_amount }} <strong class="text-uppercase">{{ $trade->coin->abbr }}</strong></p></div></td>
+                            <td><div><p class="small my-1 font-weight-bold">Status</p><p class="my-0 text-warning font-weight-bold">{{ $trade->transaction_status }}</p></div></td>
+                            <td>
+                                @if($trade->market->type == "buy")
+                                    @if($trade->buyer_transaction_stage == null)
+                                        <div class="d-md-block  my-2"><button type="button" class="btn btn-danger">Cancel</button></div>
+                                    @else
+                                        <div class="d-md-block  my-2"><button type="button" disabled class="btn btn-danger">Cancel</button></div>
+                                    @endif
+                                @elseif($trade->market->type == "sell")
+                                    @if($trade->seller_transaction_stage == null)
+                                        <div class="d-md-block  my-2"><button type="button" class="btn btn-danger">Cancel</button></div>
+                                    @else
+                                        <div class="d-md-block  my-2"><button type="button" disabled class="btn btn-danger">Cancel</button></div>
+                                    @endif
                                 @endif
-                            @elseif($trade->market->type == "sell")
-                                @if($trade->seller_transaction_stage == null)
-                                    <div class="d-md-block  my-2"><a href="{{ route('admin.trade.accept.sell', $trade) }}" class="btn btn-success">Accept</a></div>
-                                @else
-                                    <div class="d-md-block  my-2"><a href="{{ route('admin.trade.accept.sell', $trade) }}" class="btn btn-success">Continue</a></div>
+                            </td>
+                            <td>
+                                @if($trade->market->type == "buy")
+                                    @if($trade->buyer_transaction_stage == null)
+                                        <div class="d-md-block  my-2"><a href="{{ route('admin.trade.accept.buy', $trade) }}" class="btn btn-success">Accept</a></div>
+                                    @else
+                                        <div class="d-md-block  my-2"><a href="{{ route('admin.trade.accept.buy', $trade) }}" class="btn btn-success">Continue</a></div>
+                                    @endif
+                                @elseif($trade->market->type == "sell")
+                                    @if($trade->seller_transaction_stage == null)
+                                        <div class="d-md-block  my-2"><a href="{{ route('admin.trade.accept.sell', $trade) }}" class="btn btn-success">Accept</a></div>
+                                    @else
+                                        <div class="d-md-block  my-2"><a href="{{ route('admin.trade.accept.sell', $trade) }}" class="btn btn-success">Continue</a></div>
+                                    @endif
                                 @endif
-                            @endif
+                            </td>
+                        </tr>
+                        <div class="col-12 col-sm-12 mx-auto bg-white d-block d-md-none d-flex justify-content-between shadow py-md-4 border-left border-warning my-2">
+                            <div class=" small">
+                                <div><p class="small my-1 font-weight-bold">Transaction ID</p><p class="my-0">{{ $trade->transaction_id }}</p></div>
+                                <div><p class="small my-1 font-weight-bold">Coin Volume</p><p class="my-0">{{ $trade->coin_amount }} <strong class="text-uppercase">{{ $trade->coin->abbr }}</strong></p></div>
+                                <div><p class="small my-1 font-weight-bold">Status</p><p class="my-0 text-warning font-weight-bold">{{ $trade->transaction_status }}</p></div>
+                            </div>
+                            <div class="d-md-none d-block align-self-center">
+                                @if($trade->market->type == "buy")
+                                    @if($trade->buyer_transaction_stage == null)
+                                        <div class="d-md-block  my-2"><button type="button" class="btn btn-sm btn-danger">Cancel</button></div>
+                                    @else
+                                        <div class="d-md-block  my-2"><button type="button" disabled class="btn btn-sm btn-danger">Cancel</button></div>
+                                    @endif
+                                @elseif($trade->market->type == "sell")
+                                    @if($trade->seller_transaction_stage == null)
+                                        <div class="d-md-block  my-2"><button type="button" class="btn btn-sm btn-danger">Cancel</button></div>
+                                    @else
+                                        <div class="d-md-block  my-2"><button type="button" disabled class="btn btn-sm btn-danger">Cancel</button></div>
+                                    @endif
+                                @endif
+                                @if($trade->market->type == "buy")
+                                    @if($trade->buyer_transaction_stage == null)
+                                        <div class="d-md-block  my-2"><a href="{{ route('admin.trade.accept.buy', $trade) }}" class="btn btn-sm btn-success">Accept</a></div>
+                                    @else
+                                        <div class="d-md-block  my-2"><a href="{{ route('admin.trade.accept.buy', $trade) }}" class="btn btn-sm btn-success">Continue</a></div>
+                                    @endif
+                                @elseif($trade->market->type == "sell")
+                                    @if($trade->seller_transaction_stage == null)
+                                        <div class="d-md-block  my-2"><a href="{{ route('admin.trade.accept.sell', $trade) }}" class="btn btn-sm btn-success">Accept</a></div>
+                                    @else
+                                        <div class="d-md-block  my-2"><a href="{{ route('admin.trade.accept.sell', $trade) }}" class="btn btn-sm btn-success">Continue</a></div>
+                                    @endif
+                                @endif
+                            </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </table>
             @else
                 <p class="my-4">No pending trade</p>
             @endif

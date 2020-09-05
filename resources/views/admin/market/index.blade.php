@@ -42,7 +42,7 @@
                         <th>Coin</th>
                         <th>Volume(Min)</th>
                         <th>Volume(Max)</th>
-                        <th>Price(NGN)</th>
+                        <th>Rate</th>
                         <th>Date</th>
                         <th>Remove</th>
                     </tr>
@@ -62,7 +62,7 @@
                             <td>{{ $market->coin->abbr }}</td>
                             <td>{{ $market->min }}</td>
                             <td>{{ $market->max }}</td>
-                            <td>{{ number_format($market->price_ngn) }}</td>
+                            <td>{{ $market->rate }}</td>
                             <td>{{ $market->created_at->diffForHumans() }}</td>
                             <td class="text-center d-flex">
                                 @if($market->is_special == 1)

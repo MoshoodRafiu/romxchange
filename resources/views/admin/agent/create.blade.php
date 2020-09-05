@@ -32,7 +32,7 @@
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="form-group">
                             <label><strong>Display Name</strong></label>
                             <input type="text" class="form-control @error("display_name") is-invalid @enderror" placeholder="Display Name" name="display_name" value="{{ old('display_name') }}"/>
@@ -41,32 +41,12 @@
                             <span class="text-danger"><strong>{{ $message }}</strong></span>
                         @enderror
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="form-group">
                             <label><strong>Email</strong></label>
                             <input type="email" class="form-control @error("email") is-invalid @enderror" placeholder="Email" name="email" value="{{ old('email') }}"/>
                         </div>
                         @error("email")
-                            <span class="text-danger"><strong>{{ $message }}</strong></span>
-                        @enderror
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label><strong>Password</strong></label>
-                            <input type="password" class="form-control @error("password") is-invalid @enderror" placeholder="Password" name="password"/>
-                        </div>
-                        @error("password")
-                            <span class="text-danger"><strong>{{ $message }}</strong></span>
-                        @enderror
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label><strong>Confirm Password</strong></label>
-                            <input type="password" class="form-control @error("confirm_password") is-invalid @enderror" placeholder="Confirm Password" name="confirm_password"/>
-                        </div>
-                        @error("confirm_password")
                             <span class="text-danger"><strong>{{ $message }}</strong></span>
                         @enderror
                     </div>

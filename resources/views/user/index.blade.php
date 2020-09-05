@@ -70,21 +70,54 @@
                             <div class="alert col-12 alert-warning text-left" role="alert">You have to verify your account before making a trade</div>
                         @else()
                             @if(!Auth::user()->verification->is_email_verified || !Auth::user()->verification->is_phone_verified || !Auth::user()->verification->is_document_verified)
-                                <div class="alert col-12 alert-warning text-left" role="alert">You have to verify your account before creating an advert</div>
+                                <div class="alert col-12 alert-warning text-left" role="alert">You have to verify your account before making a trade</div>
                             @endif
                         @endif
                     @endif
                 @if(count($markets) > 0)
+                    <table class="table bg-white shadow d-none d-md-table">
                     @foreach($markets as $market)
-                        <div class="col-10 col-sm-12 mx-auto bg-white d-md-block d-flex justify-content-between shadow py-md-4 border-left border-warning my-2">
-                            <div class="d-md-flex justify-content-around">
+                        <tr>
+                            <td class="p-4"><div><p>{{ $market->user->display_name }}</p></div></td>
+                            <td class="p-4">
+                                @if($market->type === "buy")
+                                    <div class="font-weight-bold">Buyer<i class="fa fa-arrow-circle-down text-success mx-1"></i></div>
+                                @elseif($market->type === "sell")
+                                    <div class="font-weight-bold">Seller<i class="fa fa-arrow-circle-up text-danger mx-1"></i></div>
+                                @endif
+                            </td>
+                            <td class="p-4">
+                                <div><img src="{{ asset('/images/'.$market->coin->logo) }}" height="25px" class="mr-1" alt="logo"> {{ $market->min }}  -  {{ $market->max }} <span class="text-uppercase">{{ $market->coin->abbr }}</span></div>
+                            </td>
+                            <td class="p-4">
+                                <div>NGN 4,745,345</div>
+                            </td>
+                            <td class="p-4">
+                                <div>
+                                    <i class="fa fa-star rating text-warning"></i>
+                                    <i class="fa fa-star rating text-warning"></i>
+                                    <i class="fa fa-star rating text-warning"></i>
+                                    <i class="fa fa-star rating text-warning"></i>
+                                    <i class="fa fa-star rating text-secondary"></i>
+                                </div>
+                            </td>
+                            <td class="p-4">
+                                @if($market->type === "buy")
+                                    <a href="{{ route('trade.initiate.sell', $market) }}" class="d-none d-md-block btn btn-danger">Sell</a>
+                                @elseif($market->type === "sell")
+                                    <a href="{{ route('trade.initiate.buy', $market) }}" class="d-none d-md-block btn btn-success">Buy</a>
+                                @endif
+                            </td>
+                        </tr>
+                        <div class="col-10 col-sm-12 mx-auto bg-white d-block d-md-none d-flex justify-content-between shadow py-md-4 border-left border-warning my-2">
+                            <div class="d-md-flex justify-content-around small">
                                 <div><p>{{ $market->user->display_name }}</p></div>
                                 @if($market->type === "buy")
                                     <div class="font-weight-bold">Buyer<i class="fa fa-arrow-circle-down text-success mx-1"></i></div>
                                 @elseif($market->type === "sell")
                                     <div class="font-weight-bold">Seller<i class="fa fa-arrow-circle-up text-danger mx-1"></i></div>
                                 @endif
-                                <div><i class="fa fa-bitcoin text-warning"></i>{{ $market->min }}  -  {{ $market->max }} {{ $market->coin->name }}</div>
+                                <div><img src="{{ asset('/images/'.$market->coin->logo) }}" class="mr-1" height="20px" alt="logo"> {{ $market->min }}  -  {{ $market->max }} <span class="text-uppercase">{{ $market->coin->abbr }}</span></div>
                                 <div>NGN 4,745,345</div>
                                 <div>
                                     <i class="fa fa-star rating text-warning"></i>
@@ -93,23 +126,19 @@
                                     <i class="fa fa-star rating text-warning"></i>
                                     <i class="fa fa-star rating text-secondary"></i>
                                 </div>
-                                @if($market->type === "buy")
-                                    <a href="{{ route('trade.initiate.sell', $market) }}" class="d-none d-md-block btn btn-danger">Sell Now</a>
-                                @elseif($market->type === "sell")
-                                    <a href="{{ route('trade.initiate.buy', $market) }}" class="d-none d-md-block btn btn-success">Buy Now</a>
-                                @endif
                             </div>
                             <div class="d-md-none d-block align-self-center">
                                 @if($market->type === "buy")
-                                    <a href="{{ route('trade.initiate.sell', $market) }}" class="btn btn-danger">Sell Now</a>
+                                    <a href="{{ route('trade.initiate.sell', $market) }}" class="btn btn-sm btn-danger">Sell</a>
                                 @elseif($market->type === "sell")
-                                    <a href="{{ route('trade.initiate.buy', $market) }}" class="btn btn-success">Buy Now</a>
+                                    <a href="{{ route('trade.initiate.buy', $market) }}" class="btn btn-sm btn-success">Buy</a>
                                 @endif
                             </div>
                         </div>
                     @endforeach
+                    </table>
                 @else
-                    <div class="col-10 col-sm-12 mx-auto bg-white d-md-block d-flex justify-content-between shadow py-md-4 border-left border-warning my-2">
+                    <div class="col-11 p-5 col-md-12 mx-auto bg-white d-md-block d-flex justify-content-between shadow py-md-4 border-left border-warning my-2">
                         No Market Available
                     </div>
                 @endif
@@ -125,63 +154,35 @@
                         <tr>
                             <th>Rank</th>
                             <th>Name</th>
+                            <th>Sym</th>
                             <th>Market Cap</th>
                             <th>USD</th>
-                            <th>NGN</th>
-                            <th>Change (24h) <i class="fa fa-exchange text-muted"></i></th>
+                            <th>Volume</th>
+                            <th>Change(24hrs) <i class="fa fa-sort text-dark"></i></th>
                         </tr>
                         </thead>
                         <tbody>
+                        @isset($response)
+                        @foreach($response as $key=>$coin)
                         <tr>
-                            <td>2</td>
-                            <td>Bitcoin</td>
-                            <td>$ 23,856,223,52</td>
-                            <td>$9,700</td>
-                            <td>NGN 4,453,634</td>
-                            <td class="text-success">4.01%</td>
+                            <td>{{ $key+1 }}</td>
+                            <td class="d-flex justify-content-start align-items-center">
+                                <img width="20px" class="mx-3 py-lg-4 py-2" src="{{ $coin['logo_url'] }}" alt="logo">
+                                <p>{{ $coin['name'] }}</p>
+                            </td>
+                            <td class="text-left py-lg-4 py-2">{{ $coin['currency'] }}</td>
+                            <td class="text-left py-lg-4 py-2">${{ number_format($coin['market_cap']) }}</td>
+                            <td class="text-left py-lg-4 py-2">${{ number_format($coin['price'], 5) }}</td>
+                            <td class="text-left py-lg-4 py-2">${{ number_format($coin['1d']['volume']) }}</td>
+                            <td class="text-left py-lg-4 py-2 font-weight-bold @if($coin['1d']['price_change_pct'] < 0) text-danger @else text-success @endif">{{ $coin['1d']['price_change_pct'] }} @if($coin['1d']['price_change_pct'] < 0) <i class="fa fa-sort-down text-danger"></i> @else <i class="fa fa-sort-up text-success"></i> @endif</td>
                         </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>Bitcoin</td>
-                            <td>$ 23,856,223,52</td>
-                            <td>$9,700</td>
-                            <td>NGN 4,453,634</td>
-                            <td class="text-success">4.01%</td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>Bitcoin</td>
-                            <td>$ 23,856,223,52</td>
-                            <td>$9,700</td>
-                            <td>NGN 4,453,634</td>
-                            <td class="text-success">4.01%</td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>Bitcoin</td>
-                            <td>$ 23,856,223,52</td>
-                            <td>$9,700</td>
-                            <td>NGN 4,453,634</td>
-                            <td class="text-danger">4.01%</td>
-                        </tr>
-                        <tr>
-                            <td>6</td>
-                            <td>Bitcoin</td>
-                            <td>$ 23,856,223,52</td>
-                            <td>$9,700</td>
-                            <td>NGN 4,453,634</td>
-                            <td class="text-success">4.01%</td>
-                        </tr>
-                        <tr>
-                            <td>7</td>
-                            <td>Bitcoin</td>
-                            <td>$ 23,856,223,52</td>
-                            <td>$9,700</td>
-                            <td>NGN 4,453,634</td>
-                            <td class="text-success">4.01%</td>
-                        </tr>
+                        @endforeach
+                        @else
+                            <tr><td>Data not available</td></tr>
+                        @endisset
                         </tbody>
-                    </table></div>
+                    </table>
+                </div>
             </div>
             <div class="row">
                 <div class="col-lg-12">
