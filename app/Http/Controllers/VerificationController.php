@@ -75,7 +75,7 @@ class VerificationController extends Controller
             "pin_time_to_live" => env('TERMII_PIN_TIME_TO_LIVE'),
             "pin_length" => env('TERMII_PIN_LENGTH'),
             "pin_placeholder" => "< 1234 >",
-            "message_text" => "Your verification pin for AcexWorld is < 1234 >",
+            "message_text" => "Your verification pin for AcexWorld is < 1234 >. Pin expires in 30 minutes",
             "pin_type" => env('TERMII_PIN_TYPE'),
         ])->json();
 
@@ -90,11 +90,19 @@ class VerificationController extends Controller
         return back()->with('info', 'Verification OTP has been sent to your phone '.$request->phone.' enter the code below and click verify');
     }
 
+    public function resend(){
+        session()->forget('id');
+        return back();
+    }
+
     public function verifyCode(Request $request){
         $this->validate($request, [
-            "code" => "required|numeric",
-            "id" => "required",
+            "code" => "required|numeric"
         ]);
+
+        if (!$request->id){
+            return back()->with('error', 'Error verifying, request a code and try again');
+        }
 
         $user = Auth::user();
         if ($user->verification){

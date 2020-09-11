@@ -10,6 +10,11 @@
                 </div>
             </div>
             <div class="row">
+                @if(Session::has('message'))
+                    <div class="alert w-100 col-12 alert-success text-left" role="alert">{{ session('message') }}</div>
+                @elseif(Session::has('error'))
+                    <div class="alert w-100 col-12 alert-danger text-left" role="alert">{{ session('error') }}</div>
+                @endif
                 <div class="card text-left">
                     <div class="card-header bg-special">
                         <ul class="nav nav-tabs card-header-tabs" role="tablist">
@@ -23,20 +28,41 @@
                     <div class="card-body">
                         <div id="nav-tabContent" class="tab-content">
                             <div id="item-1-1" class="tab-panel fade show active" role="tabpanel" aria-labelledby="item-1-1-tab">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="small">
+                                        <a href="{{ route('sms.summon', ['trade' => $trade, 'type' => 'seller']) }}" class="btn btn-sm btn-secondary">Summon via SMS</a>
+                                        <a href="{{ route('mail.summon', ['trade' => $trade, 'type' => 'seller']) }}" class="btn btn-sm btn-info">Summon via Mail</a>
+                                    </div>
+                                    <h4 class="text-right text-danger"><span id="minute">00</span>.<span id="second">00</span></h4>
+                                </div>
                                 <div class="step">
                                     <h4 class="text-center my-4">Step 1</h4>
+                                    @if($trade->is_dispute == 1)
+                                        <div class="text-center">
+                                            <strong class="text-warning" id="info-1-text" style="font-size: 23px">Trade Dispute, Use Dispute Chatbox Below</strong>
+                                            <img width="30px" id="info-1-img" src="{{ asset('assets/img/warning.gif') }}" alt="proceed">
+                                        </div>
+                                    @endif
                                     <form class="row mb-4">
+                                        <div class="form-group col-md-12">
+                                            <label for="transactionID">Transaction ID</label>
+                                                        <div class="d-flex ">
+                                                <input type="text" name="transactionID" id="transactionID" value="{{ $trade->transaction_id }}" class="form-control col-sm-11 col-10" readonly>
+                                                <span class="bg-dark text-white px-2 py-1 clipboard-message">Copied to clipboard</span>
+                                                <a onclick="copyText('transactionID')" class="col-sm-1 m-0 col-2 btn text-white btn-secondary"><i class="fas fa-copy"></i></a>
+                                            </div>
+                                        </div>
                                         <div class="form-group col-md-6">
                                             <label for="volume">Coin Amount </label>
                                                                    <input type="text" value="{{ $trade->coin_amount }} {{ $trade->market->coin->abbr }}" name="volume" id="volume" class="form-control" disabled>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="amount-usd">Amount in USD</label>
-                                                                   <input type="text" name="amount-usd" id="amount-usd" value="{{ $trade->coin_amount_usd }}" class="form-control" disabled>
+                                                                   <input type="text" name="amount-usd" id="amount-usd" value="{{ round($trade->coin_amount_usd, 2) }}" class="form-control" disabled>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="amount-ngn">Amount in NGN</label>
-                                                                   <input type="text" name="amount-ngn" id="amount-ngn" value="{{ $trade->coin_amount_ngn }}" class="form-control" disabled>
+                                                                   <input type="text" name="amount-ngn" id="amount-ngn" value="{{ round($trade->coin_amount_ngn, 2) }}" class="form-control" disabled>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label for="charges">Account Number</label>
@@ -46,8 +72,8 @@
                                             <label for="charges">Bank Name</label>
                                             <input type="text" name="bankName" value="{{ \App\BankAccount::where('user_id', $trade->seller_id)->first()->bank_name }}" class="form-control" disabled>
                                         </div>
-                                        <div class="mx-auto">
-                                            <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn m-2 px-4 btn-danger">Cancel Trade</button>
+                                        <div class="mx-auto text-center">
+                                            <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn px-4 btn-danger">Cancel Trade</button>
                                             @if($trade->buyer_transaction_stage == null)
                                                 <button type="submit" id="step-1-proceed" class="btn btn-special mx-4">Accept Trade</button>
                                             @else
@@ -56,7 +82,7 @@
                                         </div>
                                     </form>
                                 </div>
-                                <div id="chat-field" class="col-12 mx-auto p-0">
+                                <div id="chat-field" class="col-12 mx-auto p-0 mb-5">
                                     @isset($trade)
                                         @if($trade->is_dispute == 1)
                                             @include('user.dashboard.trades.accept.partials.buy.chat')
@@ -100,6 +126,47 @@
 @endsection
 
 @section('script')
+
+    <script>
+            @isset($trade)
+        var cancel_time = "{{ date('F j, Y H:i:s', strtotime($trade->trade_window_expiry)) }}";
+        var url = "{{ route('trade.index') }}";
+        // Set the date we're counting down to
+        var countDownDate = new Date(cancel_time).getTime();
+
+        function formatNumber(num, len) {
+            var s = num+"";
+            while (s.length < len) s = "0" + s;
+            return s;
+        }
+
+        // Update the count down every 1 second
+        var x = setInterval(function() {
+
+            // Get today's date and time
+            var now = new Date().getTime();
+
+            // Find the distance between now and the count down date
+            var distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Output the result in an element with id="demo"
+            document.getElementById("minute").innerText = formatNumber(minutes, 2);
+            document.getElementById("second").innerText = formatNumber(seconds, 2);
+
+            // If the count down is over, write some text
+            if (distance < 0) {
+                // window.location.replace(url);
+                clearInterval(x);
+                document.getElementById("minute").innerText = "00";
+                document.getElementById("second").innerText = "00";
+            }
+        }, 1000);
+        @endisset
+    </script>
 
     <script>
         $(document).ready(function () {
@@ -519,6 +586,28 @@
                 $("#info-3-text").addClass('text-success');
                 $("#info-3-img").attr('src', '{{ asset('assets/img/proceed.gif') }}');
                 $("#info-3-img").width('100');
+            });
+
+            channel.listen('.switch-trade', function() {
+                $("#info-1-text").text('Agent Cancelled Trade, Trade Window Will now Close');
+                $("#info-1-text").removeClass('text-warning');
+                $("#info-1-text").addClass('text-danger');
+                $("#info-1-img").attr('src', '{{ asset('assets/img/cancel.gif') }}');
+                $("#info-1-img").width('50');
+
+                $("#info-3-text").text('Agent Cancelled Trade, Trade Window Will now Close');
+                $("#info-3-text").removeClass('text-info');
+                $("#info-3-text").addClass('text-danger');
+                $("#info-3-img").attr('src', '{{ asset('assets/img/cancel.gif') }}');
+                $("#info-3-img").width('50');
+                var url = "{{ route('trade.index') }}";
+                window.setTimeout(function(){
+                    window.location.replace(url);
+                }, 3000);
+            });
+
+            channel.listen('.trade-dispute', function() {
+                location.reload();
             });
 
             channel.listen('.agent-joined', function() {

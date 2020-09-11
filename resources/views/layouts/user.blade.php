@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Ace World</title>
+    <title>AcexWorld</title>
     <link rel="icon" type="image/png" sizes="218x250" href="{{asset('assets/img/logo.png')}}">
 {{--    <link rel="stylesheet" href="{{asset('assets/bootstrap/css/bootstrap.min.css?h=e3b2ea54c5d54884854fc0397d0f6bb8')}}">--}}
 {{--    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700">--}}

@@ -36,6 +36,8 @@ Route::group(['middleware' => ['auth', 'email_verified', 'active']], function ()
     Route::get('/trades/{trade}/dispute', 'TradeController@dispute')->name('trade.dispute');
     Route::get('/trades/{trade}/switch', 'TradeController@switch')->name('trade.switch');
     Route::get('/trades/{trade}/cancel', 'TradeController@cancel')->name('trade.cancel');
+    Route::get('/trades/{trade}/sms/summon/{type}', 'TradeController@summonViaSMS')->name('sms.summon');
+    Route::get('/trades/{trade}/mail/summon/{type}', 'TradeController@summonViaMail')->name('mail.summon');
 
     Route::get('/wallets', 'WalletController@index')->name('wallet.index');
     Route::get('/wallets/create', 'WalletController@create')->name('wallet.create');
@@ -48,6 +50,7 @@ Route::group(['middleware' => ['auth', 'email_verified', 'active']], function ()
     Route::get('/verification/phone', 'VerificationController@phone')->name('verification.phone');
     Route::post('/verification/phone/code/request', 'VerificationController@requestCode')->name('verification.phone.code.request');
     Route::post('/verification/phone/code/verify', 'VerificationController@verifyCode')->name('verification.phone.code.verify');
+    Route::get('/verification/phone/code/resend', 'VerificationController@resend')->name('verification.phone.code.resend');
     Route::get('/verification/document', 'VerificationController@document')->name('verification.document');
     Route::post('/verification/document/store', 'VerificationController@documentStore')->name('verification.document.store');
 

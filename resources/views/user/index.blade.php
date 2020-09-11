@@ -149,7 +149,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h2 class="text-uppercase" style="font-size: 30px;">Crypto market</h2><table id="example" class="table shadow table-responsive-sm" cellspacing="0" width="100%">
+                    <h2 class="text-uppercase" style="font-size: 30px;">Crypto market</h2><table id="example" class="table shadow table-responsive-xl" cellspacing="0" width="100%">
                         <thead>
                         <tr>
                             <th>Rank</th>

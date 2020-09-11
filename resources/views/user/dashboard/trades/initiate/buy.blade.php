@@ -10,6 +10,11 @@
                 </div>
             </div>
             <div class="row">
+                @if(Session::has('success'))
+                    <div class="alert w-100 col-12 alert-success text-left" role="alert">{{ session('success') }}</div>
+                @elseif(Session::has('error'))
+                    <div class="alert w-100 col-12 alert-danger text-left" role="alert">{{ session('error') }}</div>
+                @endif
                 <div class="card text-left">
                     <div class="card-header bg-special">
                         <ul class="nav nav-tabs card-header-tabs" role="tablist">
@@ -17,25 +22,49 @@
                             <li class="nav-item"><a class="nav-link step-info" id="item-1-2-tab" data-toggle="tab" role="tab" aria-controls="item-1-2" aria-selected="false" href="#item-1-2">Verify Wallet <i id="step-icon-2" class="fa @isset($trade) @if($trade->buyer_transaction_stage >= 2) fa-check-circle text-success @else fa-info-circle text-danger @endif @else fa-info-circle text-danger @endisset"></i></a></li>
                             <li class="nav-item"><a class="nav-link step-info" id="item-1-3-tab" data-toggle="tab" role="tab" aria-controls="item-1-3" aria-selected="false" href="#item-1-3">Make Payment <i id="step-icon-3" class="fa @isset($trade) @if($trade->buyer_transaction_stage >= 3) fa-check-circle text-success @else fa-info-circle text-danger @endif @else fa-info-circle text-danger @endisset"></i></a></li>
                             <li class="nav-item"><a class="nav-link step-info" id="item-1-4-tab" data-toggle="tab" role="tab" aria-controls="item-1-4" aria-selected="false" href="#item-1-4">Receive Coin <i id="step-icon-4" class="fa @isset($trade) @if($trade->buyer_transaction_stage >= 4) fa-check-circle text-success @else fa-info-circle text-danger @endif @else fa-info-circle text-danger @endisset"></i></a></li>
-                            <li class="nav-item"><a class="nav-link step-info" id="item-1-5-tab" data-toggle="tab" role="tab" aria-controls="item-1-5" aria-selected="false" href="#item-1-5">Rate Seller <i id="step-icon-5" class="fa @isset($trade) @if($trade->buyer_transaction_stage >= 5) fa-check-circle text-success @else fa-info-circle text-danger @endif @else fa-info-circle text-danger @endisset"></i></a></li>
+                            <li class="nav-item"><a class="nav-link step-info" id="item-1-5-tab" data-toggle="tab" role="tab" aria-controls="item-1-5" aria-selected="false" href="#item-1-5">Rate Seller <i id="step-icon-5" class="fa @isset($trade) @if($trade->transaction_status == "success" && $trade->buyer_transaction_stage >= 4) fa-check-circle text-success @else fa-info-circle text-danger @endif @else fa-info-circle text-danger @endisset"></i></a></li>
                         </ul>
                     </div>
                     <div class="card-body">
                         <div id="nav-tabContent" class="tab-content">
                             <div class="tab-panel fade show active" role="tabpanel" aria-labelledby="item-1-1-tab">
+                                @isset($trade)
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="small">
+                                        <a href="{{ route('sms.summon', ['trade' => $trade, 'type' => 'seller']) }}" class="btn btn-sm btn-secondary">Summon via SMS</a>
+                                        <a href="{{ route('mail.summon', ['trade' => $trade, 'type' => 'seller']) }}" class="btn btn-sm btn-info">Summon via Mail</a>
+                                    </div>
+                                    <h4 class="text-right text-danger"><span id="minute">00</span>.<span id="second">00</span></h4>
+                                </div>
+                                @endisset
                                 <div class="step">
-                                    <h4 class="text-center my-4">Step 1</h4>
+                                    <h4 class="text-center mb-4">Step 1</h4>
                                     @isset($trade)
+                                    @if($trade->is_dispute == 1)
+                                        <div class="text-center">
+                                            <strong class="text-warning" id="info-1-text" style="font-size: 23px">Trade Dispute, Use Dispute Chatbox Below</strong>
+                                            <img width="30px" id="info-1-img" src="{{ asset('assets/img/warning.gif') }}" alt="proceed">
+                                        </div>
+                                    @endif
                                     @if(($trade->buyer_transaction_stage == 1 && $trade->seller_transaction_stage == null))
                                         <div class="text-center">
-                                            <strong class="text-success" style="font-size: 23px">Trade started, Click Proceed</strong>
-                                            <img width="100px" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
+                                            <strong class="text-success" id="info-1-text" style="font-size: 23px">Trade started, Click Proceed</strong>
+                                            <img width="100px" id="info-1-img" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
                                         </div>
                                     @endif
                                     @endisset
                                     <div><strong id="error" class="text-danger"></strong></div>
                                     <form class="row mb-4">
-                                        @csrf
+                                        @isset($trade)
+                                            <div class="form-group col-md-12">
+                                                <label for="transactionID">Transaction ID</label>
+                                                <div class="d-flex ">
+                                                    <input type="text" name="transactionID" id="transactionID" value="{{ $trade->transaction_id }}" class="form-control col-sm-11 col-10" readonly>
+                                                    <span class="bg-dark text-white px-2 py-1 clipboard-message">Copied to clipboard</span>
+                                                    <a onclick="copyText('transactionID')" class="col-sm-1 m-0 col-2 btn text-white btn-secondary"><i class="fas fa-copy"></i></a>
+                                                </div>
+                                            </div>
+                                        @endisset
                                         <div class="form-group col-md-6">
                                             <label>Coin Amount <span class="range font-weight-bold mx-2 text-capitalize">Min: {{ $market->min }} <span class="font-weight-light">{{ $market->coin->abbr }}</span></span><span class="range font-weight-bold text-capitalize mx-2">Max: {{ $market->max }} <span class="font-weight-light">{{ $market->coin->abbr }}</span></span></label>
                                             @isset($trade)
@@ -46,11 +75,11 @@
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label>Amount in USD</label>
-                                           <input type="text" name="amount-usd" id="amount_usd" value="{{ $market->price_usd }}" class="form-control" disabled>
+                                            <input type="text" name="amount-usd" id="amount_usd" value="@isset($data){{ round($data[0]['price'], 2) }}@else @isset($trade){{ round($trade->coin_amount_usd, 2) }} @endisset @endisset" class="form-control" disabled>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label>Amount in NGN</label>
-                                            <input type="text" name="amount-ngn" id="amount_ngn" value="{{ $market->price_ngn }}" class="form-control" disabled>
+                                            <input type="text" name="amount-ngn" id="amount_ngn" value="@isset($data){{ round($market->rate * $data[0]['price'], 2) }} @else @isset($trade){{ round($trade->coin_amount_ngn, 2) }} @endisset @endisset" class="form-control" disabled>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label>Account Number</label>
@@ -60,7 +89,7 @@
                                             <label>Bank Name</label>
                                             <input type="text" name="bankName" value="{{ \App\BankAccount::where('user_id', $market->user_id)->first()->bank_name }}" class="form-control" disabled>
                                         </div>
-                                        <div class="mx-auto">
+                                        <div class="text-center mx-auto">
                                             @isset($trade)
                                                 <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn m-2 px-4 btn-danger">Cancel Trade</button>
                                                 <button type="submit" id="step-2-nav" class="btn m-2 btn-special px-5">Proceed</button>
@@ -70,7 +99,7 @@
                                         </div>
                                     </form>
                                 </div>
-                                <div id="chat-field" class="col-12 mx-auto p-0">
+                                <div id="chat-field" class="col-12 mx-auto p-0 mb-5">
                                     @isset($trade)
                                         @if($trade->is_dispute == 1)
                                             @include('user.dashboard.trades.initiate.partials.buy.chat')
@@ -116,6 +145,47 @@
 @section('script')
 
     <script>
+        @isset($trade)
+        var cancel_time = "{{ date('F j, Y H:i:s', strtotime($trade->trade_window_expiry)) }}";
+        var url = "{{ route('trade.index') }}";
+        // Set the date we're counting down to
+        var countDownDate = new Date(cancel_time).getTime();
+
+        function formatNumber(num, len) {
+            var s = num+"";
+            while (s.length < len) s = "0" + s;
+            return s;
+        }
+
+        // Update the count down every 1 second
+        var x = setInterval(function() {
+
+            // Get today's date and time
+            var now = new Date().getTime();
+
+            // Find the distance between now and the count down date
+            var distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Output the result in an element with id="demo"
+            document.getElementById("minute").innerText = formatNumber(minutes, 2);
+            document.getElementById("second").innerText = formatNumber(seconds, 2);
+
+            // If the count down is over, write some text
+            if (distance < 0) {
+                // window.location.replace(url);
+                clearInterval(x);
+                document.getElementById("minute").innerText = "00";
+                document.getElementById("second").innerText = "00";
+            }
+        }, 1000);
+        @endisset
+    </script>
+
+    <script>
         $(document).ready(function () {
 
             $(".chat-field").animate({ scrollTop: 999999 }, 1000);
@@ -127,8 +197,10 @@
                     $("#amount_ngn").val("");
                 }else{
                     $("#error").text("")
-                    $("#amount_usd").val(($("#amount").val() * {{ $market->price_usd }}).toFixed(2) );
-                    $("#amount_ngn").val(($("#amount").val() * {{ $market->price_ngn }}).toFixed(2) );
+                    var usd = @isset($data) {{ $data[0]['price'] }}; @else 0.00; @endisset
+                    var ngn = @isset($data) {{ $market->rate * $data[0]['price'] }}; @else 0.00; @endisset
+                    $("#amount_usd").val(($("#amount").val() * usd).toFixed(2) );
+                    $("#amount_ngn").val(($("#amount").val() * ngn).toFixed(2) );
                 }
             })
 
@@ -161,7 +233,7 @@
                         if (result.success){
                             location.reload();
                         }else{
-                            $("#error").text("Please input a valid amount of coin")
+                            $("#error").text(result.error)
                         }
                     }
                 });
@@ -594,6 +666,10 @@
                 $("#info-3-img").width('100');
             });
 
+            channel.listen('.coin-deposited', function() {
+                $("#info-2-text").text('Trade Acccepted, Waiting for Seller\'s Coin Processing');
+            });
+
             channel.listen('.agent-joined', function() {
 
                 const div = document.createElement('div');
@@ -601,6 +677,28 @@
 
                 document.querySelector('.chat-field').appendChild(div);
                 $(".chat-field").animate({ scrollTop: 999999 }, 1000);
+            });
+
+            channel.listen('.trade-dispute', function() {
+                location.reload();
+            });
+
+            channel.listen('.switch-trade', function() {
+                $("#info-1-text").text('Agent Cancelled Trade, Trade Window Will now Close');
+                $("#info-1-text").removeClass('text-warning');
+                $("#info-1-text").addClass('text-danger');
+                $("#info-1-img").attr('src', '{{ asset('assets/img/cancel.gif') }}');
+                $("#info-1-img").width('50');
+
+                $("#info-3-text").text('Agent Cancelled Trade, Trade Window Will now Close');
+                $("#info-3-text").removeClass('text-info');
+                $("#info-3-text").addClass('text-danger');
+                $("#info-3-img").attr('src', '{{ asset('assets/img/cancel.gif') }}');
+                $("#info-3-img").width('50');
+                var url = "{{ route('trade.index') }}";
+                window.setTimeout(function(){
+                    window.location.replace(url);
+                }, 3000);
             });
 
             channel.listen('.message-sent', function(data) {

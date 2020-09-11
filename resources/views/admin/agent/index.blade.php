@@ -55,7 +55,7 @@
                                 <td>{{ $agent->display_name }}</td>
                                 <td>{{ $agent->email }}</td>
                                 <td>{{ \App\Trade::where('agent_id', $agent->id)->where('transaction_status', 'success')->count() }}</td>
-                                <td>{{ $agent->created_at->diffForHumans() }}</td>
+                                <td>@if($agent->created_at){{ $agent->created_at->diffForHumans() }}@else null @endif</td>
                                 <td class="text-center d-flex">
                                     <button type="button" data-toggle="modal" data-target="#deleteModal{{ $agent->id }}" class="btn mx-1 @if($agent->is_active) btn-danger @else btn-success @endif">@if($agent->is_active) <i class="fas fa-user-alt-slash"></i> @else <i class="fas fa-user-check"></i> @endif</button>
 

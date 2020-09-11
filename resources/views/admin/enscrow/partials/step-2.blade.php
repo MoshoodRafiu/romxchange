@@ -31,7 +31,7 @@
                 <div class="row mx-auto">
                     <input type="text" class="form-control col-10" id="coin-amount" name="first_name" value="{{ $trade->coin_amount }}" readonly/>
                     <span class="bg-dark text-white px-2 py-1 clipboard-message">Copied to clipboard</span>
-                    <a class="col-2 btn text-white btn-secondary" onclick="copyText('coin-amount')"><i class="fa fa-copy"></i></a>
+                    <a class="col-2 btn text-white btn-secondary" onclick="copyText('coin-amount')"><i class="fas fa-copy"></i></a>
                 </div>
             </div>
         </div>
@@ -45,14 +45,14 @@
             <div class="form-group">
                 <label for="username"><strong>Buyer Wallet Address</strong></label>
                 <div class="row mx-auto">
-                    <input type="text" class="form-control col-md-11 col-8" id="buyer-wallet" value="{{ \App\Wallet::where('user_id', $trade->buyer_id)->where('coin_id', $trade->coin->id)->first()->address }}" readonly/>
+                    <input type="text" class="form-control col-md-11 col-10" id="buyer-wallet" value="{{ \App\Wallet::where('user_id', $trade->buyer_id)->where('coin_id', $trade->coin->id)->first()->address }}" readonly/>
                     <span class="bg-dark text-white px-2 py-1 clipboard-message">Copied to clipboard</span>
-                    <a class="col-md-1 col-4 btn text-white btn-secondary" onclick="copyText('buyer-wallet')"><i class="fa fa-copy"></i></a>
+                    <a class="col-md-1 col-2 btn text-white btn-secondary" onclick="copyText('buyer-wallet')"><i class="fas fa-copy"></i></a>
                 </div>
             </div>
         </div>
     </div>
-    <div class="form-group text-center">
+    <div class="form-group text-center" id="function-button">
     @if($trade->buyer_transaction_stage >= 3 && $trade->buyer_transaction_stage >= 3 && $trade->ace_transaction_stage == 2)
         <button class="btn btn-special" id="step-2-proceed" type="submit">Transaction Has Been Settled</button>
     @else

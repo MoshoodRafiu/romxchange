@@ -13,22 +13,40 @@ class ReviewController extends Controller
     public function store(Request $request){
         $validator = Validator::make($request->all(), [
             'trade' => 'required',
-            'star' => 'sometimes|numeric|between:0,5',
-            'message'=> 'sometimes|string'
         ]);
 
+        if ($request->star > 5 || $request->star < 1){
+            if (Auth::user()->is_admin == 0 && Auth::user()->is_agent == 0){
+                return redirect()->route('trade.index')->with('success', 'Trade Completed');
+            }else{
+                return redirect()->route('admin.trades')->with('success', 'Trade Completed');
+            }
+        }
+
         if ($validator->fails()){
-            return redirect()->route('trade.index')->with('success', 'Trade Completed');
+            if (Auth::user()->is_admin == 0 && Auth::user()->is_agent == 0){
+                return redirect()->route('trade.index')->with('success', 'Trade Completed');
+            }else{
+                return redirect()->route('admin.trades')->with('success', 'Trade Completed');
+            }
         }
 
         if ($request->star == null && $request->message == null){
-            return redirect()->route('trade.index')->with('success', 'Trade Completed');
+            if (Auth::user()->is_admin == 0 && Auth::user()->is_agent == 0){
+                return redirect()->route('trade.index')->with('success', 'Trade Completed');
+            }else{
+                return redirect()->route('admin.trades')->with('success', 'Trade Completed');
+            }
         }
 
         $trade = Trade::findOrFail($request->trade);
 
         if (Review::where('user_id', Auth::user()->id)->where('trade_id', $trade->id)->count() > 0){
-            return redirect()->route('trade.index')->with('success', 'Trade Completed');
+            if (Auth::user()->is_admin == 0 && Auth::user()->is_agent == 0){
+                return redirect()->route('trade.index')->with('success', 'Trade Completed');
+            }else{
+                return redirect()->route('admin.trades')->with('success', 'Trade Completed');
+            }
         }
 
         $review = new Review();
@@ -40,6 +58,10 @@ class ReviewController extends Controller
 
         $review->save();
 
-        return redirect()->route('trade.index')->with('success', 'Trade Completed');
+        if (Auth::user()->is_admin == 0 && Auth::user()->is_agent == 0){
+            return redirect()->route('trade.index')->with('success', 'Trade Completed');
+        }else{
+            return redirect()->route('admin.trades')->with('success', 'Trade Completed');
+        }
     }
 }

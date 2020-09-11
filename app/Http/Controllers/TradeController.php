@@ -8,7 +8,10 @@ use App\Events\CoinDeposited;
 use App\Events\CoinVerified;
 use App\Events\PaymentMade;
 use App\Events\PaymentVerified;
+use App\Events\SwitchTrade;
 use App\Events\TradeAccepted;
+use App\Events\TradeCancelled;
+use App\Events\TradeDispute;
 use App\Market;
 use App\Setting;
 use App\Trade;
@@ -16,6 +19,9 @@ use App\Wallet;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
+use Throwable;
 
 class TradeController extends Controller
 {
@@ -23,11 +29,82 @@ class TradeController extends Controller
      * Display a listing of the resource.i
      *
      */
+
     public function index()
     {
         $trades = Trade::latest()->where('seller_id', Auth::user()->id)->orwhere('buyer_id', Auth::user()->id)->paginate(5);
 
         return view('user.dashboard.trades.index', compact('trades'));
+    }
+
+    public function summonViaSMS(Trade $trade, $type){
+        if (!$this->userInTrade($trade)){
+            return back();
+        }
+        if ($type == "seller"){
+            $user = User::whereId($trade->seller_id)->first();
+            $status = $trade->buyer_has_summoned;
+        }else{
+            $user = User::whereId($trade->buyer_id)->first();
+            $status = $trade->seller_has_summoned;
+        }
+
+        if ($status == 1){
+            return back()->with('error', 'You have already used your SMS summon option for this trade');
+        }
+
+        if ($type == "seller"){
+            $trade->buyer_has_summoned = 1;
+        }else{
+            $user = User::whereId($trade->buyer_id)->first();
+            $trade->seller_has_summoned = 1;
+        }
+
+        $trade->update();
+
+        $sms = 'Hello, '.Str::ucfirst($user->display_name).' has summoned you to attend to a pending trade on www.acexworld.com';
+
+        if ($trade->seller_transaction_stage >= 3){
+            return back()->with('error', 'Can\'t summon user, payments already settled');
+        }
+
+        $response = Http::post('https://termii.com/api/sms/send', [
+            "api_key" => env('TERMI_KEY'),
+            "to" => $user->phone,
+            "from" => env('TERMII_FROM'),
+            "type" => 'plain',
+            "channel" => env('TERMII_CHANNEL'),
+            "sms" => $sms,
+        ])->json();
+
+        return back()->with('success', 'User summoned via SMS successfully');
+    }
+
+    public function summonViaMail(Trade $trade, $type){
+
+        if (!$this->userInTrade($trade)){
+            return back();
+        }
+
+        if ($type == "seller"){
+            $user = User::whereId($trade->seller_id)->first();
+        }else{
+            $user = User::whereId($trade->buyer_id)->first();
+        }
+
+        if ($trade->seller_transaction_stage > 2){
+            $mail = 'Hello, '.Str::ucfirst($user->display_name).' has summoned you to attend to a pending trade on www.acexworld.com';
+        }else{
+            $mail = 'Hello, '.Str::ucfirst($user->display_name).' has summoned you to attend to a pending trade on www.acexworld.com. Kindly note that trade window automatically closes in 10 minutes after initiated time.';
+        }
+
+        if ($trade->seller_transaction_stage >= 3){
+            return back()->with('error', 'Can\'t summon user, payments already settled');
+        }
+
+        MailController::sendSummonUserEmail($user->display_name, $user->email, $mail);
+
+        return back()->with('success', 'User summoned via mail successfully');
     }
 
     public function tradeDispute(){
@@ -37,8 +114,13 @@ class TradeController extends Controller
     }
 
     public function dispute(Trade $trade){
+        if (!$this->userInTrade($trade)){
+            return back();
+        }
         $trade->is_dispute = 1;
         $trade->update();
+
+        event(new TradeDispute($trade));
 
         return back();
     }
@@ -55,14 +137,26 @@ class TradeController extends Controller
             return back()->with('error', 'Error cancelling trade');
         }
 
+        if ($trade->seller_transaction_stage == null){
+            if (Auth::user()->is_admin == 0 && Auth::user()->is_agent == 0){
+                $trade->transaction_status = "cancelled";
+                $trade->update();
+                event(new TradeCancelled($trade));
+                return redirect()->route('trade.index')->with('success', 'Trade cancelled successfully');
+            }
+        }
+
+        if($trade->seller_transaction_stage >= 3){
+            return back()->with('error', 'Unable to cancel trade, payment already settled');
+        }
 
         $trade->is_special = 1;
         $trade->is_dispute = 0;
         $trade->market_id = $market->id;
         $trade->buyer_id = $user->id;
-        $trade->seller_transaction_stage = 2;
-        $trade->buyer_transaction_stage = 3;
         $trade->update();
+
+        event(new SwitchTrade($trade));
 
         if (Auth::user()->is_admin == 0 && Auth::user()->is_agent == 0){
             return redirect()->route('trade.index')->with('success', 'Trade cancelled successfully');
@@ -72,8 +166,13 @@ class TradeController extends Controller
     }
 
     public function cancel(Trade $trade){
+        if (!$this->userInTrade($trade)){
+            return back();
+        }
         $trade->transaction_status = "cancelled";
         $trade->update();
+
+        event(new TradeCancelled($trade));
 
         return redirect()->route('admin.trades')->with('message', 'Trade cancelled successfully');
     }
@@ -198,10 +297,17 @@ class TradeController extends Controller
      */
 
     public function adminAcceptBuy(Trade $trade){
+        if (!$this->userInTrade($trade)){
+            return;
+        }
         return view('admin.trades.accept.buy', compact('trade'));
     }
 
     public function adminAcceptBuyStep1(Trade $trade){
+
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         $trade->buyer_transaction_stage = 1;
 
@@ -213,6 +319,10 @@ class TradeController extends Controller
     }
 
     public function adminAcceptBuyStep2(Trade $trade){
+
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 1)){
             return;
@@ -235,6 +345,10 @@ class TradeController extends Controller
 
     public function adminAcceptBuyStep3(Trade $trade){
 
+        if (!$this->userInTrade($trade)){
+            return;
+        }
+
         if (!($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage == 2)){
             return;
         }
@@ -252,6 +366,10 @@ class TradeController extends Controller
 
     public function adminAcceptBuyStep4(Trade $trade){
 
+        if (!$this->userInTrade($trade)){
+            return;
+        }
+
         $trade->buyer_transaction_stage = 4;
 
         $trade->update();
@@ -265,6 +383,10 @@ class TradeController extends Controller
 
     public function adminAcceptBuyNavStep1(Trade $trade){
 
+        if (!$this->userInTrade($trade)){
+            return;
+        }
+
         if (!$trade){
             return;
         }
@@ -275,6 +397,10 @@ class TradeController extends Controller
     }
 
     public function adminAcceptBuyNavStep2(Trade $trade){
+
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!$trade || $trade->buyer_transaction_stage < 1 ){
             return;
@@ -287,6 +413,10 @@ class TradeController extends Controller
 
     public function adminAcceptBuyNavStep3(Trade $trade){
 
+        if (!$this->userInTrade($trade)){
+            return;
+        }
+
         if (!$trade || $trade->buyer_transaction_stage < 2 ){
             return;
         }
@@ -297,6 +427,10 @@ class TradeController extends Controller
     }
 
     public function adminAcceptBuyNavStep4(Trade $trade){
+
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!$trade || $trade->buyer_transaction_stage < 3 ){
             return;
@@ -312,6 +446,10 @@ class TradeController extends Controller
     }
 
     public function adminAcceptBuyNavStep5(Trade $trade){
+
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!$trade || $trade->buyer_transaction_stage < 4 || $trade->seller_transaction_stage < 3){
             return;
@@ -365,6 +503,10 @@ class TradeController extends Controller
     public function adminAcceptSellStep1(Request $request){
         $trade = Trade::findOrFail($request->trade);
 
+        if (!$this->userInTrade($trade)){
+            return;
+        }
+
         if (!($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null)){
             return;
         }
@@ -381,7 +523,9 @@ class TradeController extends Controller
     }
 
     public function adminAcceptSellStep2(Trade $trade){
-
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!($trade->buyer_transaction_stage == 3 && $trade->seller_transaction_stage == 1)){
             return;
@@ -400,6 +544,10 @@ class TradeController extends Controller
 
     public function adminAcceptSellStep3(Trade $trade){
 
+        if (!$this->userInTrade($trade)){
+            return;
+        }
+
         if (!($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage >= 3)){
             return;
         }
@@ -414,6 +562,9 @@ class TradeController extends Controller
     }
 
     public function adminAcceptSellStep4(Trade $trade){
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         $trade->seller_transaction_stage = 4;
 
@@ -427,6 +578,9 @@ class TradeController extends Controller
     }
 
     public function adminAcceptSellNavStep1(Trade $trade){
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if ($trade->seller_transaction_stage < 1){
             return;
@@ -438,6 +592,9 @@ class TradeController extends Controller
     }
 
     public function adminAcceptSellNavStep2(Trade $trade){
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!$trade || $trade->seller_transaction_stage < 1 ){
             return;
@@ -449,6 +606,9 @@ class TradeController extends Controller
     }
 
     public function adminAcceptSellNavStep3(Trade $trade){
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!$trade || $trade->seller_transaction_stage < 2 ){
             return;
@@ -460,6 +620,9 @@ class TradeController extends Controller
     }
 
     public function adminAcceptSellNavStep4(Trade $trade){
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!$trade || $trade->seller_transaction_stage < 3 ){
             return;
@@ -471,6 +634,9 @@ class TradeController extends Controller
     }
 
     public function adminAcceptSellNavStep5(Trade $trade){
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!$trade || $trade->seller_transaction_stage < 4 ){
             return;
@@ -489,10 +655,18 @@ class TradeController extends Controller
      */
 
     public function acceptBuy(Trade $trade){
+
+        if (!$this->userInTrade($trade)){
+            return redirect()->route('trade.index');
+        }
         return view('user.dashboard.trades.accept.buy', compact('trade'));
     }
 
     public function acceptBuyStep1(Trade $trade){
+
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         $trade->buyer_transaction_stage = 1;
 
@@ -504,6 +678,10 @@ class TradeController extends Controller
     }
 
     public function acceptBuyStep2(Trade $trade){
+
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 1)){
             return;
@@ -526,6 +704,10 @@ class TradeController extends Controller
 
     public function acceptBuyStep3(Trade $trade){
 
+        if (!$this->userInTrade($trade)){
+            return;
+        }
+
         if (!($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage == 2 && $trade->ace_transaction_stage == 2)){
             return;
         }
@@ -543,6 +725,10 @@ class TradeController extends Controller
 
     public function acceptBuyStep4(Trade $trade){
 
+        if (!$this->userInTrade($trade)){
+            return;
+        }
+
         $trade->buyer_transaction_stage = 4;
 
         $trade->update();
@@ -553,6 +739,10 @@ class TradeController extends Controller
     }
 
     public function acceptBuyNavStep1(Trade $trade){
+
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!$trade){
             return;
@@ -565,6 +755,10 @@ class TradeController extends Controller
 
     public function acceptBuyNavStep2(Trade $trade){
 
+        if (!$this->userInTrade($trade)){
+            return;
+        }
+
         if (!$trade || $trade->buyer_transaction_stage < 1 ){
             return;
         }
@@ -575,6 +769,10 @@ class TradeController extends Controller
     }
 
     public function acceptBuyNavStep3(Trade $trade){
+
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!$trade || $trade->buyer_transaction_stage < 2 ){
             return;
@@ -591,6 +789,10 @@ class TradeController extends Controller
 
     public function acceptBuyNavStep4(Trade $trade){
 
+        if (!$this->userInTrade($trade)){
+            return;
+        }
+
         if (!$trade || $trade->buyer_transaction_stage < 3 ){
             return;
         }
@@ -605,6 +807,10 @@ class TradeController extends Controller
     }
 
     public function acceptBuyNavStep5(Trade $trade){
+
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!$trade || $trade->buyer_transaction_stage < 4 ){
             return;
@@ -625,6 +831,10 @@ class TradeController extends Controller
      */
 
     public function acceptSell(Trade $trade){
+
+        if (!$this->userInTrade($trade)){
+            return redirect()->route('trade.index');
+        }
         return view('user.dashboard.trades.accept.sell', compact('trade'));
     }
 
@@ -633,6 +843,10 @@ class TradeController extends Controller
             return response()->json(array('success' => false, 'error' => 'wallet company error'));
         }
         $trade = Trade::findOrFail($request->trade);
+
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null && $trade->ace_transaction_stage == 1)){
             return;
@@ -649,7 +863,9 @@ class TradeController extends Controller
     }
 
     public function acceptSellStep2(Trade $trade){
-
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         $trade->seller_transaction_stage = 2;
 
@@ -663,9 +879,18 @@ class TradeController extends Controller
     }
 
     public function acceptSellStep3(Trade $trade){
-
-        if (!($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage == 3)){
+        if (!$this->userInTrade($trade)){
             return;
+        }
+
+        if ($trade->is_special == 1){
+            if (!($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage == 4)){
+                return;
+            }
+        }else{
+            if (!($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage == 3)){
+                return;
+            }
         }
 
         $trade->seller_transaction_stage = 3;
@@ -680,6 +905,9 @@ class TradeController extends Controller
     }
 
     public function acceptSellStep4(Trade $trade){
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         $trade->seller_transaction_stage = 4;
 
@@ -691,8 +919,11 @@ class TradeController extends Controller
     }
 
     public function acceptSellNavStep1(Trade $trade){
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
-        if (!$trade){
+        if ($trade->seller_transaction_stage == null){
             return;
         }
 
@@ -702,6 +933,9 @@ class TradeController extends Controller
     }
 
     public function acceptSellNavStep2(Trade $trade){
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!$trade || $trade->seller_transaction_stage < 1 ){
             return;
@@ -713,6 +947,9 @@ class TradeController extends Controller
     }
 
     public function acceptSellNavStep3(Trade $trade){
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!$trade || $trade->seller_transaction_stage < 2 ){
             return;
@@ -728,6 +965,9 @@ class TradeController extends Controller
     }
 
     public function acceptSellNavStep4(Trade $trade){
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!$trade || $trade->seller_transaction_stage < 3 ){
             return;
@@ -739,6 +979,9 @@ class TradeController extends Controller
     }
 
     public function acceptSellNavStep5(Trade $trade){
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!$trade || $trade->seller_transaction_stage < 4 ){
             return;
@@ -777,8 +1020,17 @@ class TradeController extends Controller
         }elseif (!$this->sellerAccount()){
             return back()->with('error', 'please proceed to fill in your BANK DETAILS in PROFILE and try again');
         }
+        $key = env('NOMICS_KEY');
+        $coin = Str::upper($market->coin->abbr);
 
-        return view('user.dashboard.trades.initiate.sell', compact('market'));
+        try {
+            $data = Http::get('https://api.nomics.com/v1/currencies/ticker?key='.$key.'&ids='.$coin)->json();
+            return view('user.dashboard.trades.initiate.sell', compact('market', 'data'));
+        } catch (Throwable $e) {
+            return back()->with('error', 'Network error, please try again');
+        }
+
+
     }
 
     public function initiateSellStep1(Request $request){
@@ -786,7 +1038,7 @@ class TradeController extends Controller
         $market = Market::findOrFail($request->market);
 
         if ($request->amount < $market->min || $request->amount > $market->max || !$request->company){
-            return response()->json(array('success' => false, 'error' => 'amount error'));
+            return response()->json(array('success' => false, 'error' => 'Price error'));
         }
 
         $trade = Trade::where('seller_id', Auth::user()->id)->where('buyer_id', $market->user_id)->where('market_id', $market->id)->where('transaction_status', "pending")->first();
@@ -795,22 +1047,33 @@ class TradeController extends Controller
             return;
         }
 
+        $key = env('NOMICS_KEY');
+        $coin = Str::upper($market->coin->abbr);
+
+        try {
+            $data = Http::get('https://api.nomics.com/v1/currencies/ticker?key='.$key.'&ids='.$coin)->json();
+        } catch (Throwable $e) {
+            return response()->json(array('success' => false, 'error' => 'Network error, try again'));
+        }
+
         $charge = Setting::all()->first()->charges / 100;
+        $duration = Setting::all()->first()->duration;
 
         $trade = new Trade;
-        $trade->transaction_id = "ACE".$market->user_id.Auth::user()->id.time();
+        $trade->transaction_id = "acex".$market->user_id.Auth::user()->id.time();
         $trade->coin_id = $market->coin->id;
         $trade->market_id = $market->id;
         $trade->seller_id = Auth::user()->id;
         $trade->buyer_id = $market->user_id;
         $trade->seller_transaction_stage = 1;
         $trade->coin_amount = $request->amount;
-        $trade->coin_amount_usd = $request->amount * $market->price_usd;
-        $trade->coin_amount_ngn = $request->amount * $market->price_ngn;
+        $trade->coin_amount_usd = $request->amount * $data[0]['price'];
+        $trade->coin_amount_ngn = $request->amount * $data[0]['price'] * $market->rate;
         $trade->transaction_charge_coin = $request->amount * $charge;
-        $trade->transaction_charge_usd = $request->amount * $charge * $market->price_usd;
-        $trade->transaction_charge_ngn = $request->amount * $charge * $market->price_ngn;
+        $trade->transaction_charge_usd = $request->amount * $charge * $data[0]['price'];
+        $trade->transaction_charge_ngn = $request->amount * $charge * $data[0]['price'] * $market->rate;
         $trade->seller_wallet_company = $request->company;
+        $trade->trade_window_expiry = date('Y-m-d H:i:s', strtotime(now()."+ ".$duration." minutes"));
         $trade->transaction_status = "pending";
 
         if ($market->is_special == 1){
@@ -827,6 +1090,10 @@ class TradeController extends Controller
     public function initiateSellStep2(Request $request){
 
         $trade = Trade::findOrFail($request->trade);
+
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if ($trade->is_special == 1){
 
@@ -863,6 +1130,10 @@ class TradeController extends Controller
 
         $trade = Trade::findOrFail($request->trade);
 
+        if (!$this->userInTrade($trade)){
+            return;
+        }
+
         if ($trade->is_special == 1){
             if (!($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage >= 4)){
                 return;
@@ -898,6 +1169,10 @@ class TradeController extends Controller
 
         $trade = Trade::findOrFail($request->trade);
 
+        if (!$this->userInTrade($trade)){
+            return;
+        }
+
         $trade->seller_transaction_stage = 4;
 
         $trade->update();
@@ -912,6 +1187,10 @@ class TradeController extends Controller
 
         $trade = Trade::findOrFail($request->trade);
 
+        if (!$this->userInTrade($trade)){
+            return;
+        }
+
         if (!$trade){
             return;
         }
@@ -924,6 +1203,10 @@ class TradeController extends Controller
     public function initiateSellNavStep2(Request $request){
 
         $trade = Trade::findOrFail($request->trade);
+
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if ($trade->is_special == 1){
             if ($trade->seller_transaction_stage < 1 || !$trade->buyer_transaction_stage){
@@ -955,6 +1238,10 @@ class TradeController extends Controller
 
         $trade = Trade::findOrFail($request->trade);
 
+        if (!$this->userInTrade($trade)){
+            return;
+        }
+
         if ($trade->is_special == 1){
 
             if ($trade->seller_transaction_stage < 2 || $trade->buyer_transaction_stage < 3){
@@ -983,6 +1270,10 @@ class TradeController extends Controller
 
         $trade = Trade::findOrFail($request->trade);
 
+        if (!$this->userInTrade($trade)){
+            return;
+        }
+
         if (!$trade || $trade->seller_transaction_stage < 3 ){
             return;
         }
@@ -995,6 +1286,10 @@ class TradeController extends Controller
     public function initiateSellNavStep5(Request $request){
 
         $trade = Trade::findOrFail($request->trade);
+
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!$trade || $trade->seller_transaction_stage < 4 ){
             return;
@@ -1035,7 +1330,15 @@ class TradeController extends Controller
             return back()->with('error', 'please add a wallet for this coin before carrying out a BUY trade');
         }
 
-        return view('user.dashboard.trades.initiate.buy', compact('market'));
+        $key = env('NOMICS_KEY');
+        $coin = Str::upper($market->coin->abbr);
+
+        try {
+            $data = Http::get('https://api.nomics.com/v1/currencies/ticker?key='.$key.'&ids='.$coin)->json();
+            return view('user.dashboard.trades.initiate.buy', compact('market', 'data'));
+        } catch (Throwable $e) {
+            return back()->with('error', 'Network error, please try again');
+        }
     }
 
     public function initiateBuyStep1(Request $request){
@@ -1049,24 +1352,35 @@ class TradeController extends Controller
         }
 
         if ($request->amount < $market->min || $request->amount > $market->max){
-            return response()->json(array('success' => false, 'error' => 'amount error'));
+            return response()->json(array('success' => false, 'error' => 'price error'));
+        }
+
+        $key = env('NOMICS_KEY');
+        $coin = Str::upper($market->coin->abbr);
+
+        try {
+            $data = Http::get('https://api.nomics.com/v1/currencies/ticker?key='.$key.'&ids='.$coin)->json();
+        } catch (Throwable $e) {
+            return response()->json(array('success' => false, 'error' => 'Network error, try again'));
         }
 
         $charge = Setting::all()->first()->charges / 100;
+        $duration = Setting::all()->first()->duration;
 
         $trade = new Trade;
-        $trade->transaction_id = "ACE".$market->user_id.Auth::user()->id.time();
+        $trade->transaction_id = "acex".$market->user_id.Auth::user()->id.time();
         $trade->coin_id = $market->coin->id;
         $trade->market_id = $market->id;
         $trade->buyer_id = Auth::user()->id;
         $trade->seller_id = $market->user_id;
         $trade->buyer_transaction_stage = 1;
         $trade->coin_amount = $request->amount;
-        $trade->coin_amount_usd = $request->amount * $market->price_usd;
-        $trade->coin_amount_ngn = $request->amount * $market->price_ngn;
+        $trade->coin_amount_usd = $request->amount * $data[0]['price'];
+        $trade->coin_amount_ngn = $request->amount * $data[0]['price'] * $market->rate;
         $trade->transaction_charge_coin = $request->amount * $charge;
-        $trade->transaction_charge_usd = $request->amount * $charge * $market->price_usd;
-        $trade->transaction_charge_ngn = $request->amount * $charge * $market->price_ngn;
+        $trade->transaction_charge_usd = $request->amount * $charge * $data[0]['price'];
+        $trade->transaction_charge_ngn = $request->amount * $charge * $data[0]['price'] * $market->rate;
+        $trade->trade_window_expiry = date('Y-m-d H:i:s', strtotime(now()."+ ".$duration." minutes"));
         $trade->transaction_status = "pending";
 
         if ($market->is_special == 1){
@@ -1083,6 +1397,10 @@ class TradeController extends Controller
     public function initiateBuyStep2(Request $request){
 
         $trade = Trade::findOrFail($request->trade);
+
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         $trade->buyer_transaction_stage = 2;
 
@@ -1105,6 +1423,10 @@ class TradeController extends Controller
 
         $trade = Trade::findOrFail($request->trade);
 
+        if (!$this->userInTrade($trade)){
+            return;
+        }
+
         $trade->buyer_transaction_stage = 3;
 
         $trade->update();
@@ -1120,6 +1442,10 @@ class TradeController extends Controller
 
         $trade = Trade::findOrFail($request->trade);
 
+        if (!$this->userInTrade($trade)){
+            return;
+        }
+
         $trade->buyer_transaction_stage = 4;
 
         $trade->update();
@@ -1132,6 +1458,10 @@ class TradeController extends Controller
     public function initiateBuyNavStep1(Request $request){
 
         $trade = Trade::findOrFail($request->trade);
+
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!$trade){
             return;
@@ -1148,6 +1478,10 @@ class TradeController extends Controller
 
         $trade = Trade::findOrFail($request->trade);
 
+        if (!$this->userInTrade($trade)){
+            return;
+        }
+
         if (!$trade || $trade->buyer_transaction_stage < 1 ){
             return;
         }
@@ -1160,6 +1494,10 @@ class TradeController extends Controller
     public function initiateBuyNavStep3(Request $request){
 
         $trade = Trade::findOrFail($request->trade);
+
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if ($trade->is_special == 1){
             if ($trade->buyer_transaction_stage < 2 || $trade->seller_transaction_stage < 1 || !$trade->seller_transaction_stage ){
@@ -1189,6 +1527,10 @@ class TradeController extends Controller
 
         $trade = Trade::findOrFail($request->trade);
 
+        if (!$this->userInTrade($trade)){
+            return;
+        }
+
         if ($trade->is_special == 1){
             if (!$trade || $trade->buyer_transaction_stage < 3 || $trade->seller_transaction_stage < 2 ){
                 return;
@@ -1211,6 +1553,10 @@ class TradeController extends Controller
     public function initiateBuyNavStep5(Request $request){
 
         $trade = Trade::findOrFail($request->trade);
+
+        if (!$this->userInTrade($trade)){
+            return;
+        }
 
         if (!$trade || $trade->buyer_transaction_stage < 4 ){
             return;
@@ -1322,5 +1668,12 @@ class TradeController extends Controller
         if ($market->user->id === Auth::user()->id){
             return true;
         }
+    }
+
+    protected function userInTrade($trade){
+        if ($trade->buyer_id == Auth::user()->id || $trade->seller_id == Auth::user()->id){
+            return true;
+        }
+        return false;
     }
 }

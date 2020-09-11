@@ -4,6 +4,7 @@
             <h6>Dispute Chat Box</h6>
         </div>
         <div class="card-body chat-field">
+            <div class="chat-info">This chat is strictly for trade disputes, any information not relating to this trade should not be shared</div>
             @foreach($trade->messages as $message)
                 @if($message->type == "text")
                     <div class="@if($message->user->id == Auth::user()->id) sent @else received @endif">

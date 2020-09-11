@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\AgentInvitationMail;
 use App\Mail\SignupEmail;
+use App\Mail\SummonUserMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -24,5 +25,14 @@ class MailController extends Controller
             'password' => $password,
         ];
         Mail::to($email)->send(new AgentInvitationMail($data));
+    }
+
+    public static function sendSummonUserEmail($display_name, $email, $mail){
+        $data = [
+            'display_name' => $display_name,
+            'email' => $email,
+            'text' => $mail,
+        ];
+        Mail::to($email)->send(new SummonUserMail($data));
     }
 }

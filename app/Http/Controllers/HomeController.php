@@ -34,8 +34,6 @@ class HomeController extends Controller
             $response = Http::get('https://api.nomics.com/v1/currencies/ticker?key='.$key.'&ids=BTC,ETH,XRP,BCH,LTC,TRX,YFI,USDT')->json();
             return view('user.index', compact('markets', 'response'));
         } catch (Throwable $e) {
-            report($e);
-
             return view('user.index', compact('markets'));
         }
     }

@@ -32,7 +32,7 @@
                                         @enderror
                                         <label>Phone Number <span class="text-info font-weight-bold">(phone number should be in format 2348090000000)</span></label>
                                         <div class="d-flex justify-content-between">
-                                            <input type="tel" name="phone" class="form-control col-md-10 col-sm-8 col-6" value="{{ Auth::user()->phone }}"
+                                            <input type="tel" name="phone" placeholder="2348090000000" class="form-control col-md-10 col-sm-8 col-6" value="{{ Auth::user()->phone }}"
                                                 @if(Auth::user()->verification)
                                                     @if(Auth::user()->verification->is_phone_verified == 1)
                                                         disabled
@@ -42,10 +42,18 @@
                                                 @if(Auth::user()->verification->is_phone_verified == 1)
                                                     <button disabled class="btn btn-info col-md-2 col-sm-4 col-6" type="button">Send Code</button>
                                                 @else
-                                                    <button class="btn btn-info col-md-2 col-sm-4 col-6" type="submit">Send Code</button>
+                                                    @if(Session::has('id'))
+                                                        <button class="btn btn-info col-md-2 col-sm-4 col-6" type="button" disabled>Send Code</button>
+                                                    @else
+                                                        <button class="btn btn-info col-md-2 col-sm-4 col-6" type="submit">Send Code</button>
+                                                    @endif
                                                 @endif
                                             @else
-                                                <button class="btn btn-info col-md-2 col-sm-4 col-6" type="submit">Send Code</button>
+                                                @if(Session::has('id'))
+                                                    <button class="btn btn-info col-md-2 col-sm-4 col-6" type="button" disabled>Send Code</button>
+                                                @else
+                                                    <button class="btn btn-info col-md-2 col-sm-4 col-6" type="submit">Send Code</button>
+                                                @endif
                                             @endif
                                         </div>
                                     </div>
@@ -83,6 +91,7 @@
                                     @endif
                                 </div>
                             </form>
+                            <div class="text-center"><span>Didn't get code? <a href="{{ route('verification.phone.code.resend') }}">click here</a></span></div>
                         </div>
                     </div>
                 </div>

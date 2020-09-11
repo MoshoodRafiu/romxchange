@@ -516,11 +516,11 @@
             });
 
             channel.listen('.payment-verified', function() {
-                $("#info-3-text").text('Payment Verified, Proceed with Transaction');
-                $("#info-3-text").removeClass('text-info');
-                $("#info-3-text").addClass('text-success');
-                $("#info-3-img").attr('src', '{{ asset('assets/img/proceed.gif') }}');
-                $("#info-3-img").width('100');
+                $("#info-4-text").text('Payment Verified, Proceed with Transaction');
+                $("#info-4-text").removeClass('text-info');
+                $("#info-4-text").addClass('text-success');
+                $("#info-4-img").attr('src', '{{ asset('assets/img/proceed.gif') }}');
+                $("#info-4-img").width('100');
             });
 
             channel.listen('.message-sent', function(data) {
@@ -569,14 +569,16 @@
                     next();
                 });
 
-                $id = $(this).data('rating');
+                var id = $(this).data('rating');
                 $(this).siblings('span').each(function () {
-                    if ($(this).data('rating') < $id){
+                    if ($(this).data('rating') < id){
                         $(this).addClass('fa-star');
                     }else{
                         $(this).addClass('fa-star-o');
                     }
                 })
+
+                $('#star-rating').val(id);
 
             });
 
