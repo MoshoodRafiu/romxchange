@@ -8,17 +8,19 @@ use App\Market;
 use App\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class MarketController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        $markets = Market::paginate(5);
+        $markets = Market::orderBy('is_special', 'desc')->withCount(['reviews as star_rating' => function($query) {
+            $query->select(DB::raw('coalesce(avg(star),0)'));
+        }])->orderByDesc('star_rating')->paginate(8);
+
         return view('user.market', compact('markets'));
     }
 

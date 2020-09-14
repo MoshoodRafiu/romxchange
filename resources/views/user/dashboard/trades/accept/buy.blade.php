@@ -10,8 +10,8 @@
                 </div>
             </div>
             <div class="row">
-                @if(Session::has('message'))
-                    <div class="alert w-100 col-12 alert-success text-left" role="alert">{{ session('message') }}</div>
+                @if(Session::has('success'))
+                    <div class="alert w-100 col-12 alert-success text-left" role="alert">{{ session('success') }}</div>
                 @elseif(Session::has('error'))
                     <div class="alert w-100 col-12 alert-danger text-left" role="alert">{{ session('error') }}</div>
                 @endif
@@ -30,8 +30,8 @@
                             <div id="item-1-1" class="tab-panel fade show active" role="tabpanel" aria-labelledby="item-1-1-tab">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="small">
-                                        <a href="{{ route('sms.summon', ['trade' => $trade, 'type' => 'seller']) }}" class="btn btn-sm btn-secondary">Summon via SMS</a>
-                                        <a href="{{ route('mail.summon', ['trade' => $trade, 'type' => 'seller']) }}" class="btn btn-sm btn-info">Summon via Mail</a>
+                                        <a href="{{ route('sms.summon', ['trade' => $trade, 'type' => 'seller']) }}" class="btn my-1 my-md-0 btn-sm btn-secondary">Summon via SMS</a>
+                                        <a href="{{ route('mail.summon', ['trade' => $trade, 'type' => 'seller']) }}" class="btn my-1 my-md-0 btn-sm btn-info">Summon via Mail</a>
                                     </div>
                                     <h4 class="text-right text-danger"><span id="minute">00</span>.<span id="second">00</span></h4>
                                 </div>
@@ -43,6 +43,10 @@
                                             <img width="30px" id="info-1-img" src="{{ asset('assets/img/warning.gif') }}" alt="proceed">
                                         </div>
                                     @endif
+                                    <div id="cancel-info" class="text-center" style="display: none;">
+                                        <strong class="text-danger" id="info-1-text" style="font-size: 23px">Trade Cancelled, Close Trade Window</strong>
+                                        <img width="50px" id="info-1-img" src="{{ asset('assets/img/cancel.gif') }}" alt="proceed">
+                                    </div>
                                     <form class="row mb-4">
                                         <div class="form-group col-md-12">
                                             <label for="transactionID">Transaction ID</label>
@@ -72,7 +76,7 @@
                                             <label for="charges">Bank Name</label>
                                             <input type="text" name="bankName" value="{{ \App\BankAccount::where('user_id', $trade->seller_id)->first()->bank_name }}" class="form-control" disabled>
                                         </div>
-                                        <div class="mx-auto text-center">
+                                        <div class="mx-auto text-center" id="trade-cancel">
                                             <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn px-4 btn-danger">Cancel Trade</button>
                                             @if($trade->buyer_transaction_stage == null)
                                                 <button type="submit" id="step-1-proceed" class="btn btn-special mx-4">Accept Trade</button>
@@ -586,6 +590,12 @@
                 $("#info-3-text").addClass('text-success');
                 $("#info-3-img").attr('src', '{{ asset('assets/img/proceed.gif') }}');
                 $("#info-3-img").width('100');
+            });
+
+            channel.listen('.trade-cancelled', function() {
+                $('#cancel-info').show('slow');
+                var link = '{{ route('trade.index') }}';
+                $('#trade-cancel').html('<a href="'+ link +'" class="btn btn-info p-2">Close Trade Window</a>');
             });
 
             channel.listen('.switch-trade', function() {

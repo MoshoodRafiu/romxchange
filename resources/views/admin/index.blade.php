@@ -12,7 +12,7 @@
                     <div class="row align-items-center no-gutters">
                         <div class="col mr-2">
                             <div class="text-uppercase text-primary font-weight-bold text-xs mb-1"><span>total income</span></div>
-                            <div class="text-dark font-weight-bold h5 mb-0"><span>NGN {{ $trades->count() == 0 ? 0 : number_format($trades->where('transaction_status', 'success')->sum('transaction_charge_ngn')) }}</span></div>
+                            <div class="text-dark font-weight-bold h5 mb-0"><span>USD {{ $trades->count() == 0 ? 0 : number_format($trades->where('transaction_status', 'success')->sum('transaction_charge_usd'), 2) }}</span></div>
                         </div>
                         <div class="col-auto"><i class="fas fa-dollar-sign fa-2x text-gray-300"></i></div>
                     </div>
@@ -90,41 +90,24 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-lg-7 col-xl-8">
+        <div class="col-lg-7">
             <div class="card shadow mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="text-primary font-weight-bold m-0">This Week Transaction Analysis</h6>
-                    <div class="dropdown no-arrow"><button class="btn btn-link btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fas fa-ellipsis-v text-gray-400"></i></button>
-                        <div class="dropdown-menu shadow dropdown-menu-right animated--fade-in"
-                             role="menu">
-                            <p class="text-center dropdown-header">dropdown header:</p><a class="dropdown-item" role="presentation" href="#">&nbsp;Action</a><a class="dropdown-item" role="presentation" href="#">&nbsp;Another action</a>
-                            <div class="dropdown-divider"></div><a class="dropdown-item" role="presentation" href="#">&nbsp;Something else here</a></div>
-                    </div>
                 </div>
                 <div class="card-body">
-                    <div class="chart-area"><canvas data-bs-chart="{&quot;type&quot;:&quot;line&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;Mon&quot;,&quot;Tue&quot;,&quot;Wed&quot;,&quot;Thu&quot;,&quot;Fri&quot;,&quot;Sat&quot;,&quot;Sun&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;Transaction&quot;,&quot;fill&quot;:true,&quot;data&quot;:[&quot;0&quot;,&quot;10000&quot;,&quot;5000&quot;,&quot;15000&quot;,&quot;10000&quot;,&quot;20000&quot;,&quot;15000&quot;,&quot;25000&quot;],&quot;backgroundColor&quot;:&quot;rgba(78, 115, 223, 0.05)&quot;,&quot;borderColor&quot;:&quot;rgba(78, 115, 223, 1)&quot;}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;legend&quot;:{&quot;display&quot;:false},&quot;title&quot;:{&quot;display&quot;:false},&quot;scales&quot;:{&quot;xAxes&quot;:[{&quot;gridLines&quot;:{&quot;color&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;zeroLineColor&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;drawBorder&quot;:false,&quot;drawTicks&quot;:false,&quot;borderDash&quot;:[&quot;3&quot;],&quot;zeroLineBorderDash&quot;:[&quot;3&quot;],&quot;drawOnChartArea&quot;:true},&quot;ticks&quot;:{&quot;fontColor&quot;:&quot;#858796&quot;,&quot;beginAtZero&quot;:false,&quot;padding&quot;:20}}],&quot;yAxes&quot;:[{&quot;gridLines&quot;:{&quot;color&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;zeroLineColor&quot;:&quot;rgb(234, 236, 244)&quot;,&quot;drawBorder&quot;:false,&quot;drawTicks&quot;:false,&quot;borderDash&quot;:[&quot;3&quot;],&quot;zeroLineBorderDash&quot;:[&quot;3&quot;],&quot;drawOnChartArea&quot;:true},&quot;ticks&quot;:{&quot;fontColor&quot;:&quot;#858796&quot;,&quot;beginAtZero&quot;:false,&quot;padding&quot;:20}}]}}}"></canvas></div>
+                    <div class="chart-area"><canvas id="lineChart"></canvas></div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-5 col-xl-4">
+        <div class="col-lg-5">
             <div class="card shadow mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="text-primary font-weight-bold m-0">This Week Transactions Breakdown</h6>
-                    <div class="dropdown no-arrow">
-                        <button class="btn btn-link btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button"><i class="fas fa-ellipsis-v text-gray-400"></i></button>
-                        <div class="dropdown-menu shadow dropdown-menu-right animated--fade-in"
-                             role="menu">
-                            <p class="text-center dropdown-header">dropdown header:</p><a class="dropdown-item" role="presentation" href="#">&nbsp;Action</a><a class="dropdown-item" role="presentation" href="#">&nbsp;Another action</a>
-                            <div class="dropdown-divider"></div><a class="dropdown-item" role="presentation" href="#">&nbsp;Something else here</a>
-                        </div>
-                    </div>
                 </div>
                 <div class="card-body">
                     <div class="chart-area">
-                        <canvas data-bs-chart="{&quot;type&quot;:&quot;doughnut&quot;,&quot;data&quot;:{&quot;labels&quot;:[&quot;Pending&quot;,&quot;Success&quot;,&quot;Cancelled&quot;],&quot;datasets&quot;:[{&quot;label&quot;:&quot;&quot;,&quot;backgroundColor&quot;:[&quot;#f6c23e&quot;,&quot;#1cc88a&quot;,&quot;#e74a3b&quot;],&quot;borderColor&quot;:[&quot;#ffffff&quot;,&quot;#ffffff&quot;,&quot;#ffffff&quot;],&quot;data&quot;:[&quot;7&quot;,&quot;90&quot;,&quot;13&quot;]}]},&quot;options&quot;:{&quot;maintainAspectRatio&quot;:false,&quot;legend&quot;:{&quot;display&quot;:false,&quot;position&quot;:&quot;top&quot;},&quot;title&quot;:{&quot;display&quot;:false}}}"></canvas>
-                    </div>
-                    <div
-                        class="text-center small mt-4"><span class="mr-2"><i class="fas fa-circle text-success"></i>&nbsp;Success</span><span class="mr-2"><i class="fas fa-circle text-warning"></i>&nbsp;Pending</span><span class="mr-2"><i class="fas fa-circle text-danger"></i>&nbsp;Cancelled</span>
+                        <canvas id="doughnutChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -203,4 +186,92 @@
         </div>
     </div>
 
+@endsection
+
+@section('script')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" integrity="sha512-s+xg36jbIujB2S2VKfpGmlC3T5V2TF3lY48DX7u2r9XzGzgPsa6wTpOQA7J9iffvdeBN0q9tKzRxVxw1JviZPg==" crossorigin="anonymous"></script>
+    <script>
+        @php
+            $thisWeekTrades = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->get();
+
+            $thisWeekSuccessTradesMon = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'success')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 0')->count();
+            $thisWeekSuccessTradesTue = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'success')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 1')->count();
+            $thisWeekSuccessTradesWed = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'success')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 2')->count();
+            $thisWeekSuccessTradesThu = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'success')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 3')->count();
+            $thisWeekSuccessTradesFri = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'success')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 4')->count();
+            $thisWeekSuccessTradesSat = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'success')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 5')->count();
+            $thisWeekSuccessTradesSun = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'success')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 6')->count();
+
+            $thisWeekPendingTradesMon = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'pending')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 0')->count();
+            $thisWeekPendingTradesTue = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'pending')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 1')->count();
+            $thisWeekPendingTradesWed = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'pending')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 2')->count();
+            $thisWeekPendingTradesThu = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'pending')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 3')->count();
+            $thisWeekPendingTradesFri = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'pending')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 4')->count();
+            $thisWeekPendingTradesSat = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'pending')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 5')->count();
+            $thisWeekPendingTradesSun = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'pending')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 6')->count();
+
+            $thisWeekCancelledTradesMon = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'cancelled')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 0')->count();
+            $thisWeekCancelledTradesTue = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'cancelled')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 1')->count();
+            $thisWeekCancelledTradesWed = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'cancelled')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 2')->count();
+            $thisWeekCancelledTradesThu = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'cancelled')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 3')->count();
+            $thisWeekCancelledTradesFri = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'cancelled')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 4')->count();
+            $thisWeekCancelledTradesSat = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'cancelled')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 5')->count();
+            $thisWeekCancelledTradesSun = \App\Trade::whereYear('created_at', date('Y', strtotime(now())))->where('transaction_status', 'cancelled')->whereBetween('created_at', [\Carbon\Carbon::now()->startOfWeek(), \Carbon\Carbon::now()->endOfWeek()])->whereRaw('WEEKDAY(trades.created_at) = 6')->count();
+        @endphp
+        var lineChart = document.getElementById('lineChart');
+        var newLineChart = new Chart(lineChart, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [
+                    {
+                        label: 'Success',
+                        data: [{{ $thisWeekSuccessTradesMon }}, {{ $thisWeekSuccessTradesTue }}, {{ $thisWeekSuccessTradesWed }}, {{ $thisWeekSuccessTradesThu }}, {{ $thisWeekSuccessTradesFri }}, {{ $thisWeekSuccessTradesSat }}, {{ $thisWeekSuccessTradesSun }}],
+                        borderWidth: 2,
+                        borderColor: "#1cc88a",
+                    },
+                    {
+                        label: 'Pending',
+                        data: [{{ $thisWeekPendingTradesMon }}, {{ $thisWeekPendingTradesTue }}, {{ $thisWeekPendingTradesWed }}, {{ $thisWeekPendingTradesThu }}, {{ $thisWeekPendingTradesFri }}, {{ $thisWeekPendingTradesSat }}, {{ $thisWeekPendingTradesSun }}],
+                        borderWidth: 2,
+                        borderColor: "#f6c23e",
+                    },
+                    {
+                        label: 'Cancelled',
+                        data: [{{ $thisWeekCancelledTradesMon }}, {{ $thisWeekCancelledTradesTue }}, {{ $thisWeekCancelledTradesWed }}, {{ $thisWeekCancelledTradesThu }}, {{ $thisWeekCancelledTradesFri }}, {{ $thisWeekCancelledTradesSat }}, {{ $thisWeekCancelledTradesSun }}],
+                        borderWidth: 2,
+                        borderColor: "#e74a3b",
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+        var doughnutChart = document.getElementById('doughnutChart');
+        var newDoughnutChart = new Chart(doughnutChart, {
+            type: 'doughnut',
+            data: {
+                datasets: [
+                    {
+                        data: [{{ $thisWeekTrades->where('transaction_status', 'success')->count() }}, {{ $thisWeekTrades->where('transaction_status', 'pending')->count() }}, {{ $thisWeekTrades->where('transaction_status', 'cancelled')->count() }}],
+                        borderWidth: 2,
+                        backgroundColor: ["#1cc88a", "#f6c23e", "#e74a3b"]
+                    },
+                ],
+                labels: [
+                    'Success',
+                    'Pending',
+                    'Cancelled'
+                ]
+            },
+        });
+    </script>
 @endsection

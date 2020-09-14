@@ -51,7 +51,7 @@
                                 @endif
                             @endif
                         @endif
-                        <p>Acknowledge Coin of <strong class="text-success">{{ $trade->coin_amount }} <span class="text-uppercase">{{ $trade->coin->abbr }}</span></strong>, once you receive the coin from <strong>{{ \App\User::whereId($trade->seller_id)->first()->display_name }}</strong>. Please ensure that your coin is received before you proceed, as the transaction will continue between buyer and seller.</p>
+                        <p>Acknowledge Coin of <strong class="text-success">{{ $trade->coin_amount }} <span class="text-uppercase">{{ $trade->coin->abbr }}</span></strong> in company's <span class="text-uppercase font-weight-bold">@if($trade->seller_wallet_company == "others") Blockchain @else {{ $trade->seller_wallet_company }} @endif</span> wallet, once you receive the coin from <strong>{{ \App\User::whereId($trade->seller_id)->first()->display_name }}</strong>. Please ensure that your coin is received before you proceed, as the transaction will continue between buyer and seller.</p>
                         <div id="function-button" class="text-center">
                             @if($trade->transaction_status == "cancelled")
                                 <a href="{{ route('admin.transactions.enscrow') }}"  class="btn btn-info px-5">Close Trade Window</a>

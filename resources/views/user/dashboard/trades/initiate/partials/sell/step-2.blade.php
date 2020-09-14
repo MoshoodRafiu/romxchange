@@ -36,32 +36,24 @@
 <form class="row mb-4">
     <div class="form-group col-md-12">
         <label for="transactionID">Transaction ID</label>
-                    <div class="d-flex ">
+        <div class="d-flex ">
             <input type="text" name="transactionID" id="transactionID" value="{{ $trade->transaction_id }}" class="form-control col-sm-11 col-10" readonly>
             <span class="bg-dark text-white px-2 py-1 clipboard-message">Copied to clipboard</span>
             <a onclick="copyText('transactionID')" class="col-sm-1 m-0 col-2 btn text-white btn-secondary"><i class="fas fa-copy"></i></a>
         </div>
     </div>
-    <div class="form-group col-md-6">
-        <label>Coin Volume</label>
-                                <input type="text" name="volume" id="volume" value="{{ $trade->coin_amount }}" class="form-control" disabled>
-    </div>
-    <div class="form-group col-md-6">
-        <label>Transaction Charges</label>
-                                <input type="number" name="charges" value="{{ $trade->transaction_charge_coin }}" class="form-control" disabled>
-    </div>
     <div class="form-group col-md-12">
-        <label>Total Coin To Be Deposited</label>
+        <label>Coin Amount</label>
         <div class="d-flex">
-            <input type="text" name="total-coin" id="total-coin" value="{{ $trade->coin_amount + $trade->transaction_charge_coin }}" class="form-control" readonly>
+            <input type="text" name="total-coin" id="total-coin" value="{{ $trade->coin_amount }}" class="form-control" readonly>
             <span class="bg-dark text-white px-2 py-1 clipboard-message">Copied to clipboard</span>
             <a class="btn text-white m-0 btn-secondary" onclick="copyText('total-coin')"><i class="fas fa-copy mx-1"></i></a>
         </div>
     </div>
     <div class="form-group col-md-12">
-        <label>You are required to deposit <strong>{{ $trade->coin_amount + $trade->transaction_charge_coin }} {{ $trade->market->coin->abbr }}</strong> to the {{ $trade->market->coin->abbr }} address below</label>
+        <label>You are required to deposit <strong>{{ $trade->coin_amount }} {{ $trade->market->coin->abbr }}</strong> to the {{ $trade->market->coin->abbr }} wallet address below</label>
         <div class="d-flex">
-            <input type="text" name="address" id="address" value="{{ \App\Wallet::where('user_id', $trade->buyer_id)->where('coin_id', $trade->market->coin->id)->first()->address }}" class="form-control" readonly>
+            <input type="text" name="address" id="address" value="@if($trade->seller_wallet_company == "others"){{ \App\Wallet::where('is_special', 1)->where('coin_id', $trade->coin->id)->where('company', 'Blockchain')->first()->address }}@else{{ \App\Wallet::where('is_special', 1)->where('coin_id', $trade->coin->id)->where('company', $trade->seller_wallet_company)->first()->address }}@endif" class="form-control" readonly>
             <span class="bg-dark text-white px-2 py-1 clipboard-message">Copied to clipboard</span>
             <a class="btn text-white m-0 btn-secondary" onclick="copyText('address')"><i class="fas fa-copy mx-1"></i></a>
         </div>
@@ -70,7 +62,6 @@
         @if($trade->transaction_status == "cancelled")
             <a href="{{ route('trade.index') }}"  class="btn btn-info px-5">Close Trade Window</a>
         @else
-            <button type="reset" class="btn btn-danger mx-4">Cancel Transaction</button>
             @if($trade->seller_transaction_stage == 1)
                 <button type="submit" id="step-2-proceed" class="btn btn-special mx-4">I Have Deposited</button>
             @else

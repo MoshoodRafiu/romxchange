@@ -35,6 +35,8 @@ class CustomerController extends Controller
 
         $user->save();
 
+        MailController::sendRestrictionEmail($user->display_name, $user->email);
+
         return back()->with('message', 'Account restricted successfully');
     }
 
@@ -45,6 +47,8 @@ class CustomerController extends Controller
         $user->is_active = 1;
 
         $user->save();
+
+        MailController::sendApprovalEmail($user->display_name, $user->email);
 
         return back()->with('message', 'Account approved successfully');
     }

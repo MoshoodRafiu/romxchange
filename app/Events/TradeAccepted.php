@@ -36,6 +36,11 @@ class TradeAccepted implements ShouldBroadcast
         return new PrivateChannel('trade.'.$this->trade->id);
     }
 
+    public function broadcastWith(){
+        return $data = ['message' => 'Trade Accepted'];
+    }
+
+
     public function broadcastAs(){
         return "trade-accepted";
     }

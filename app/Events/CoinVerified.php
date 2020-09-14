@@ -36,6 +36,11 @@ class CoinVerified implements ShouldBroadcast
         return new PrivateChannel('trade.'.$this->trade->id);
     }
 
+    public function broadcastWith(){
+        return $data = ['message' => 'Coin Verified'];
+    }
+
+
     public function broadcastAs(){
         return "coin-verified";
     }

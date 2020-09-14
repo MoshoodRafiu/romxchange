@@ -1,5 +1,13 @@
 <h4 class="text-center my-4">Step 3</h4>
 <form class="row mb-4">
+    <div class="form-group col-md-12">
+        <label for="transactionID">Transaction ID</label>
+                    <div class="d-flex ">
+            <input type="text" name="transactionID" id="transactionID" value="{{ $trade->transaction_id }}" class="form-control col-sm-11 col-10" readonly>
+            <span class="bg-dark text-white px-2 py-1 clipboard-message">Copied to clipboard</span>
+            <a onclick="copyText('transactionID')" class="col-sm-1 m-0 col-2 btn text-white btn-secondary"><i class="fas fa-copy"></i></a>
+        </div>
+    </div>
     <div class="form-group col-md-6">
         <label>Coin Volume</label>
                        <input type="text" name="volume" value="{{ $trade->coin_amount }} {{ $trade->market->coin->abbr }}" class="form-control" disabled>
@@ -32,21 +40,21 @@
             <a class="btn btn-secondary text-white" onclick="copyText('address')"><i class="fas fa-copy mx-1"></i></a>
         </div>
     </div>
-    <div class="mx-auto">
-        <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn px-4 btn-danger">Cancel Trade</button>
+    <div class="mx-auto text-center">
+        <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn my-1 px-4 btn-danger">Cancel Trade</button>
         @if($trade->buyer_transaction_stage == 3 || $trade->seller_transaction_stage == 2)
             @if($trade->is_dispute == 1)
-                <button type="button" disabled class="btn btn-info p-2">Dispute Trade</button>
+                <button type="button" disabled class="btn my-1 btn-info">Dispute Trade</button>
             @else
-                <a href="{{ route('trade.dispute', $trade) }}" class="btn btn-info p-2">Dispute Trade</a>
+                <a href="{{ route('trade.dispute', $trade) }}" class="btn my-1 btn-info">Dispute Trade</a>
             @endif
         @else
-            <button type="button" disabled class="btn btn-info p-2">Dispute Trade</button>
+            <button type="button" disabled class="btn my-1 btn-info">Dispute Trade</button>
         @endif
         @if($trade->seller_transaction_stage == 2)
-            <button type="submit" id="step-3-proceed" class="btn btn-special mx-4">I Have Sent Coin</button>
+            <button type="submit" id="step-3-proceed" class="btn my-1 btn-special mx-4">I Have Sent Coin</button>
         @else
-            <button type="submit" id="step-4-nav" class="btn btn-special mx-4">Proceed</button>
+            <button type="submit" id="step-4-nav" class="btn my-1 btn-special mx-4">Proceed</button>
         @endif
     </div>
 </form>

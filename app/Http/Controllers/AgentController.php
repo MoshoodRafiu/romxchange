@@ -17,7 +17,7 @@ class AgentController extends Controller
      */
     public function index()
     {
-        $agents = User::where('is_agent', 1)->paginate(10);
+        $agents = User::where('is_admin', 0)->where('is_agent', 1)->paginate(10);
 
         return view('admin.agent.index', ['agents' => $agents, 'search' => false]);
     }
@@ -62,7 +62,11 @@ class AgentController extends Controller
         $verification = new Verification();
         $verification->user_id = $user->id;
         $verification->is_email_verified = 1;
+        $verification->is_phone_verified = 1;
+        $verification->is_document_verified = 1;
         $verification->email_verified_at = now();
+        $verification->phone_verified_at = now();
+        $verification->document_verified_at = now();
 
         $verification->save();
 

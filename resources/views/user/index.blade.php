@@ -94,11 +94,11 @@
                             </td>
                             <td class="p-4">
                                 <div>
-                                    <i class="fa fa-star rating text-warning"></i>
-                                    <i class="fa fa-star rating text-warning"></i>
-                                    <i class="fa fa-star rating text-warning"></i>
-                                    <i class="fa fa-star rating text-warning"></i>
-                                    <i class="fa fa-star rating text-secondary"></i>
+                                    <i class="fa fa-star rating @if($market->rating() >= 1) text-warning @else text-secondary @endif"></i>
+                                    <i class="fa fa-star rating @if($market->rating() >= 2) text-warning @else text-secondary @endif"></i>
+                                    <i class="fa fa-star rating @if($market->rating() >= 3) text-warning @else text-secondary @endif"></i>
+                                    <i class="fa fa-star rating @if($market->rating() >= 4) text-warning @else text-secondary @endif"></i>
+                                    <i class="fa fa-star rating @if($market->rating() >= 5) text-warning @else text-secondary @endif"></i>
                                 </div>
                             </td>
                             <td class="p-4">

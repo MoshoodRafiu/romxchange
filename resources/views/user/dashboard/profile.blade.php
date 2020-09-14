@@ -25,7 +25,30 @@
                         <hr />
                         <div class="form-group text-left">
                             <label class="text-center">Bank Name</label>
-                            <input type="text" class="form-control" name="bank_name" value="{{ Auth::user()->bankaccount ? Auth::user()->bankaccount->bank_name : "" }}"/>
+                            <select name="bank_name" class="form-control">
+                                <option value="">Select Bank</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Access Bank") selected @endif @endif value="Access Bank">Diamond Bank</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Citibank") selected @endif @endif value="Citibank">Citibank</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Ecobank") selected @endif @endif value="Ecobank">Ecobank</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Fidelity Bank") selected @endif @endif value="Fidelity Bank">Fidelity Bank</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "First Bank") selected @endif @endif value="First Bank">First Bank</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "FCMB") selected @endif @endif value="FCMB">First City Monument Bank (FCMB)</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "GTBank") selected @endif @endif value="GTBank">Guaranty Trust Bank (GTBank)</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Heritage Bank") selected @endif @endif value="Heritage Bank">Heritage Bank</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Keystone Bank") selected @endif @endif value="Keystone Bank">Keystone Bank</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Polaris Bank") selected @endif @endif value="Polaris Bank">Polaris Bank</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Providus Bank") selected @endif @endif value="Providus Bank">Providus Bank</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Stanbic IBTC Bank") selected @endif @endif value="Stanbic IBTC Bank">Stanbic IBTC Bank</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Standard Chartered Bank") selected @endif @endif value="Standard Chartered Bank">Standard Chartered Bank</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Sterling Bank") selected @endif @endif value="Sterling Bank">Sterling Bank</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Suntrust Bank") selected @endif @endif value="Suntrust Bank">Suntrust Bank</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Union Bank") selected @endif @endif value="Union Bank">Union Bank</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "UBA") selected @endif @endif value="UBA">United Bank for Africa (UBA)</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Unity Bank") selected @endif @endif value="Unity Bank">Unity Bank</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Wema Bank") selected @endif @endif value="Wema Bank">Wema Bank</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Zenith Bank") selected @endif @endif value="Zenith Bank">Zenith Bank</option>
+                            </select>
+{{--                            <input type="text" class="form-control" name="bank_name" value="{{ Auth::user()->bankaccount ? Auth::user()->bankaccount->bank_name : "" }}"/>--}}
                         </div>
                         <div class="form-group text-left">
                             <label class="text-center">Account Number</label>
@@ -69,7 +92,7 @@
                             <div class="col-sm-12">
                                 <div class="form-group text-left">
                                     <label>Phone <span class="text-info font-weight-bold">(phone number should be in format 2348090000000)</span></label>
-                                    <input type="tel" class="form-control" name="phone" value="{{ Auth::user()->phone }}"/>
+                                    <input type="tel" class="form-control" name="phone" value="{{ Auth::user()->phone }}" @if(Auth::user()->verification->is_phone_verified == 1) disabled @endif/>
                                 </div>
                             </div>
                         </div>

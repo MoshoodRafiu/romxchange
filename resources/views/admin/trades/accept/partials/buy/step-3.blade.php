@@ -12,12 +12,12 @@
         </div>
     @endif
 </div>
-<p>Verify coin of <strong class="text-info">{{ $trade->coin_amount }} {{ $trade->market->coin->abbr }}</strong> from <strong>{{ \App\User::whereId($trade->seller_id)->first()->display_name }}</strong>. This coin worth <strong class="text-info">NGN {{ number_format($trade->coin_amount_ngn) }}</strong> / <strong class="text-info">USD {{ number_format($trade->coin_amount_usd) }}</strong>. The trade rate is at <strong class="text-success">NGN {{ number_format($trade->market->price_ngn) }}</strong> per {{ $trade->market->coin->abbr }}. Please ensure you confirm coin before clicking the button below.</p>
+<p>Verify coin of <strong class="text-info">{{ $trade->coin_amount }} {{ $trade->market->coin->abbr }}</strong> from <strong>{{ \App\User::whereId($trade->seller_id)->first()->display_name }}</strong>  in company's <span class="text-uppercase font-weight-bold">@if($trade->seller_wallet_company == "others") Blockchain @else {{ $trade->seller_wallet_company }} @endif</span> wallet. This coin worth currently is <strong class="text-info">NGN {{ number_format($trade->coin_amount_ngn, 2) }}</strong>. The trade rate is at <strong class="text-success">NGN {{ number_format($trade->market->rate) }}</strong> per USD. Please ensure you confirm coin before clicking the button below.</p>
 <div class="text-center my-3">
-    <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn px-4 btn-danger">Cancel Trade</button>
+    <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn my-1 px-4 btn-danger">Cancel Trade</button>
     @if($trade->buyer_transaction_stage == 2)
-        <button class="btn btn-special p-2" id="step-3-proceed" type="button">I Have Received Coin</button>
+        <button class="btn btn-special my-1 p-2" id="step-3-proceed" type="button">I Have Received Coin</button>
     @else
-        <button type="submit" id="step-4-nav" class="btn btn-special mx-4">Proceed</button>
+        <button type="submit" id="step-4-nav" class="btn my-1 btn-special mx-4">Proceed</button>
     @endif
 </div>

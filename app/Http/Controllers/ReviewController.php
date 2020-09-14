@@ -53,6 +53,7 @@ class ReviewController extends Controller
 
         $review->user_id = Auth::user()->id;
         $review->trade_id = $trade->id;
+        $review->market_id = $trade->market->id;
         $review->star = $request->star;
         $review->message = $request->message;
 

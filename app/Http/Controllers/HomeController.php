@@ -7,8 +7,10 @@ use App\Market;
 use App\Trade;
 use App\User;
 use App\Verification;
+use Artesaos\SEOTools\Facades\SEOMeta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Throwable;
 
@@ -27,8 +29,14 @@ class HomeController extends Controller
      */
     public function index()
     {
+        SEOMeta::setTitle('Home');
+        SEOMeta::setDescription('This is my page description');
+        SEOMeta::setCanonical('https://codecasts.com.br/lesson');
+
         $key = env('NOMICS_KEY');
-        $markets = Market::all()->take(10);
+        $markets = Market::orderBy('is_special', 'desc')->withCount(['reviews as star_rating' => function($query) {
+            $query->select(DB::raw('coalesce(avg(star),0)'));
+        }])->orderByDesc('star_rating')->limit(8)->get();
 
         try {
             $response = Http::get('https://api.nomics.com/v1/currencies/ticker?key='.$key.'&ids=BTC,ETH,XRP,BCH,LTC,TRX,YFI,USDT')->json();

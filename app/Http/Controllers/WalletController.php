@@ -202,4 +202,12 @@ class WalletController extends Controller
 
         return view('admin.wallet.index', ['wallets' => $wallets, 'search' => true, 'val' => $request->val]);
     }
+
+    public function getCompanies(Request $request){
+        $coin = Coin::find($request->coin);
+
+        $html = view('user.dashboard.partials.company', compact('coin'))->render();
+
+        return response()->json(array('success' => true, 'html' => $html));
+    }
 }

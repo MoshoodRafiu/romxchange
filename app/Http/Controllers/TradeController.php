@@ -41,6 +41,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return back();
         }
+        if ($this->tradeHasBeenCancelled($trade)){
+            return back();
+        }
         if ($type == "seller"){
             $user = User::whereId($trade->seller_id)->first();
             $status = $trade->buyer_has_summoned;
@@ -85,17 +88,21 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return back();
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return back();
+        }
         if ($type == "seller"){
             $user = User::whereId($trade->seller_id)->first();
         }else{
             $user = User::whereId($trade->buyer_id)->first();
         }
 
+        $duration = Setting::all()->first()->duration;
+
         if ($trade->seller_transaction_stage > 2){
             $mail = 'Hello, '.Str::ucfirst($user->display_name).' has summoned you to attend to a pending trade on www.acexworld.com';
         }else{
-            $mail = 'Hello, '.Str::ucfirst($user->display_name).' has summoned you to attend to a pending trade on www.acexworld.com. Kindly note that trade window automatically closes in 10 minutes after initiated time.';
+            $mail = 'Hello, '.Str::ucfirst($user->display_name).' has summoned you to attend to a pending trade on www.acexworld.com. Kindly note that trade window automatically closes '.$duration.' minutes after initiated time.';
         }
 
         if ($trade->seller_transaction_stage >= 3){
@@ -115,6 +122,9 @@ class TradeController extends Controller
 
     public function dispute(Trade $trade){
         if (!$this->userInTrade($trade)){
+            return back();
+        }
+        if ($this->tradeHasBeenCancelled($trade)){
             return back();
         }
         $trade->is_dispute = 1;
@@ -137,6 +147,22 @@ class TradeController extends Controller
             return back()->with('error', 'Error cancelling trade');
         }
 
+        if($trade->seller_transaction_stage >= 3){
+            return back()->with('error', 'Unable to cancel trade, payment already settled');
+        }
+
+        if ($trade->is_special == 1){
+
+            if($trade->seller_transaction_stage >= 2){
+                return back()->with('error', 'Unable to cancel trade, payment already settled');
+            }
+
+            $trade->transaction_status = "cancelled";
+            $trade->update();
+            event(new TradeCancelled($trade));
+            return redirect()->route('trade.index')->with('success', 'Trade cancelled successfully');
+        }
+
         if ($trade->seller_transaction_stage == null){
             if (Auth::user()->is_admin == 0 && Auth::user()->is_agent == 0){
                 $trade->transaction_status = "cancelled";
@@ -144,10 +170,6 @@ class TradeController extends Controller
                 event(new TradeCancelled($trade));
                 return redirect()->route('trade.index')->with('success', 'Trade cancelled successfully');
             }
-        }
-
-        if($trade->seller_transaction_stage >= 3){
-            return back()->with('error', 'Unable to cancel trade, payment already settled');
         }
 
         $trade->is_special = 1;
@@ -169,12 +191,23 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return back();
         }
+
+        if ($this->tradeHasBeenCancelled($trade)){
+            return back();
+        }
+
+        if ($trade->seller_transaction_stage >= 3){
+            return back()->with('error', 'Unable to cancel trade, payment already settled');
+        }
         $trade->transaction_status = "cancelled";
         $trade->update();
 
         event(new TradeCancelled($trade));
-
-        return redirect()->route('admin.trades')->with('message', 'Trade cancelled successfully');
+        if (Auth::user()->is_admin == 1 || Auth::user()->is_agent == 1){
+            return redirect()->route('admin.trades')->with('message', 'Trade cancelled successfully');
+        }else{
+            return redirect()->route('trade.index')->with('message', 'Trade cancelled successfully');
+        }
     }
 
     public function tradeDisputeJoin(Trade $trade){
@@ -249,6 +282,15 @@ class TradeController extends Controller
             return;
         }
 
+        $buyer = User::whereId($trade->buyer_id)->first();
+        $seller = User::whereId($trade->seller_id)->first();
+
+        $buyer_message = "Hello ".$buyer->display_name.", you have successfully bought ".$trade->coin_amount." ".Str::upper($trade->coin->abbr)." from ".$seller->display_name." at NGN ".number_format(($trade->coin_amount_ngn), 2).". Login below to rate this trade.";
+        $seller_message = "Hello ".$seller->display_name.", you have successfully sold ".$trade->coin_amount." ".Str::upper($trade->coin->abbr)." to ".$buyer->display_name." at NGN ".number_format(($trade->coin_amount_ngn), 2).". Login below to rate this trade.";
+
+        MailController::sendTradeCompletionMail($buyer->email, $buyer_message);
+        MailController::sendTradeCompletionMail($seller->email, $seller_message);
+
         $trade->ace_transaction_stage = 3;
         $trade->transaction_status = "success";////
         $trade->update();
@@ -298,14 +340,21 @@ class TradeController extends Controller
 
     public function adminAcceptBuy(Trade $trade){
         if (!$this->userInTrade($trade)){
-            return;
+            return back();
         }
+        if ($this->tradeHasBeenCancelled($trade)){
+            return back();
+        }
+
         return view('admin.trades.accept.buy', compact('trade'));
     }
 
     public function adminAcceptBuyStep1(Trade $trade){
 
         if (!$this->userInTrade($trade)){
+            return;
+        }
+        if ($this->tradeHasBeenCancelled($trade)){
             return;
         }
 
@@ -323,7 +372,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 1)){
             return;
         }
@@ -348,7 +399,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage == 2)){
             return;
         }
@@ -369,7 +422,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         $trade->buyer_transaction_stage = 4;
 
         $trade->update();
@@ -386,7 +441,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade){
             return;
         }
@@ -401,7 +458,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade || $trade->buyer_transaction_stage < 1 ){
             return;
         }
@@ -416,7 +475,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade || $trade->buyer_transaction_stage < 2 ){
             return;
         }
@@ -431,7 +492,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade || $trade->buyer_transaction_stage < 3 ){
             return;
         }
@@ -450,12 +513,23 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade || $trade->buyer_transaction_stage < 4 || $trade->seller_transaction_stage < 3){
             return;
         }
 
         if ($trade->buyer_transaction_stage == 4){
+
+            $buyer = User::whereId($trade->buyer_id)->first();
+            $seller = User::whereId($trade->seller_id)->first();
+
+            $buyer_message = "Hello ".$buyer->display_name.", you have successfully bought ".$trade->coin_amount." ".Str::upper($trade->coin->abbr)." from ".$seller->display_name." at NGN ".number_format(($trade->coin_amount_ngn), 2).". Login below to rate this trade.";
+            $seller_message = "Hello ".$seller->display_name.", you have successfully sold ".$trade->coin_amount." ".Str::upper($trade->coin->abbr)." to ".$buyer->display_name." at NGN ".number_format(($trade->coin_amount_ngn), 2).". Login below to rate this trade.";
+
+            MailController::sendTradeCompletionMail($buyer->email, $buyer_message);
+            MailController::sendTradeCompletionMail($seller->email, $seller_message);
 
             $trade->transaction_status = "success";
 
@@ -466,7 +540,6 @@ class TradeController extends Controller
 
         return response()->json(array('success' => true, 'html' => $html));
     }
-
 
 
 
@@ -506,7 +579,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null)){
             return;
         }
@@ -526,7 +601,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!($trade->buyer_transaction_stage == 3 && $trade->seller_transaction_stage == 1)){
             return;
         }
@@ -547,7 +624,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage >= 3)){
             return;
         }
@@ -565,8 +644,19 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         $trade->seller_transaction_stage = 4;
+
+        $buyer = User::whereId($trade->buyer_id)->first();
+        $seller = User::whereId($trade->seller_id)->first();
+
+        $buyer_message = "Hello ".$buyer->display_name.", you have successfully bought ".$trade->coin_amount." ".Str::upper($trade->coin->abbr)." from ".$seller->display_name." at NGN ".number_format(($trade->coin_amount_ngn), 2).". Login below to rate this trade.";
+        $seller_message = "Hello ".$seller->display_name.", you have successfully sold ".$trade->coin_amount." ".Str::upper($trade->coin->abbr)." to ".$buyer->display_name." at NGN ".number_format(($trade->coin_amount_ngn), 2).". Login below to rate this trade.";
+
+        MailController::sendTradeCompletionMail($buyer->email, $buyer_message);
+        MailController::sendTradeCompletionMail($seller->email, $seller_message);
 
         $trade->transaction_status = "success";
 
@@ -581,7 +671,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if ($trade->seller_transaction_stage < 1){
             return;
         }
@@ -595,7 +687,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade || $trade->seller_transaction_stage < 1 ){
             return;
         }
@@ -609,7 +703,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade || $trade->seller_transaction_stage < 2 ){
             return;
         }
@@ -623,7 +719,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade || $trade->seller_transaction_stage < 3 ){
             return;
         }
@@ -637,7 +735,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade || $trade->seller_transaction_stage < 4 ){
             return;
         }
@@ -667,7 +767,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         $trade->buyer_transaction_stage = 1;
 
         $trade->update();
@@ -682,7 +784,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 1)){
             return;
         }
@@ -707,7 +811,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage == 2 && $trade->ace_transaction_stage == 2)){
             return;
         }
@@ -728,7 +834,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         $trade->buyer_transaction_stage = 4;
 
         $trade->update();
@@ -743,7 +851,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade){
             return;
         }
@@ -758,7 +868,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade || $trade->buyer_transaction_stage < 1 ){
             return;
         }
@@ -773,7 +885,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade || $trade->buyer_transaction_stage < 2 ){
             return;
         }
@@ -792,7 +906,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade || $trade->buyer_transaction_stage < 3 ){
             return;
         }
@@ -811,7 +927,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade || $trade->buyer_transaction_stage < 4 ){
             return;
         }
@@ -835,6 +953,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return redirect()->route('trade.index');
         }
+        if ($this->tradeHasBeenCancelled($trade)){
+            return redirect()->route('trade.index');
+        }
         return view('user.dashboard.trades.accept.sell', compact('trade'));
     }
 
@@ -847,7 +968,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null && $trade->ace_transaction_stage == 1)){
             return;
         }
@@ -866,7 +989,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         $trade->seller_transaction_stage = 2;
 
         $trade->update();
@@ -882,7 +1007,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if ($trade->is_special == 1){
             if (!($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage == 4)){
                 return;
@@ -908,7 +1035,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         $trade->seller_transaction_stage = 4;
 
         $trade->update();
@@ -922,7 +1051,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if ($trade->seller_transaction_stage == null){
             return;
         }
@@ -936,7 +1067,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade || $trade->seller_transaction_stage < 1 ){
             return;
         }
@@ -950,7 +1083,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade || $trade->seller_transaction_stage < 2 ){
             return;
         }
@@ -968,7 +1103,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade || $trade->seller_transaction_stage < 3 ){
             return;
         }
@@ -982,7 +1119,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade || $trade->seller_transaction_stage < 4 ){
             return;
         }
@@ -1067,11 +1206,10 @@ class TradeController extends Controller
         $trade->buyer_id = $market->user_id;
         $trade->seller_transaction_stage = 1;
         $trade->coin_amount = $request->amount;
-        $trade->coin_amount_usd = $request->amount * $data[0]['price'];
-        $trade->coin_amount_ngn = $request->amount * $data[0]['price'] * $market->rate;
+        $trade->coin_amount_usd = ($request->amount - (($request->amount * $charge)/2)) * $data[0]['price'];
+        $trade->coin_amount_ngn = ($request->amount - (($request->amount * $charge)/2)) * $data[0]['price'] * $market->rate;
         $trade->transaction_charge_coin = $request->amount * $charge;
         $trade->transaction_charge_usd = $request->amount * $charge * $data[0]['price'];
-        $trade->transaction_charge_ngn = $request->amount * $charge * $data[0]['price'] * $market->rate;
         $trade->seller_wallet_company = $request->company;
         $trade->trade_window_expiry = date('Y-m-d H:i:s', strtotime(now()."+ ".$duration." minutes"));
         $trade->transaction_status = "pending";
@@ -1094,7 +1232,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if ($trade->is_special == 1){
 
             if (!($trade->seller_transaction_stage == 1 && $trade->buyer_transaction_stage == 2)){
@@ -1133,7 +1273,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if ($trade->is_special == 1){
             if (!($trade->seller_transaction_stage == 2 && $trade->buyer_transaction_stage >= 4)){
                 return;
@@ -1172,7 +1314,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         $trade->seller_transaction_stage = 4;
 
         $trade->update();
@@ -1190,7 +1334,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade){
             return;
         }
@@ -1207,7 +1353,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if ($trade->is_special == 1){
             if ($trade->seller_transaction_stage < 1 || !$trade->buyer_transaction_stage){
                 return;
@@ -1241,7 +1389,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if ($trade->is_special == 1){
 
             if ($trade->seller_transaction_stage < 2 || $trade->buyer_transaction_stage < 3){
@@ -1273,7 +1423,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade || $trade->seller_transaction_stage < 3 ){
             return;
         }
@@ -1290,7 +1442,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade || $trade->seller_transaction_stage < 4 ){
             return;
         }
@@ -1375,11 +1529,10 @@ class TradeController extends Controller
         $trade->seller_id = $market->user_id;
         $trade->buyer_transaction_stage = 1;
         $trade->coin_amount = $request->amount;
-        $trade->coin_amount_usd = $request->amount * $data[0]['price'];
-        $trade->coin_amount_ngn = $request->amount * $data[0]['price'] * $market->rate;
+        $trade->coin_amount_usd = ($request->amount - (($request->amount * $charge)/2)) * $data[0]['price'];
+        $trade->coin_amount_ngn = ($request->amount - (($request->amount * $charge)/2)) * $data[0]['price'] * $market->rate;
         $trade->transaction_charge_coin = $request->amount * $charge;
         $trade->transaction_charge_usd = $request->amount * $charge * $data[0]['price'];
-        $trade->transaction_charge_ngn = $request->amount * $charge * $data[0]['price'] * $market->rate;
         $trade->trade_window_expiry = date('Y-m-d H:i:s', strtotime(now()."+ ".$duration." minutes"));
         $trade->transaction_status = "pending";
 
@@ -1401,7 +1554,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         $trade->buyer_transaction_stage = 2;
 
         $trade->update();
@@ -1426,7 +1581,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         $trade->buyer_transaction_stage = 3;
 
         $trade->update();
@@ -1445,7 +1602,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         $trade->buyer_transaction_stage = 4;
 
         $trade->update();
@@ -1462,7 +1621,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade){
             return;
         }
@@ -1481,7 +1642,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade || $trade->buyer_transaction_stage < 1 ){
             return;
         }
@@ -1498,7 +1661,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if ($trade->is_special == 1){
             if ($trade->buyer_transaction_stage < 2 || $trade->seller_transaction_stage < 1 || !$trade->seller_transaction_stage ){
                 return;
@@ -1530,7 +1695,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if ($trade->is_special == 1){
             if (!$trade || $trade->buyer_transaction_stage < 3 || $trade->seller_transaction_stage < 2 ){
                 return;
@@ -1557,7 +1724,9 @@ class TradeController extends Controller
         if (!$this->userInTrade($trade)){
             return;
         }
-
+        if ($this->tradeHasBeenCancelled($trade)){
+            return;
+        }
         if (!$trade || $trade->buyer_transaction_stage < 4 ){
             return;
         }
@@ -1672,6 +1841,13 @@ class TradeController extends Controller
 
     protected function userInTrade($trade){
         if ($trade->buyer_id == Auth::user()->id || $trade->seller_id == Auth::user()->id){
+            return true;
+        }
+        return false;
+    }
+
+    protected function tradeHasBeenCancelled($trade){
+        if ($trade->transaction_status == "cancelled"){
             return true;
         }
         return false;

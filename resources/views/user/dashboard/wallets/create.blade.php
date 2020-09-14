@@ -44,11 +44,8 @@
                             <div class="col-sm-12 col-md-6">
                                 <div class="form-group text-left">
                                     <label>Wallet Company </label>
-                                    <select name="company" class="form-control @error('company') is-invalid @enderror" required>
+                                    <select name="company" id="company" class="form-control @error('company') is-invalid @enderror" required>
                                         <option value="">Select Wallet Company</option>
-                                        <option value="luno">Luno</option>
-                                        <option value="paxful">Paxful</option>
-                                        <option value="others">Others</option>
                                     </select>
                                     @error('company')
                                     <div>
@@ -84,5 +81,42 @@
             </form>
         </div>
     </section>
+
+@endsection
+
+@section('script')
+
+    <script>
+        $(document).ready(function () {
+            $('#coin').change(function (e) {
+                e.preventDefault();
+                if (!$('#coin').val()){
+                    $('#company').html( '<option value="">Select Wallet Company</option>' );
+                }else{
+                    $.ajaxSetup({
+                        headers: {
+                            "X-CSRF-TOKEN": $("meta[name='csrf-token']").attr('content')
+                        }
+                    });
+                    $.ajax({
+                        url: "{{ route('wallet.coin.companies') }}",
+                        method: "POST",
+                        beforeSend: function () {
+                            $('#company').html( '<option value="">Loading</option>' );
+                        },
+                        data: {
+                            coin: $('#coin').val()
+                        },
+                        cache: false,
+                        success: function (result) {
+                            if (result.success) {
+                                $('#company').html(result.html);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 
 @endsection

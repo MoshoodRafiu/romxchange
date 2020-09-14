@@ -18,7 +18,7 @@
                 @elseif(Session::has('error'))
                     <div class="alert col-12 w-100 my-3 alert-danger text-left" role="alert">{{ session('error') }}</div>
                 @endif
-                <form method="POST" action="{{ route('register') }}">
+                <form method="POST" id="registration-form" action="{{ route('register') }}">
                     @csrf
                     <div class="form-group">
                         <label for="name" class="text-special">Display Name</label>
@@ -58,7 +58,9 @@
                         <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password" placeholder="Confirm Password" />
                     </div>
                     <div class="mx-auto text-center">
-                        <div class="mt-2"><button class="btn btn-login btn-block w-100" type="submit">Register</button></div>
+                        <div class="mt-2">
+                            {!! NoCaptcha::displaySubmit('registration-form', 'Register', ['data-theme' => 'dark', 'class' => 'btn btn-login btn-block w-100']) !!}
+                        </div>
                     </div>
                 </form>
                 <p class="text-center mt-3 mb-0"><a class="text-special text-info small" href="{{ url('/login') }}">Already have an account? Login </a></p>
@@ -66,4 +68,8 @@
         </div>
     </section>
 
+@endsection
+
+@section('script')
+    {!! NoCaptcha::renderJs() !!}
 @endsection

@@ -19,18 +19,18 @@ class Market extends Model
         return $this->hasMany('App\Trade');
     }
 
+    public function reviews(){
+        return $this->hasMany('App\Review');
+    }
+
     public function rating(){
         if ($this->is_special == 1){
             return 5;
         }
-        $sum = 0;
-        $count = 0;
-        foreach ($this->trades as $trade){
-            $sum += $trade->reviews->sum('star');
-            $count += $trade->reviews->count('star');
-        }
-        if ($count > 0){
-            return round($sum/$count);
+        $rating = $this->reviews()->avg('star');
+
+        if ($rating > 0){
+            return $rating;
         }
         return 1;
     }

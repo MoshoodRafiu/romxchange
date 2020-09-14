@@ -13,11 +13,14 @@ class ProfileController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
      */
     public function index()
     {
         return view('user.dashboard.profile');
+    }
+
+    public function adminIndex(){
+        return view('admin.profile.index');
     }
 
     /**
@@ -107,6 +110,25 @@ class ProfileController extends Controller
 
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
+        if ($user->verification->is_phone_verified == 0){
+            $user->phone = $request->phone;
+        }
+        $user->update();
+
+        return back()->with('message', 'Profile Updated Successfully');
+    }
+
+    public function adminUpdate(Request $request){
+        $user = Auth::user();
+
+        if ($user->phone){
+            $this->validate($request, [
+                'phone' => 'required'
+            ]);
+        }
+
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
         $user->phone = $request->phone;
         $user->update();
 
@@ -116,7 +138,7 @@ class ProfileController extends Controller
     public function updatePassword(Request $request){
         $this->validate($request, [
             "old_password" => "required",
-            "password" => "required|required_with:confirm_password |min:8|max:255"
+            "password" => "required|same:confirm_password|min:8|max:255"
         ]);
 
         $user = Auth::user();

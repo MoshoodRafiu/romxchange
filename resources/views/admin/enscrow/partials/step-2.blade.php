@@ -39,7 +39,7 @@
             <div class="form-group"><label><strong>Charges</strong><br /></label><input type="text" class="form-control" value="{{ $trade->transaction_charge_coin }} {{ $trade->coin->abbr }}" disabled/></div>
         </div>
         <div class="col-12">
-            <div class="form-group"><label><strong>Wallet Company</strong></label><input type="text" class="form-control" value="{{ $trade->seller_wallet_company }}" disabled/></div>
+            <div class="form-group"><label><strong>Wallet Company of Buyer</strong></label><input type="text" class="form-control" value="{{ \App\Wallet::where('user_id', $trade->buyer_id)->where('coin_id', $trade->market->coin->id)->first()->company }}" disabled/></div>
         </div>
         <div class="col-12">
             <div class="form-group">

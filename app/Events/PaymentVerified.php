@@ -36,6 +36,11 @@ class PaymentVerified implements ShouldBroadcast
         return new PrivateChannel('trade.'.$this->trade->id);
     }
 
+    public function broadcastWith(){
+        return $data = ['message' => 'Payment Verified'];
+    }
+
+
     public function broadcastAs(){
         return "payment-verified";
     }

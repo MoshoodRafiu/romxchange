@@ -10,6 +10,11 @@
                 </div>
             </div>
             <div class="row">
+                @if(Session::has('success'))
+                    <div class="alert w-100 col-12 alert-success text-left" role="alert">{{ session('success') }}</div>
+                @elseif(Session::has('error'))
+                    <div class="alert w-100 col-12 alert-danger text-left" role="alert">{{ session('error') }}</div>
+                @endif
                 <div class="card text-left">
                     <div class="card-header bg-special">
                         <ul class="nav nav-tabs card-header-tabs" role="tablist">
@@ -23,61 +28,93 @@
                     <div class="card-body">
                         <div id="nav-tabContent" class="tab-content">
                             <div id="item-1-1" class="tab-pane fade show active" role="tabpanel" aria-labelledby="item-1-1-tab">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="small">
+                                        <a href="{{ route('sms.summon', ['trade' => $trade, 'type' => 'seller']) }}" class="btn my-1 my-md-0 btn-sm btn-secondary">Summon via SMS</a>
+                                        <a href="{{ route('mail.summon', ['trade' => $trade, 'type' => 'seller']) }}" class="btn my-1 my-md-0 btn-sm btn-info">Summon via Mail</a>
+                                    </div>
+                                    <h4 class="text-right text-danger"><span id="minute">00</span>.<span id="second">00</span></h4>
+                                </div>
                                 <div class="step">
                                     <h4 class="text-center my-4">Step 1</h4>
-                                    @if($trade->is_special == 1)
-                                        @if($trade->buyer_transaction_stage == 1 && $trade->seller_transaction_stage == null)
+                                    @if($trade->transaction_status == "cancelled")
+                                        <div class="text-center">
+                                            <strong class="text-danger" id="info-2-text" style="font-size: 23px">Trade Cancelled, Close Trade Window</strong>
+                                            <img width="50px" id="info-2-img" src="{{ asset('assets/img/cancel.gif') }}" alt="proceed">
+                                        </div>
+                                    @else
+                                        @if($trade->is_dispute == 1)
                                             <div class="text-center">
-                                                <strong class="text-info" id="info-1-text" style="font-size: 23px">Waiting For Buyer to Verify Wallet </strong>
-                                                <img width="50px" id="info-1-img" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
-                                            </div>
-                                        @elseif($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null)
-                                            <div class="text-center">
-                                                <strong class="text-success" id="info-1-text" style="font-size: 23px">Wallet Verified, Proceed with Transaction</strong>
-                                                <img width="100px" id="info-1-img" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
+                                                <strong class="text-warning" id="info-1-text" style="font-size: 23px">Trade Dispute, Use Dispute Chatbox Below</strong>
+                                                <img width="30px" id="info-1-img" src="{{ asset('assets/img/warning.gif') }}" alt="proceed">
                                             </div>
                                         @endif
-                                    @else
-                                        @if($trade->buyer_transaction_stage == 1 && $trade->seller_transaction_stage == null && $trade->ace_transaction_stage == null)
-                                            <div class="text-center">
-                                                <strong class="text-info" id="info-1-text" style="font-size: 23px">Waiting For Buyer to Verify Wallet </strong>
-                                                <img width="50px" id="info-1-img" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
-                                            </div>
-                                        @elseif($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null && $trade->ace_transaction_stage == null)
-                                            <div class="text-center">
-                                                <strong class="text-info" id="info-1-text" style="font-size: 23px">Waiting For Buyer to Verify Wallet </strong>
-                                                <img width="50px" id="info-1-img" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
-                                            </div>
-                                        @elseif($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null && $trade->ace_transaction_stage == 1)
-                                            <div class="text-center">
-                                                <strong class="text-success" id="info-1-text" style="font-size: 23px">Wallet Verified, Proceed with Transaction</strong>
-                                                <img width="100px" id="info-1-img" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
-                                            </div>
+                                        @if($trade->is_special == 1)
+                                            @if($trade->buyer_transaction_stage == 1 && $trade->seller_transaction_stage == null)
+                                                <div class="text-center">
+                                                    <strong class="text-info" id="info-1-text" style="font-size: 23px">Waiting For Buyer to Verify Wallet </strong>
+                                                    <img width="50px" id="info-1-img" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
+                                                </div>
+                                            @elseif($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null)
+                                                <div class="text-center">
+                                                    <strong class="text-success" id="info-1-text" style="font-size: 23px">Wallet Verified, Proceed with Transaction</strong>
+                                                    <img width="100px" id="info-1-img" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
+                                                </div>
+                                            @endif
+                                        @else
+                                            @if($trade->buyer_transaction_stage == 1 && $trade->seller_transaction_stage == null && $trade->ace_transaction_stage == null)
+                                                <div class="text-center">
+                                                    <strong class="text-info" id="info-1-text" style="font-size: 23px">Waiting For Buyer to Verify Wallet </strong>
+                                                    <img width="50px" id="info-1-img" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
+                                                </div>
+                                            @elseif($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null && $trade->ace_transaction_stage == null)
+                                                <div class="text-center">
+                                                    <strong class="text-info" id="info-1-text" style="font-size: 23px">Waiting For Buyer to Verify Wallet </strong>
+                                                    <img width="50px" id="info-1-img" src="{{ asset('assets/img/waiting.gif') }}" alt="waiting">
+                                                </div>
+                                            @elseif($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == null && $trade->ace_transaction_stage == 1)
+                                                <div class="text-center">
+                                                    <strong class="text-success" id="info-1-text" style="font-size: 23px">Wallet Verified, Proceed with Transaction</strong>
+                                                    <img width="100px" id="info-1-img" src="{{ asset('assets/img/proceed.gif') }}" alt="proceed">
+                                                </div>
+                                            @endif
                                         @endif
                                     @endif
                                     <form class="row mb-4" id="step-1">
+                                        <div class="form-group col-md-12">
+                                            <label for="transactionID">Transaction ID</label>
+                                                        <div class="d-flex ">
+                                                <input type="text" name="transactionID" id="transactionID" value="{{ $trade->transaction_id }}" class="form-control col-sm-11 col-10" readonly>
+                                                <span class="bg-dark text-white px-2 py-1 clipboard-message">Copied to clipboard</span>
+                                                <a onclick="copyText('transactionID')" class="col-sm-1 m-0 col-2 btn text-white btn-secondary"><i class="fas fa-copy"></i></a>
+                                            </div>
+                                        </div>
                                         <div class="form-group col-md-6">
                                             <label>Coin Amount</label>
                                             <input type="type" name="amount" value="{{ $trade->coin_amount }} {{ $trade->market->coin->abbr }}" class="form-control" disabled>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label>Amount in USD</label>
-                                            <input type="text" name="amount-usd" value="{{ $trade->coin_amount_usd }}" class="form-control" disabled>
+                                            <input type="text" name="amount-usd" value="{{ round($trade->coin_amount_usd, 2) }}" class="form-control" disabled>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label>Amount in NGN</label>
-                                            <input type="text" name="amount-ngn" value="{{ $trade->coin_amount_ngn }}" class="form-control" disabled>
+                                            <input type="text" name="amount-ngn" value="{{ round($trade->coin_amount_ngn, 2) }}" class="form-control" disabled>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label>Transaction Charges</label>
                                             <input type="number" name="charges" value="{{ $trade->transaction_charge_coin }}" class="form-control" disabled>
                                         </div>
-                                        <div class="mx-auto">
-                                            <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn px-4 btn-danger">Cancel Trade</button>
-                                            @if(!$trade->seller_transaction_stage == null)
-                                                <button type="submit" id="step-2-nav"  class="btn btn-special px-5">Proceed</button>
+                                        <div class="mx-auto text-center" id="trade-cancel">
+                                            @if($trade->transaction_status == "cancelled")
+                                                <a href="{{ route('admin.trades') }}" class="btn btn-info">Close Trade Window</a>
                                             @else
-                                                <button id="step-1-proceed" class="btn btn-special px-5">Accept Trade</button>
+                                                <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn my-1 px-4 btn-danger">Cancel Trade</button>
+                                                @if(!$trade->seller_transaction_stage == null)
+                                                    <button type="submit" id="step-2-nav"  class="btn my-1 btn-special px-5">Proceed</button>
+                                                @else
+                                                    <button id="step-1-proceed" class="btn btn-special px-5">Accept Trade</button>
+                                                @endif
                                             @endif
                                         </div>
                                     </form>
@@ -126,6 +163,45 @@
 @endsection
 
 @section('script')
+    <script>
+            @isset($trade)
+        var cancel_time = "{{ date('F j, Y H:i:s', strtotime($trade->trade_window_expiry)) }}";
+        var url = "{{ route('trade.index') }}";
+        // Set the date we're counting down to
+        var countDownDate = new Date(cancel_time).getTime();
+
+        function formatNumber(num, len) {
+            var s = num+"";
+            while (s.length < len) s = "0" + s;
+            return s;
+        }
+
+        // Update the count down every 1 second
+        var x = setInterval(function() {
+
+            // Get today's date and time
+            var now = new Date().getTime();
+
+            // Find the distance between now and the count down date
+            var distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Output the result in an element with id="demo"
+            document.getElementById("minute").innerText = formatNumber(minutes, 2);
+            document.getElementById("second").innerText = formatNumber(seconds, 2);
+
+            // If the count down is over, write some text
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("minute").innerText = "00";
+                document.getElementById("second").innerText = "00";
+            }
+        }, 1000);
+        @endisset
+    </script>
 
     <script>
         $(document).ready(function () {
@@ -465,7 +541,7 @@
                 sendMessage("4");
             });
 
-                @isset($trade)
+            @isset($trade)
             var sendMessage = function (val) {
                     $.ajaxSetup({
                         headers: {
@@ -560,6 +636,28 @@
                 $("#info-1-img").width('100');
             });
 
+            channel.listen('.trade-dispute', function() {
+                location.reload();
+            });
+
+            channel.listen('.trade-cancelled', function() {
+                $("#info-1-text").text('Trade Cancelled, Close Trade Window');
+                $("#info-1-text").removeClass('text-info');
+                $("#info-1-text").addClass('text-danger');
+                $("#info-1-img").attr('src', '{{ asset('assets/img/cancel.gif') }}');
+                $("#info-1-img").width('50');
+
+                $("#info-2-text").text('Trade Cancelled, Close Trade Window');
+                $("#info-2-text").removeClass('text-info');
+                $("#info-2-text").addClass('text-danger');
+                $("#info-2-img").attr('src', '{{ asset('assets/img/cancel.gif') }}');
+                $("#info-2-img").width('50');
+
+                var link = '{{ route('admin.trades') }}';
+                $('#trade-cancel').html('<a href="'+ link +'" class="btn btn-info p-2">Close Trade Window</a>');
+            });
+
+
             channel.listen('.message-sent', function(data) {
 
                 if(data.id !== {{ \Illuminate\Support\Facades\Auth::user()->id }}){
@@ -606,14 +704,16 @@
                     next();
                 });
 
-                $id = $(this).data('rating');
+                var id = $(this).data('rating');
                 $(this).siblings('span').each(function () {
-                    if ($(this).data('rating') < $id){
+                    if ($(this).data('rating') < id){
                         $(this).addClass('fa-star');
                     }else{
                         $(this).addClass('fa-star-o');
                     }
                 })
+
+                $('#star-rating').val(id);
 
             });
 

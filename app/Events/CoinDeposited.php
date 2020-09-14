@@ -36,6 +36,11 @@ class CoinDeposited implements ShouldBroadcast
         return new PrivateChannel('trade.'.$this->trade->id);
     }
 
+    public function broadcastWith(){
+        return $data = ['message' => 'Coin deposited'];
+    }
+
+
     public function broadcastAs(){
         return "coin-deposited";
     }

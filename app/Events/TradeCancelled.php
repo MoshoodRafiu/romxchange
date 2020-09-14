@@ -36,6 +36,11 @@ class TradeCancelled implements ShouldBroadcast
         return new PrivateChannel('trade.'.$this->trade->id);
     }
 
+    public function broadcastWith(){
+        return $data = ['message' => 'Trade Cancelled'];
+    }
+
+
     public function broadcastAs(){
         return "trade-cancelled";
     }

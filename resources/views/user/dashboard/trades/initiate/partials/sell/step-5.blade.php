@@ -16,7 +16,7 @@
                         " data-rating="5"></span><input class="form-control rating-value" type="hidden" id="rate" name="Rating" value="0" />
         </div>
     </div>
-    <p>Transaction completed, the held <strong class="text-info">{{ $trade->coin_amount }} {{ $trade->market->coin->abbr }}</strong> has been released to <strong>{{ \App\User::whereId($trade->buyer_id)->first()->display_name }}</strong> . Please Rate Your Transaction With <strong>{{ \App\User::whereId($trade->buyer_id)->first()->display_name }}</strong> based on transaction time and completion</p>
+    <p>Transaction completed, the held <strong class="text-info">{{ $trade->coin_amount }} {{ $trade->market->coin->abbr }}</strong> has been released to <strong>{{ \App\User::whereId($trade->buyer_id)->first()->display_name }}</strong> . Please rate your transaction with <strong>{{ \App\User::whereId($trade->buyer_id)->first()->display_name }}</strong> based on transaction time of completion</p>
     <form action="{{ route('review.store') }}" method="post">
         @csrf
         <input type="hidden" name="trade" value="{{ $trade->id }}">

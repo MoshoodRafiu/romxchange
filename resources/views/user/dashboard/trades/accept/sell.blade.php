@@ -30,8 +30,8 @@
                             <div id="item-1-1" class="tab-pane fade show active" role="tabpanel" aria-labelledby="item-1-1-tab">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="small">
-                                        <a href="{{ route('sms.summon', ['trade' => $trade, 'type' => 'buyer']) }}" class="btn btn-sm btn-secondary">Summon via SMS</a>
-                                        <a href="{{ route('mail.summon', ['trade' => $trade, 'type' => 'buyer']) }}" class="btn btn-sm btn-info">Summon via Mail</a>
+                                        <a href="{{ route('sms.summon', ['trade' => $trade, 'type' => 'buyer']) }}" class="btn my-1 my-md-0 btn-sm btn-secondary">Summon via SMS</a>
+                                        <a href="{{ route('mail.summon', ['trade' => $trade, 'type' => 'buyer']) }}" class="btn my-1 my-md-0 btn-sm btn-info">Summon via Mail</a>
                                     </div>
                                     <h4 class="text-right text-danger"><span id="minute">00</span>.<span id="second">00</span></h4>
                                 </div>
@@ -93,12 +93,7 @@
                                             <input type="text" name="amount-ngn" value="{{ number_format($trade->coin_amount_ngn, 2) }}" class="form-control" disabled>
                                         </div>
                                         <div class="form-group col-md-6">
-                                            <label>Transaction Charges</label>
-                                            <input type="number" name="charges" value="{{ $trade->transaction_charge_coin }}" class="form-control" disabled>
-                                        </div>
-                                        <div class="form-group col-md-12">
                                             <label>Wallet Company</label>
-                                            <div><strong id="error" class="text-danger"></strong></div>
                                             @if(!$trade->seller_transaction_stage == null)
                                                 <select name="wallet" id="wallet-company" class="form-control" disabled>
                                                     <option value="">Select Wallet You Are Sending From</option>
@@ -116,6 +111,7 @@
                                                     <option value="others">Others</option>
                                                 </select>
                                             @endif
+                                            <div><strong id="error" class="text-danger"></strong></div>
                                         </div>
                                         <div class="mx-auto text-center" id="trade-cancel">
                                             @if($trade->transaction_status == "cancelled")

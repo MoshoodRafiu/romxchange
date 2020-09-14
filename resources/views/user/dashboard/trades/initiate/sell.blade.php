@@ -9,8 +9,8 @@
                 </div>
             </div>
             <div class="row">
-                @if(Session::has('message'))
-                    <div class="alert w-100 col-12 alert-success text-left" role="alert">{{ session('message') }}</div>
+                @if(Session::has('success'))
+                    <div class="alert w-100 col-12 alert-success text-left" role="alert">{{ session('success') }}</div>
                 @elseif(Session::has('error'))
                     <div class="alert w-100 col-12 alert-danger text-left" role="alert">{{ session('error') }}</div>
                 @endif
@@ -30,8 +30,8 @@
                                 @isset($trade)
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="small">
-                                        <a href="{{ route('sms.summon', ['trade' => $trade, 'type' => 'buyer']) }}" class="btn btn-sm btn-secondary">Summon via SMS</a>
-                                        <a href="{{ route('mail.summon', ['trade' => $trade, 'type' => 'buyer']) }}" class="btn btn-sm btn-info">Summon via Mail</a>
+                                        <a href="{{ route('sms.summon', ['trade' => $trade, 'type' => 'buyer']) }}" class="btn my-1 my-md-0 btn-sm btn-secondary">Summon via SMS</a>
+                                        <a href="{{ route('mail.summon', ['trade' => $trade, 'type' => 'buyer']) }}" class="btn my-1 my-md-0 btn-sm btn-info">Summon via Mail</a>
                                     </div>
                                     <h4 class="text-right text-danger"><span id="minute">00</span>.<span id="second">00</span></h4>
                                 </div>
@@ -86,18 +86,13 @@
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label>Amount in USD</label>
-                                            <input type="text" name="amount_usd" id="amount_usd" value="@isset($data) {{ round($data[0]['price'], 2) }} @else @isset($trade) {{ round($trade->coin_amount_usd, 2) }} @endisset @endisset" class="form-control" disabled>
+                                            <input type="text" name="amount_usd" id="amount_usd" value="@isset($data) 0.00 @else @isset($trade) {{ round($trade->coin_amount_usd, 2) }} @endisset @endisset" class="form-control" disabled>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label>Amount in NGN</label>
-                                            <input type="text" name="amount_ngn" id="amount_ngn" value="@isset($data) {{ round($market->rate * $data[0]['price'], 2) }} @else @isset($trade) {{ round($trade->coin_amount_ngn, 2) }} @endisset @endisset" class="form-control" disabled>
+                                            <input type="text" name="amount_ngn" id="amount_ngn" value="@isset($data) 0.00 @else @isset($trade) {{ round($trade->coin_amount_ngn, 2) }} @endisset @endisset" class="form-control" disabled>
                                         </div>
                                         <div class="form-group col-md-6">
-                                            <label>Transaction Charges</label>
-                                            <input type="number" name="charges" id="charge" @isset($trade) value="{{ $trade->transaction_charge_coin }}" @endisset class="form-control" disabled>
-                                        </div>
-                                        <div class="form-group col-md-12">
-                                            <div><strong id="error-wallet" class="text-danger"></strong></div>
                                             <label>Wallet Company</label>
                                             @isset($trade)
                                                 <select name="wallet" id="wallet-company" class="form-control" disabled>
@@ -116,6 +111,7 @@
                                                     <option value="others">Others</option>
                                                 </select>
                                             @endisset
+                                            <div><strong id="error-wallet" class="text-danger"></strong></div>
                                         </div>
                                         <div class="mx-auto text-center" id="trade-cancel">
                                             @isset($trade)
@@ -155,7 +151,7 @@
     <script>
             @isset($trade)
         var cancel_time = "{{ date('F j, Y H:i:s', strtotime($trade->trade_window_expiry)) }}";
-        var url = "{{ route('trade.index') }}";
+        var url = "{{ route('trade.cancel', $trade) }}";
         // Set the date we're counting down to
         var countDownDate = new Date(cancel_time).getTime();
 
@@ -184,6 +180,9 @@
 
             // If the count down is over, write some text
             if (distance < 0) {
+                @if($trade->buyer_transaction_stage == null)
+                    window.location.replace(url);
+                @endif
                 clearInterval(x);
                 document.getElementById("minute").innerText = "00";
                 document.getElementById("second").innerText = "00";
@@ -206,11 +205,11 @@
                     $("#charge").val("");
                 }else{
                     $("#error").text("");
+                    var charge = ({{ \App\Setting::all()->first()->charges / 100}}) * $("#amount").val();
                     var usd = @isset($data) {{ $data[0]['price'] }}; @else 0.00; @endisset
                     var ngn = @isset($data) {{ $market->rate * $data[0]['price'] }}; @else 0.00; @endisset
-                    $("#amount_usd").val(($("#amount").val() * usd).toFixed(2) );
-                    $("#amount_ngn").val(($("#amount").val() *  ngn).toFixed(2) );
-                    $("#charge").val(($("#amount").val() * {{ \App\Setting::all()->first()->charges / 100 }}) );
+                    $("#amount_usd").val((($("#amount").val() - (charge / 2)) * usd).toFixed(2));
+                    $("#amount_ngn").val((($("#amount").val() - (charge / 2)) *  ngn).toFixed(2));
                 }
             })
             $("#wallet-company").bind('keyup change', function () {

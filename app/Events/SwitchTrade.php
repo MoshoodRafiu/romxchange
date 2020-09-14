@@ -35,6 +35,11 @@ class SwitchTrade implements ShouldBroadcast
         return new PrivateChannel('trade.'.$this->trade->id);
     }
 
+    public function broadcastWith(){
+        return $data = ['message' => 'Trade Switched'];
+    }
+
+
     public function broadcastAs(){
         return "switch-trade";
     }

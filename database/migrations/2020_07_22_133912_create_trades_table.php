@@ -32,7 +32,6 @@ class CreateTradesTable extends Migration
             $table->boolean('seller_has_summoned')->default(0);
             $table->string('transaction_charge_coin')->nullable();
             $table->string('transaction_charge_usd')->nullable();
-            $table->string('transaction_charge_ngn')->nullable();
             $table->string('seller_wallet_company')->nullable();
             $table->timestamp('trade_window_expiry');
             $table->string('transaction_status')->default('pending');

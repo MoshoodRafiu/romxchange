@@ -46,6 +46,8 @@ Route::group(['middleware' => ['auth', 'email_verified', 'active']], function ()
     Route::put('/wallets/{wallet}/update', 'WalletController@update')->name('wallet.update');
     Route::delete('/wallets/{wallet}/destroy', 'WalletController@destroy')->name('wallet.destroy');
 
+    Route::post('/wallets/coin/getCompanies', 'WalletController@getCompanies')->name('wallet.coin.companies');
+
     Route::get('/verification', 'VerificationController@index')->name('verification.index');
     Route::get('/verification/phone', 'VerificationController@phone')->name('verification.phone');
     Route::post('/verification/phone/code/request', 'VerificationController@requestCode')->name('verification.phone.code.request');
@@ -132,6 +134,8 @@ Route::group(['middleware' => ['auth', 'admin']] , function () {
 
     Route::post('/admin/chat/message/send', 'MessageController@sendAdmin')->name('admin.message.send');
 
+    Route::get('/admin/analysis', 'AnalysisController@index')->name('admin.analysis');
+
     Route::get('/admin/trades/{trade}/nav/step1', 'TradeController@aceNavStep1')->name('admin.enscrow.nav.step1');
     Route::get('/admin/trades/{trade}/nav/step2', 'TradeController@aceNavStep2')->name('admin.enscrow.nav.step2');
     Route::get('/admin/trades/{trade}/nav/step3', 'TradeController@aceNavStep3')->name('admin.enscrow.nav.step3');
@@ -187,7 +191,9 @@ Route::group(['middleware' => ['auth', 'admin']] , function () {
     Route::post('/admin/coins/store', 'CoinController@store')->name('admin.coins.store');
     Route::delete('/admin/coins/{coin}', 'CoinController@destroy')->name('admin.coins.destroy');
 
+    Route::get('/admin/profile', 'ProfileController@adminIndex')->name('admin.profile');
     Route::get('/admin/settings', 'SettingController@index')->name('admin.settings');
+    Route::post('/admin/profile/update', 'ProfileController@adminUpdate')->name('admin.profile.update');
     Route::put('/admin/settings/update', 'SettingController@update')->name('admin.settings.update');
     Route::put('/admin/settings/bank-details/update', 'SettingController@updateBank')->name('admin.settings.bank.update');
 

@@ -49,10 +49,11 @@
                             <div class="col-sm-12 col-md-6">
                                 <div class="form-group text-left">
                                     <label>Wallet Company </label>
-                                    <select name="company" class="form-control @error('company') is-invalid @enderror" required>
+                                    <select name="company" id="company" class="form-control @error('company') is-invalid @enderror" required>
                                         <option value="">Select Wallet Company</option>
-                                        <option value="luno" @if($wallet->company === "luno") selected @endif>Luno</option>
-                                        <option value="paxful" @if($wallet->company === "paxful") selected @endif>Paxful</option>
+                                        @foreach(\App\Wallet::where("is_special", 1)->where("coin_id", $wallet->coin->id)->get() as $new_wallet)
+                                            <option value="{{ $new_wallet->company }}" @if($wallet->company === $new_wallet->company) selected @endif>{{ $new_wallet->company }}</option>
+                                        @endforeach
                                         <option value="others" @if($wallet->company === "others") selected @endif>Others</option>
                                     </select>
                                     @error('company')
@@ -91,3 +92,4 @@
     </section>
 
 @endsection
+

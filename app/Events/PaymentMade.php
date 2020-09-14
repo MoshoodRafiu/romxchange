@@ -36,6 +36,11 @@ class PaymentMade implements ShouldBroadcast
         return new PrivateChannel('trade.'.$this->trade->id);
     }
 
+    public function broadcastWith(){
+        return $data = ['message' => 'Payment Made'];
+    }
+
+
     public function broadcastAs(){
         return "payment-made";
     }

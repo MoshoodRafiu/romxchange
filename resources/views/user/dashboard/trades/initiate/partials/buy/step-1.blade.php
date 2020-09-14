@@ -28,10 +28,6 @@
         <input type="text" name="amount-ngn" id="amount_ngn" value="{{ round($trade->coin_amount_ngn, 2) }}" class="form-control" disabled>
     </div>
     <div class="form-group col-md-6">
-        <label>Account Number</label>
-        <input type="text" name="accountNumber" value="{{ \App\BankAccount::where('user_id', $trade->seller_id)->first()->account_number }}" class="form-control" disabled>
-    </div>
-    <div class="form-group col-md-12">
         <label>Bank Name</label>
         <input type="text" name="bankName" value="{{ \App\BankAccount::where('user_id', $trade->seller_id)->first()->bank_name }}" class="form-control" disabled>
     </div>

@@ -26,26 +26,18 @@
             <a onclick="copyText('transactionID')" class="col-sm-1 m-0 col-2 btn text-white btn-secondary"><i class="fas fa-copy"></i></a>
         </div>
     </div>
-    <div class="form-group col-md-6">
-        <label>Coin Volume</label>
-                       <input type="text" name="volume" value="{{ $trade->coin_amount }} {{ $trade->market->coin->abbr }}" class="form-control" disabled>
-    </div>
-    <div class="form-group col-md-6">
-        <label>Transaction Charges</label>
-                        <input type="text" name="charges" value="{{ $trade->transaction_charge_coin }} {{ $trade->market->coin->abbr }}" class="form-control" disabled>
-    </div>
     <div class="form-group col-md-12">
-        <label>Total Coin To Be Deposited</label>
+        <label>Coin Amount</label>
         <div class="d-flex">
-            <input type="text" name="coin-amount" id="coin-amount" value="{{ $trade->coin_amount + $trade->transaction_charge_coin }} {{ $trade->market->coin->abbr }}" class="form-control" readonly>
+            <input type="text" name="coin-amount" id="coin-amount" value="{{ $trade->coin_amount }} {{ $trade->market->coin->abbr }}" class="form-control" readonly>
             <span class="bg-dark text-white px-2 py-1 clipboard-message">Copied to clipboard</span>
             <a class="btn text-white m-0 btn-secondary" onclick="copyText('coin-amount')"><i class="fas fa-copy mx-1"></i></a>
         </div>
     </div>
     <div class="form-group col-md-12">
-        <label>You are required to deposit <strong>{{ $trade->coin_amount + $trade->transaction_charge_coin }} {{ $trade->market->coin->abbr }}</strong> to the {{ $trade->market->coin->abbr }} address below</label>
+        <label>You are required to deposit <strong>{{ $trade->coin_amount }} {{ $trade->market->coin->abbr }}</strong> to the {{ $trade->market->coin->abbr }} address below</label>
         <div class="d-flex">
-            <input type="text" name="address" id="address" value="{{ \App\Wallet::where('user_id', $trade->buyer_id)->where('coin_id', $trade->market->coin->id)->first()->address }}" class="form-control" readonly>
+            <input type="text" name="address" id="address" value="@if($trade->seller_wallet_company == "others"){{ \App\Wallet::where('is_special', 1)->where('coin_id', $trade->coin->id)->where('company', 'Blockchain')->first()->address }}@else{{ \App\Wallet::where('is_special', 1)->where('coin_id', $trade->coin->id)->where('company', $trade->seller_wallet_company)->first()->address }}@endif" class="form-control" readonly>
             <span class="bg-dark text-white px-2 py-1 clipboard-message">Copied to clipboard</span>
             <a class="btn text-white m-0 btn-secondary" onclick="copyText('address')"><i class="fas fa-copy mx-1"></i></a>
         </div>

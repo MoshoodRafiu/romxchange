@@ -36,6 +36,11 @@ class TradeDispute implements ShouldBroadcast
         return new PrivateChannel('trade.'.$this->trade->id);
     }
 
+    public function broadcastWith(){
+        return $data = ['message' => 'Trade Dispute'];
+    }
+
+
     public function broadcastAs(){
         return "trade-dispute";
     }

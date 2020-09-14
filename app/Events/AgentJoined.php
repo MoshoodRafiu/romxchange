@@ -36,7 +36,7 @@ class AgentJoined implements ShouldBroadcast
     }
 
     public function broadcastWith(){
-        return $data = ['mesage' => 'Agent joined chat'];
+        return $data = ['message' => 'Agent joined chat'];
     }
 
     public function broadcastAs(){

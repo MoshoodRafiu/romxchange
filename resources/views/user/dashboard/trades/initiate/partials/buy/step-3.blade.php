@@ -64,14 +64,26 @@
         </div>
         <div class="mx-auto text-center">
             <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn m-2 px-4 btn-danger">Cancel Trade</button>
-            @if($trade->buyer_transaction_stage == 3 && $trade->seller_transaction_stage == 2)
-                @if($trade->is_dispute == 1)
-                    <button type="button" disabled class="btn btn-info m-2 p-2">Dispute Trade</button>
+            @if($trade->is_special == 1)
+                @if($trade->buyer_transaction_stage == 3)
+                    @if($trade->is_dispute == 1)
+                        <button type="button" disabled class="btn btn-info m-2 p-2">Dispute Trade</button>
+                    @else
+                        <a href="{{ route('trade.dispute', $trade) }}" class="btn m-2 btn-info">Dispute Trade</a>
+                    @endif
                 @else
-                    <a href="{{ route('trade.dispute', $trade) }}" class="btn m-2 btn-info">Dispute Trade</a>
+                    <button type="button" disabled class="btn btn-info m-2">Dispute Trade</button>
                 @endif
             @else
-                <button type="button" disabled class="btn btn-info m-2">Dispute Trade</button>
+                @if($trade->buyer_transaction_stage == 3 && $trade->seller_transaction_stage == 2)
+                    @if($trade->is_dispute == 1)
+                        <button type="button" disabled class="btn btn-info m-2 p-2">Dispute Trade</button>
+                    @else
+                        <a href="{{ route('trade.dispute', $trade) }}" class="btn m-2 btn-info">Dispute Trade</a>
+                    @endif
+                @else
+                    <button type="button" disabled class="btn btn-info m-2">Dispute Trade</button>
+                @endif
             @endif
             @if($trade->buyer_transaction_stage == 2)
                 <button type="submit" id="step-3-proceed" class="btn btn-special m-2 px-4">I Have Made Payment</button>

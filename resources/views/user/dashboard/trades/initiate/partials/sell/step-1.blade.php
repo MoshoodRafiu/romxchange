@@ -41,10 +41,6 @@
                         <input type="text" name="amount-ngn" value="{{ round($trade->coin_amount_ngn, 2) }}" class="form-control" disabled>
     </div>
     <div class="form-group col-md-6">
-        <label>Transaction Charges</label>
-                        <input type="number" name="charges" value="{{ $trade->transaction_charge_coin }}" class="form-control" disabled>
-    </div>
-    <div class="form-group col-md-12">
         <label>Wallet Company</label>
         <select name="wallet" class="form-control" disabled>
             <option value="{{ $trade->seller_wallet_company }}">{{ $trade->seller_wallet_company }}</option>

@@ -31,8 +31,8 @@
                                 @isset($trade)
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="small">
-                                        <a href="{{ route('sms.summon', ['trade' => $trade, 'type' => 'seller']) }}" class="btn btn-sm btn-secondary">Summon via SMS</a>
-                                        <a href="{{ route('mail.summon', ['trade' => $trade, 'type' => 'seller']) }}" class="btn btn-sm btn-info">Summon via Mail</a>
+                                        <a href="{{ route('sms.summon', ['trade' => $trade, 'type' => 'seller']) }}" class="btn my-1 my-md-0 btn-sm btn-secondary">Summon via SMS</a>
+                                        <a href="{{ route('mail.summon', ['trade' => $trade, 'type' => 'seller']) }}" class="btn my-1 my-md-0 btn-sm btn-info">Summon via Mail</a>
                                     </div>
                                     <h4 class="text-right text-danger"><span id="minute">00</span>.<span id="second">00</span></h4>
                                 </div>
@@ -75,17 +75,13 @@
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label>Amount in USD</label>
-                                            <input type="text" name="amount-usd" id="amount_usd" value="@isset($data){{ round($data[0]['price'], 2) }}@else @isset($trade){{ round($trade->coin_amount_usd, 2) }} @endisset @endisset" class="form-control" disabled>
+                                            <input type="text" name="amount-usd" id="amount_usd" value="@isset($data) 0.00 @else @isset($trade){{ round($trade->coin_amount_usd, 2) }} @endisset @endisset" class="form-control" disabled>
                                         </div>
                                         <div class="form-group col-md-6">
                                             <label>Amount in NGN</label>
-                                            <input type="text" name="amount-ngn" id="amount_ngn" value="@isset($data){{ round($market->rate * $data[0]['price'], 2) }} @else @isset($trade){{ round($trade->coin_amount_ngn, 2) }} @endisset @endisset" class="form-control" disabled>
+                                            <input type="text" name="amount-ngn" id="amount_ngn" value="@isset($data) 0.00 @else @isset($trade){{ round($trade->coin_amount_ngn, 2) }} @endisset @endisset" class="form-control" disabled>
                                         </div>
                                         <div class="form-group col-md-6">
-                                            <label>Account Number</label>
-                                            <input type="text" name="accountNumber" value="{{ \App\BankAccount::where('user_id', $market->user_id)->first()->account_number }}" class="form-control" disabled>
-                                        </div>
-                                        <div class="form-group col-md-12">
                                             <label>Bank Name</label>
                                             <input type="text" name="bankName" value="{{ \App\BankAccount::where('user_id', $market->user_id)->first()->bank_name }}" class="form-control" disabled>
                                         </div>
@@ -147,7 +143,12 @@
     <script>
         @isset($trade)
         var cancel_time = "{{ date('F j, Y H:i:s', strtotime($trade->trade_window_expiry)) }}";
-        var url = "{{ route('trade.index') }}";
+        var url = "{{ route('trade.cancel', $trade) }}";
+        @if($trade->seller_transaction_stage == null)
+            function cancelTrade(){
+                window.location.replace(url);
+            }
+        @endif
         // Set the date we're counting down to
         var countDownDate = new Date(cancel_time).getTime();
 
@@ -176,7 +177,9 @@
 
             // If the count down is over, write some text
             if (distance < 0) {
-                // window.location.replace(url);
+                @if($trade->seller_transaction_stage == null)
+                    window.location.replace(url);
+                @endif
                 clearInterval(x);
                 document.getElementById("minute").innerText = "00";
                 document.getElementById("second").innerText = "00";
@@ -197,10 +200,11 @@
                     $("#amount_ngn").val("");
                 }else{
                     $("#error").text("")
+                    var charge = ({{ \App\Setting::all()->first()->charges / 100}}) * $("#amount").val();
                     var usd = @isset($data) {{ $data[0]['price'] }}; @else 0.00; @endisset
                     var ngn = @isset($data) {{ $market->rate * $data[0]['price'] }}; @else 0.00; @endisset
-                    $("#amount_usd").val(($("#amount").val() * usd).toFixed(2) );
-                    $("#amount_ngn").val(($("#amount").val() * ngn).toFixed(2) );
+                    $("#amount_usd").val((($("#amount").val() - (charge / 2)) * usd).toFixed(2));
+                    $("#amount_ngn").val((($("#amount").val() - (charge / 2)) *  ngn).toFixed(2));
                 }
             })
 

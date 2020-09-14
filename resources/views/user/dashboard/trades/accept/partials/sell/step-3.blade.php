@@ -37,7 +37,7 @@
         <a href="{{ route('trade.index') }}"  class="btn btn-info px-5">Close Trade Window</a>
     @else
         <div id="dispute-button">
-            @if($trade->buyer_transaction_stage == 3 && $trade->seller_transaction_stage == 2)
+            @if($trade->buyer_transaction_stage == 2 && $trade->seller_transaction_stage == 2)
                 @if($trade->is_dispute == 1)
                     <button type="button" disabled class="btn btn-info p-2">Dispute Trade</button>
                 @else

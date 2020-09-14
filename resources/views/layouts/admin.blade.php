@@ -24,9 +24,9 @@
 <div id="wrapper">
     <nav class="navbar navbar-dark align-items-start sidebar sidebar-dark accordion sidebar p-0" style="background-color: rgb(1,7,24);">
         <div class="container-fluid d-flex flex-column p-0">
-            <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="index.html">
+            <a class="navbar-brand d-flex justify-content-center align-items-center sidebar-brand m-0" href="{{ route('admin.dashboard') }}">
                 <div><img src="{{ asset('assets/img/logo.png') }}" width="37px"></div>
-                <div class="sidebar-brand-text mx-3"><span style="font-size: 20px;">ACE WORLD</span></div>
+                <div class="sidebar-brand-text mx-3"><span style="font-size: 20px;"><img src="{{ asset('assets/img/name.png') }}" class="img img-fluid" alt="brand"></span></div>
             </a>
             <hr class="sidebar-divider my-0">
             <ul class="nav navbar-nav text-light" id="accordionSidebar">
@@ -43,23 +43,23 @@
                     <a class="{{ Request::routeIs(['admin.customers','admin.customers.filter', 'admin.customers.show']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.customers') }}"><i class="fas fa-users" style="width: 30px; text-align: center;"></i><span>Customers</span></a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="{{ Request::routeIs(['admin.verifications', 'admin.verifications.show']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.verifications') }}"><i class="fas fa-file-alt" style="width: 30px; text-align: center;"></i><span>Verifications</span></a>
+                    <a class="{{ Request::routeIs(['admin.verifications', 'admin.verifications.show']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.verifications') }}"><i class="fas fa-file-alt" style="width: 30px; text-align: center;"></i>@if(\App\Verification::where('document_verification_status', 'pending')->count() > 0)<span class="badge badge-danger py-1 m-0 mx-md-2 px-2 badge-counter">{{ \App\Verification::where('document_verification_status', 'pending')->count() }}</span>@endif<span>Verifications</span></a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="{{ Request::routeIs(['admin.transactions.enscrow', 'admin.transactions.accept', 'admin.transactions.proceed']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.transactions.enscrow') }}"><i class="far fa-credit-card" style="width: 30px; text-align: center;"></i><span>Enscrow</span></a>
+                    <a class="{{ Request::routeIs(['admin.transactions.enscrow', 'admin.transactions.accept', 'admin.transactions.proceed']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.transactions.enscrow') }}"><i class="far fa-credit-card" style="width: 30px; text-align: center;"></i>@if(\App\Trade::where('is_special', 0)->where('transaction_status', 'pending')->count() > 0)<span class="badge badge-danger py-1 m-0 mx-md-2 px-2 badge-counter">{{ \App\Trade::where('is_special', 0)->where('transaction_status', 'pending')->count() }}</span>@endif<span>Enscrow</span></a>
                 </li>
                 <li class="nav-item" role="presentation">
                     <a class="{{ Request::routeIs(['admin.agents', 'admin.agents.create']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.agents') }}"><i class="fas fa-user-friends" style="width: 30px; text-align: center;"></i><span>Agents</span></a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="{{ Request::routeIs(['admin.trades', 'admin.trade.accept.buy', 'admin.trade.accept.sell']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.trades') }}"><i class="fas fa-exchange-alt" style="width: 30px; text-align: center;"></i><span>Trades</span></a>
+                    <a class="{{ Request::routeIs(['admin.trades', 'admin.trade.accept.buy', 'admin.trade.accept.sell']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.trades') }}"><i class="fas fa-exchange-alt" style="width: 30px; text-align: center;"></i>@if(\App\Trade::where('is_special', 1)->where('transaction_status', 'pending')->count() > 0)<span class="badge badge-danger py-1 m-0 mx-md-2 px-2 badge-counter">{{ \App\Trade::where('is_special', 1)->where('transaction_status', 'pending')->count() }}</span>@endif<span>Trades</span></a>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="{{ Request::routeIs(['admin.trades.disputes', 'admin.trades.dispute.join']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.trades.disputes') }}"><i class="fas fa-exclamation-triangle" style="width: 30px; text-align: center;"></i><span>Disputes</span></a>
+                    <a class="{{ Request::routeIs(['admin.trades.disputes', 'admin.trades.dispute.join']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.trades.disputes') }}"><i class="fas fa-exclamation-triangle" style="width: 30px; text-align: center;"></i>@if(\App\Trade::where('is_special', 0)->where('is_dispute', 1)->where('transaction_status', 'pending')->count() > 0)<span class="badge badge-danger py-1 m-0 mx-md-2 px-2 badge-counter">{{ \App\Trade::where('is_special', 0)->where('is_dispute', 1)->where('transaction_status', 'pending')->count() }}</span>@endif<span>Disputes</span></a>
                 </li>
                 <li class="nav-item" role="presentation">
                     <div>
-                        <a class="btn btn-link nav-link {{ Request::routeIs(['admin.wallets.all','admin.wallets.single']) ? "active" : "" }}" data-toggle="collapse" aria-expanded="false" aria-controls="collapse-1" href="#collapse-1" role="button">
+                        <a class="btn btn-link nav-link {{ Request::routeIs(['admin.wallets.all','admin.wallets.single']) ? "active" : "" }}" id="walletsToggleButton">
                             <i class="fas fa-wallet"  style="width: 30px; text-align: center;"></i>&nbsp;<span>Wallets</span>
                         </a>
                         <div class="collapse" id="collapse-1">
@@ -74,7 +74,10 @@
                     </div>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <a class="nav-link" href="#"><i class="fas fa-chart-bar"  style="width: 30px; text-align: center;"></i><span>Analysis</span></a>
+                    <a class="{{ Request::routeIs(['admin.analysis']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.analysis') }}"><i class="fas fa-chart-bar"  style="width: 30px; text-align: center;"></i><span>Analysis</span></a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="{{ Request::routeIs(['admin.profile']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.profile') }}"><i class="fas fa-user"  style="width: 30px; text-align: center;"></i><span>Profile</span></a>
                 </li>
                 <li class="nav-item" role="presentation">
                     <a class="{{ Request::routeIs(['admin.settings']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.settings') }}"><i class="fas fa-cog"  style="width: 30px; text-align: center;"></i><span>Settings</span></a>
@@ -114,9 +117,17 @@
                         </li>
                         <li class="nav-item dropdown no-arrow mx-1" role="presentation">
                             <div class="nav-item dropdown no-arrow">
-                                <a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#">
-                                    <i class="fas fa-exchange-alt fa-fw"></i><span class="badge badge-danger badge-counter">7</span>
-                                </a>
+                                <div class="d-flex">
+                                    <a class="dropdown-toggle nav-link" href="{{ route('admin.trades') }}">
+                                        <i class="fas fa-exchange-alt fa-fw"></i>@if(\App\Trade::where('is_special', 1)->where('transaction_status', 'pending')->count() > 0)<span class="badge badge-danger badge-counter">{{ \App\Trade::where('is_special', 1)->where('transaction_status', 'pending')->count() }}</span>@endif
+                                    </a>
+                                    <a class="dropdown-toggle nav-link" href="{{ route('admin.transactions.enscrow') }}">
+                                        <i class="fas fa-credit-card fa-fw"></i>@if(\App\Trade::where('is_special', 0)->where('transaction_status', 'pending')->count() > 0)<span class="badge badge-danger badge-counter">{{ \App\Trade::where('is_special', 0)->where('transaction_status', 'pending')->count() }}</span>@endif
+                                    </a>
+                                    <a class="dropdown-toggle nav-link" href="{{ route('admin.trades.disputes') }}">
+                                        <i class="fas fa-exclamation-triangle fa-fw"></i>@if(\App\Trade::where('is_special', 0)->where('is_dispute', 1)->where('transaction_status', 'pending')->count() > 0)<span class="badge badge-danger badge-counter">{{ \App\Trade::where('is_special', 0)->where('is_dispute', 1)->where('transaction_status', 'pending')->count() }}</span>@endif
+                                    </a>
+                                </div>
                             </div>
                             <div class="shadow dropdown-list dropdown-menu dropdown-menu-right" aria-labelledby="alertsDropdown"></div>
                         </li>
@@ -124,8 +135,9 @@
                         <li class="nav-item dropdown no-arrow" role="presentation">
                             <div class="nav-item dropdown no-arrow">
                                 <a class="dropdown-toggle nav-link" data-toggle="dropdown" aria-expanded="false" href="#">
-                                    <span class="d-none d-lg-inline mr-2 text-gray-600 small">Aministrator</span>
-                                    <img class="border rounded-circle img-profile" src="{{ asset('sidebar-assets/img/avatars/avatar1.jpeg') }}"></a>
+                                    <span class="d-none d-lg-inline mr-2 text-gray-600 small">{{ Auth::user()->display_name }}</span>
+                                    <img class="border rounded-circle img-profile" src="{{ asset('sidebar-assets/img/avatars/avatar.jpg') }}">
+                                </a>
                                 <div class="dropdown-menu shadow dropdown-menu-right animated--grow-in" role="menu">
                                     <a class="dropdown-item" role="presentation" href="profile.html"><i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Profile</a>
                                     <a class="dropdown-item" role="presentation" href="#"><i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>&nbsp;Logout</a>
@@ -143,7 +155,7 @@
         </div>
         <footer class="bg-white sticky-footer">
             <div class="container my-auto">
-                <div class="text-center my-auto copyright"><span>Copyright © ACE WORLD 2020</span></div>
+                <div class="text-center my-auto copyright"><span>Copyright © ACE WORLD {{ date("Y", strtotime(now())) }}</span></div>
             </div>
         </footer>
     </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a></div>
@@ -157,6 +169,12 @@
 <script src="{{ asset('sidebar-assets/js/datatables.js') }}"></script>
 @yield('script')
 <script>
+    $(document).ready(function () {
+        $('#walletsToggleButton').click(function (e) {
+            e.preventDefault();
+            $('#collapse-1').toggle('slow')
+        })
+    })
     function copyText(input) {
         /* Get the text field */
         var copyText = document.getElementById(input);

@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\AccountApprovalMail;
+use App\Mail\AccountRestrictionMail;
+use App\Mail\AccountStatusChangeMail;
 use App\Mail\AgentInvitationMail;
 use App\Mail\SignupEmail;
 use App\Mail\SummonUserMail;
+use App\Mail\TradeCompletionMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -34,5 +38,29 @@ class MailController extends Controller
             'text' => $mail,
         ];
         Mail::to($email)->send(new SummonUserMail($data));
+    }
+
+    public static function sendRestrictionEmail($display_name, $email){
+        $data = [
+            'display_name' => $display_name,
+            'email' => $email,
+        ];
+        Mail::to($email)->send(new AccountRestrictionMail($data));
+    }
+
+    public static function sendApprovalEmail($display_name, $email){
+        $data = [
+            'display_name' => $display_name,
+            'email' => $email,
+        ];
+        Mail::to($email)->send(new AccountApprovalMail($data));
+    }
+
+    public static function sendTradeCompletionMail($email, $message){
+        $data = [
+            'message' => $message,
+            'email' => $email,
+        ];
+        Mail::to($email)->send(new TradeCompletionMail($data));
     }
 }
