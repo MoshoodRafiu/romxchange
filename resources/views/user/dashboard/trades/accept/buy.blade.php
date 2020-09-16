@@ -76,7 +76,7 @@
                                             <label for="charges">Bank Name</label>
                                             <input type="text" name="bankName" value="{{ \App\BankAccount::where('user_id', $trade->seller_id)->first()->bank_name }}" class="form-control" disabled>
                                         </div>
-                                        <div class="mx-auto text-center" id="trade-cancel">
+                                        <div class="mx-auto mt-4 text-center" id="trade-cancel">
                                             <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn px-4 btn-danger">Cancel Trade</button>
                                             @if($trade->buyer_transaction_stage == null)
                                                 <button type="submit" id="step-1-proceed" class="btn btn-special mx-4">Accept Trade</button>

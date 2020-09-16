@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
+use Artesaos\SEOTools\Facades\SEOMeta;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 
@@ -41,11 +42,19 @@ class LoginController extends Controller
 
     protected function authenticated(Request $request, $user)
     {
-        if ($user->is_admin == 1 || $user->is_agent == 1){
+        if ($user->is_admin == 1){
             return redirect()->route('admin.dashboard');
+        }elseif ($user->is_admin == 0 && $user->is_agent == 1){
+            return redirect()->route('admin.trades.disputes');
         }
 
         return redirect()->route('home');
+    }
+
+    public function showLoginForm()
+    {
+        SEOMeta::setTitle('Login');
+        return view('auth.login');
     }
 
 }

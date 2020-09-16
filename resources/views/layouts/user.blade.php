@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>AcexWorld</title>
+    {!! SEOMeta::generate() !!}
     <link rel="icon" type="image/png" sizes="218x250" href="{{asset('assets/img/logo.png')}}">
 {{--    <link rel="stylesheet" href="{{asset('assets/bootstrap/css/bootstrap.min.css?h=e3b2ea54c5d54884854fc0397d0f6bb8')}}">--}}
 {{--    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700">--}}
@@ -38,13 +38,13 @@
 </head>
 
 <body id="page-top"><nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-dark" id="mainNav" style="background-color: rgb(2,12,31);">
-    <div class="container"><a class="navbar-brand d-flex justify-content-center align-items-center" href="{{ url('/') }}" style="font-family: Poppins, sans-serif;"><img src="{{asset('assets/img/clogo.png')}}" height="45px"></a><button id="toggleNavbar" class="navbar-toggler navbar-toggler-right" type="button"><i class="fa fa-bars"></i></button>
+    <div class="container"><a class="navbar-brand d-flex justify-content-center align-items-center" href="{{ url('/') }}" style="font-family: Poppins, sans-serif;"><img src="{{asset('assets/img/clogo.png')}}" id="brand-logo"></a><button id="toggleNavbar" class="navbar-toggler navbar-toggler-right" type="button"><i class="fa fa-bars"></i></button>
         <div class="collapse navbar-collapse" id="navbarResponsive" style="font-family: Poppins, sans-serif;">
             <ul class="nav navbar-nav ml-auto text-uppercase">
                 <li role="presentation" class="nav-item"><a class=" {{ Request::is('/') ? "nav-link text-warning font-weight-bold js-scroll-trigger" : "nav-link font-weight-bold js-scroll-trigger" }} " href="{{ url('/') }}">Home</a></li>
 {{--                <li role="presentation" class="nav-item"><a class="nav-link js-scroll-trigger" href="buy.html">BUY</a></li>--}}
 {{--                <li role="presentation" class="nav-item"><a class="nav-link js-scroll-trigger" href="sell.html">SELL</a></li>--}}
-                <li role="presentation" class="nav-item"><a class="{{ Request::routeIs(['market.index', 'market.filter']) ? "nav-link text-warning font-weight-bold js-scroll-trigger" : "nav-link font-weight-bold js-scroll-trigger" }}" href="{{ route('market.index') }}">MARKet</a></li>
+                <li role="presentation" class="nav-item"><a class="{{ Request::routeIs(['market.index', 'market.filter', 'market.buy', 'market.sell']) ? "nav-link text-warning font-weight-bold js-scroll-trigger" : "nav-link font-weight-bold js-scroll-trigger" }}" href="{{ route('market.index') }}">MARKet</a></li>
                 @guest
                     <li role="presentation" class="nav-item"><a class="{{ Request::is('login') ? "nav-link text-warning font-weight-bold js-scroll-trigger" : "nav-link font-weight-bold js-scroll-trigger" }}" href="{{ route('login') }}">Login</a></li>
                     @if (Route::has('register'))
@@ -69,8 +69,10 @@
 " onmouseover="this.style.backgroundColor='#04122f';">MY ADVERTS</a>
                         </div>
                     </li>
-                    @else
+                    @elseif(Auth::user()->is_admin == 1 && Auth::user()->is_agent == 1)
                         <li role="presentation" class="nav-item"><a class="nav-link font-weight-bold js-scroll-trigger" href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                    @elseif(Auth::user()->is_admin == 0 && Auth::user()->is_agent == 1)
+                        <li role="presentation" class="nav-item"><a class="nav-link font-weight-bold js-scroll-trigger" href="{{ route('admin.trades.disputes') }}">Dashboard</a></li>
                     @endif
                     <l1 role="presentation" class="nav-item"><a class="nav-link font-weight-bold" href="{{ route('logout') }}"
                                                                 onclick="event.preventDefault();
@@ -101,20 +103,20 @@
             <p class="company-name">ACExWORLD © {{ date("Y", strtotime(now())) }} </p>
         </div>
         <div class="col-sm-6 col-md-4 footer-contacts">
-            <div><i class="fa fa-phone emphasis footer-contacts-icon"></i>
+            <div><i class="fa fa-phone small emphasis footer-contacts-icon"></i>
                 <p class="footer-center-info email text-left"> +234 9099992234</p>
             </div>
-            <div><i class="fa fa-phone emphasis footer-contacts-icon"></i>
+            <div><i class="fa fa-phone emphasis small footer-contacts-icon"></i>
                 <p class="footer-center-info email text-left"> +234 7098897878</p>
             </div>
-            <div><i class="fa fa-envelope emphasis footer-contacts-icon"></i>
-                <p><a href="#" target="_blank">support@aceworld@gmail.com</a></p>
+            <div><i class="fa fa-envelope emphasis small footer-contacts-icon"></i>
+                <p><a href="#" target="_blank">support@acexworld.com</a></p>
             </div>
         </div>
         <div class="clearfix"></div>
         <div class="col-md-4 footer-about">
             <h4>About Us</h4>
-            <p> <span class="emphasis">ACExWORLD</span> is an enscrowed online cryptocurrency peer-to-peer exchange platform that bridges the gap between cryptocurrency buyers and sellers at <span class="emphasis">zero risk.</span> </p>
+            <p> <span class="emphasis">ACExWORLD</span> is an escrow online cryptocurrency peer-to-peer exchange platform that bridges the gap between cryptocurrency buyers and sellers at <span class="emphasis">zero risk.</span> </p>
             <div class="social-links social-icons"><a href="#"><i class="fa fa-facebook emphasis"></i></a><a href="#"><i class="fa fa-twitter emphasis"></i></a><a href="#"><i class="fa fa-instagram emphasis"></i></a><a href="#"><i class="fa fa-envelope emphasis"></i></a></div>
         </div>
     </div>

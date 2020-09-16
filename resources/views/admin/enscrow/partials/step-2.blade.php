@@ -52,7 +52,7 @@
             </div>
         </div>
     </div>
-    <div class="form-group text-center" id="function-button">
+    <div class="form-group text-center mt-4" id="function-button">
     @if($trade->buyer_transaction_stage >= 3 && $trade->buyer_transaction_stage >= 3 && $trade->ace_transaction_stage == 2)
         <button class="btn btn-special" id="step-2-proceed" type="submit">Transaction Has Been Settled</button>
     @else

@@ -55,7 +55,7 @@
         <label>A total of <strong>{{ $trade->coin_amount }} {{ $trade->market->coin->abbr }}</strong> will be transferred to your <strong>{{ $trade->market->coin->abbr }}</strong> address below, please verify your wallet ID and cancel the transaction if there's any issue.</label>
         <input type="text" name="address" value="{{ \App\Wallet::where('user_id', Auth::user()->id)->where('coin_id', $trade->market->coin->id)->first()->address }}" class="form-control wallet-address" readonly>
     </div>
-    <div class="mx-auto text-center">
+    <div class="mx-auto text-center mt-4" id="trade-cancel">
         <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn m-2 px-4 btn-danger">Cancel Trade</button>
         @if($trade->buyer_transaction_stage == 1)
             <button type="submit" id="step-2-proceed" class="btn btn-special m-2">Verify Wallet</button>

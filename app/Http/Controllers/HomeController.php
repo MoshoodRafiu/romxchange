@@ -30,8 +30,8 @@ class HomeController extends Controller
     public function index()
     {
         SEOMeta::setTitle('Home');
-        SEOMeta::setDescription('This is my page description');
-        SEOMeta::setCanonical('https://codecasts.com.br/lesson');
+        SEOMeta::setDescription('ACExWORLD is an escrow online cryptocurrency peer-to-peer exchange platform that bridges the gap between cryptocurrency buyers and sellers at zero risk.');
+        SEOMeta::setCanonical('https://acexworld.com');
 
         $key = env('NOMICS_KEY');
         $markets = Market::orderBy('is_special', 'desc')->withCount(['reviews as star_rating' => function($query) {

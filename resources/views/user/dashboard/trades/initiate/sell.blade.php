@@ -113,7 +113,7 @@
                                             @endisset
                                             <div><strong id="error-wallet" class="text-danger"></strong></div>
                                         </div>
-                                        <div class="mx-auto text-center" id="trade-cancel">
+                                        <div class="mx-auto mt-4 text-center" id="trade-cancel">
                                             @isset($trade)
                                                 @if($trade->transaction_status == "cancelled")
                                                     <a href="{{ route('trade.index') }}"  class="btn btn-info px-5">Close Trade Window</a>
@@ -152,6 +152,27 @@
             @isset($trade)
         var cancel_time = "{{ date('F j, Y H:i:s', strtotime($trade->trade_window_expiry)) }}";
         var url = "{{ route('trade.cancel', $trade) }}";
+        function canCancelTrade(){
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRF-TOKEN": $("meta[name='csrf-token']").attr('content')
+                }
+            });
+            $.ajax({
+                url: "{{ route('trade.cancel.check') }}",
+                method: "POST",
+                data: {
+                    trade: {{ $trade->id }},
+                    type: "buyer"
+                },
+                cache: false,
+                success: function (result) {
+                    if (result.success){
+                        window.location.replace(url);
+                    }
+                }
+            });
+        }
         // Set the date we're counting down to
         var countDownDate = new Date(cancel_time).getTime();
 
@@ -180,10 +201,8 @@
 
             // If the count down is over, write some text
             if (distance < 0) {
-                @if($trade->buyer_transaction_stage == null)
-                    window.location.replace(url);
-                @endif
                 clearInterval(x);
+                canCancelTrade();
                 document.getElementById("minute").innerText = "00";
                 document.getElementById("second").innerText = "00";
             }

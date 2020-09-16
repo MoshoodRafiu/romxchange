@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Artesaos\SEOTools\Facades\SEOMeta;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
@@ -50,6 +51,12 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        if ($this->isHttpException($exception)){
+            if ($exception->getStatusCode() == "404"){
+                SEOMeta::setTitle('Page Not Found');
+                return response()->view('exception.404');
+            }
+        }
         return parent::render($request, $exception);
     }
 }

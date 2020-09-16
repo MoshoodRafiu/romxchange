@@ -46,7 +46,7 @@
             <option value="{{ $trade->seller_wallet_company }}">{{ $trade->seller_wallet_company }}</option>
         </select>
     </div>
-    <div class="mx-auto text-center" id="trade-cancel">
+    <div class="mx-auto text-center mt-4" id="trade-cancel">
         @if($trade->transaction_status == "cancelled")
             <a href="{{ route('trade.index') }}"  class="btn btn-info px-5">Close Trade Window</a>
         @else

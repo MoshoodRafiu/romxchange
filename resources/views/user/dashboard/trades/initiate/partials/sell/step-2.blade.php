@@ -58,7 +58,7 @@
             <a class="btn text-white m-0 btn-secondary" onclick="copyText('address')"><i class="fas fa-copy mx-1"></i></a>
         </div>
     </div>
-    <div class="mx-auto text-center" id="trade-cancel">
+    <div class="mx-auto text-center mt-4" id="trade-cancel">
         @if($trade->transaction_status == "cancelled")
             <a href="{{ route('trade.index') }}"  class="btn btn-info px-5">Close Trade Window</a>
         @else

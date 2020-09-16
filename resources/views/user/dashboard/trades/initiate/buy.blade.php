@@ -85,7 +85,7 @@
                                             <label>Bank Name</label>
                                             <input type="text" name="bankName" value="{{ \App\BankAccount::where('user_id', $market->user_id)->first()->bank_name }}" class="form-control" disabled>
                                         </div>
-                                        <div class="text-center mx-auto">
+                                        <div class="text-center mx-auto mt-4" id="trade-cancel">
                                             @isset($trade)
                                                 <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn m-2 px-4 btn-danger">Cancel Trade</button>
                                                 <button type="submit" id="step-2-nav" class="btn m-2 btn-special px-5">Proceed</button>
@@ -144,11 +144,27 @@
         @isset($trade)
         var cancel_time = "{{ date('F j, Y H:i:s', strtotime($trade->trade_window_expiry)) }}";
         var url = "{{ route('trade.cancel', $trade) }}";
-        @if($trade->seller_transaction_stage == null)
-            function cancelTrade(){
-                window.location.replace(url);
-            }
-        @endif
+        function canCancelTrade(){
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRF-TOKEN": $("meta[name='csrf-token']").attr('content')
+                }
+            });
+            $.ajax({
+                url: "{{ route('trade.cancel.check') }}",
+                method: "POST",
+                data: {
+                    trade: {{ $trade->id }},
+                    type: "seller"
+                },
+                cache: false,
+                success: function (result) {
+                    if (result.success){
+                        window.location.replace(url);
+                    }
+                }
+            });
+        }
         // Set the date we're counting down to
         var countDownDate = new Date(cancel_time).getTime();
 
@@ -177,10 +193,8 @@
 
             // If the count down is over, write some text
             if (distance < 0) {
-                @if($trade->seller_transaction_stage == null)
-                    window.location.replace(url);
-                @endif
                 clearInterval(x);
+                canCancelTrade()
                 document.getElementById("minute").innerText = "00";
                 document.getElementById("second").innerText = "00";
             }
@@ -672,6 +686,29 @@
 
             channel.listen('.coin-deposited', function() {
                 $("#info-2-text").text('Trade Acccepted, Waiting for Seller\'s Coin Processing');
+            });
+
+            channel.listen('.trade-cancelled', function() {
+                $("#info-1-text").text('Trade Cancelled, Close Trade Window');
+                $("#info-1-text").removeClass('text-info');
+                $("#info-1-text").addClass('text-danger');
+                $("#info-1-img").attr('src', '{{ asset('assets/img/cancel.gif') }}');
+                $("#info-1-img").width('50');
+
+                $("#info-2-text").text('Trade Cancelled, Close Trade Window');
+                $("#info-2-text").removeClass('text-info');
+                $("#info-2-text").addClass('text-danger');
+                $("#info-2-img").attr('src', '{{ asset('assets/img/cancel.gif') }}');
+                $("#info-2-img").width('50');
+
+                $("#info-3-text").text('Trade Cancelled, Close Trade Window');
+                $("#info-3-text").removeClass('text-info');
+                $("#info-3-text").addClass('text-danger');
+                $("#info-3-img").attr('src', '{{ asset('assets/img/cancel.gif') }}');
+                $("#info-3-img").width('50');
+
+                var link = '{{ route('trade.index') }}';
+                $('#trade-cancel').html('<a href="'+ link +'" class="btn btn-info p-2">Close Trade Window</a>');
             });
 
             channel.listen('.agent-joined', function() {

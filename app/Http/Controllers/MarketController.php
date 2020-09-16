@@ -6,6 +6,7 @@ use App\Coin;
 use App\User;
 use App\Market;
 use App\Wallet;
+use Artesaos\SEOTools\Facades\SEOMeta;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +18,9 @@ class MarketController extends Controller
      */
     public function index()
     {
+        SEOMeta::setTitle('Market');
+        SEOMeta::setDescription('Browse list of available adverts with rates, and initiate a trade with a single click.');
+        SEOMeta::setCanonical('https://acexworld.com/market');
         $markets = Market::orderBy('is_special', 'desc')->withCount(['reviews as star_rating' => function($query) {
             $query->select(DB::raw('coalesce(avg(star),0)'));
         }])->orderByDesc('star_rating')->paginate(8);
@@ -25,7 +29,7 @@ class MarketController extends Controller
     }
 
     public function adminMarket(){
-        $markets = Market::latest()->orderBy('is_special', 'DESC')->paginate(10);
+        $markets = Market::orderBy('is_special', 'DESC')->latest()->paginate(10);
         return view('admin.market.index', ['markets' => $markets, 'search' => false]);
     }
 
@@ -76,16 +80,24 @@ class MarketController extends Controller
 
     public function buy()
     {
+        SEOMeta::setTitle('Buy');
+        SEOMeta::setDescription('Buy cryptocurrencies from trusted and verified traders.');
+        SEOMeta::setCanonical('https://acexworld.com/market/buy');
         $markets = Market::where('type', 'sell')->paginate(5);
         return view('user.market', compact('markets'));
     }
     public function sell()
     {
+        SEOMeta::setTitle('Sell');
+        SEOMeta::setDescription('Sell cryptocurrencies to any trusted and verified trader on our platform and get payment in less than 10 minutes.');
+        SEOMeta::setCanonical('https://acexworld.com/market/sell');
         $markets = Market::where('type', 'buy')->paginate(5);
         return view('user.market', compact('markets'));
     }
 
     public function userMarket(){
+        SEOMeta::setTitle('Adverts');
+        SEOMeta::setCanonical('https://acexworld.com/market/user');
         $markets = Market::where('user_id', Auth::user()->id)->get();
         return view('user.dashboard.adverts.index', compact('markets'));
     }
@@ -96,6 +108,8 @@ class MarketController extends Controller
      */
     public function create()
     {
+        SEOMeta::setTitle('Adverts');
+        SEOMeta::setCanonical('https://acexworld.com/market/user/create');
         $coins = Coin::all();
         return view('user.dashboard.adverts.create', compact('coins'));
     }
@@ -203,6 +217,7 @@ class MarketController extends Controller
 
     public function edit(Market $market)
     {
+        SEOMeta::setTitle('Adverts');
         $coins = Coin::all();
         return view('user.dashboard.adverts.edit', compact(['market', 'coins']));
     }
@@ -270,15 +285,28 @@ class MarketController extends Controller
     }
 
     public function filterMarket(Request $request){
+        SEOMeta::setTitle('Market');
+        SEOMeta::setDescription('Browse list of available adverts with rates, and initiate a trade with a single click.');
         if (!$request->volume){
-            $markets = Market::where('type', '!=', $request->type)->where('coin_id', $request->coin)->paginate(5);
+            $markets = Market::where('type', '!=', $request->type)
+                ->orderBy('is_special', 'desc')
+                ->withCount(['reviews as star_rating' => function($query) {
+                    $query->select(DB::raw('coalesce(avg(star),0)'));}])
+                ->orderByDesc('star_rating')
+                ->paginate(8);
         }else{
             $this->validate($request, [
                 'volume' => 'numeric'
             ]);
-            $markets = Market::where('type', '!=', $request->type)->where('coin_id', $request->coin)
+            $markets = Market::where('type', '!=', $request->type)
+                ->where('coin_id', $request->coin)
                 ->whereRaw('CAST(`min` AS SIGNED) <= ?', (int) $request->volume)
-                ->whereRaw('CAST(`max` AS SIGNED) >= ?', (int) $request->volume)->paginate(5);
+                ->whereRaw('CAST(`max` AS SIGNED) >= ?', (int) $request->volume)
+                ->orderBy('is_special', 'desc')
+                ->withCount(['reviews as star_rating' => function($query) {
+                    $query->select(DB::raw('coalesce(avg(star),0)'));}])
+                ->orderByDesc('star_rating')
+                ->paginate(8);
         }
         return view('user.market', compact('markets'));
     }

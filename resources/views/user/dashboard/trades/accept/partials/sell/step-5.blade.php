@@ -24,11 +24,11 @@
         <div class="form-group col-12">
             <textarea name="message" id="review" class="form-control" placeholder="Review"></textarea>
         </div>
-        <div class="text-center">
+        <div class="text-center mt-5">
             <button type="submit" class="btn btn-special p-2">Submit Review & Rating</button>
         </div>
+        <div class="text-center">
+            <a class="btn btn-success p-2" href="{{ route('trade.index') }}">Skip & Finish</a>
+        </div>
     </form>
-    <div class="text-center">
-        <a class="btn btn-success p-2" href="{{ route('trade.index') }}">Skip & Finish</a>
-    </div>
 </div>

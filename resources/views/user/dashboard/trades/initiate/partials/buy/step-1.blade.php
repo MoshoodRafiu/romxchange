@@ -31,7 +31,7 @@
         <label>Bank Name</label>
         <input type="text" name="bankName" value="{{ \App\BankAccount::where('user_id', $trade->seller_id)->first()->bank_name }}" class="form-control" disabled>
     </div>
-    <div class="mx-auto text-center">
+    <div class="mx-auto text-center mt-4" id="trade-cancel">
         <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn px-4 m-2 btn-danger">Cancel Trade</button>
         <button id="step-2-nav" class="btn m-2 btn-special px-5">Proceed</button>
     </div>

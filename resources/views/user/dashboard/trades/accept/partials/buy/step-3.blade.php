@@ -48,7 +48,7 @@
                 <a onclick="copyText('accountNumber')" class="col-sm-1 col-2 btn text-white m-0 btn-secondary"><i class="fas fa-copy"></i></a>
             </div>
         </div>
-        <div class="mx-auto text-center">
+        <div class="mx-auto mt-4 text-center">
             <button type="button" data-toggle="modal" data-target="#cancelModal" class="btn m-2 px-4 btn-danger">Cancel Trade</button>
             @if($trade->buyer_transaction_stage == 3 && $trade->seller_transaction_stage == 2)
                 @if($trade->is_dispute == 1)

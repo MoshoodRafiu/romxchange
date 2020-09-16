@@ -30,33 +30,50 @@
             </a>
             <hr class="sidebar-divider my-0">
             <ul class="nav navbar-nav text-light" id="accordionSidebar">
+                @if(Auth::user()->is_admin == 1)
                 <li class="nav-item" role="presentation">
                     <a class="{{ Request::is('admin/dashboard') ? "nav-link active" : "nav-link" }}" href="{{ route('admin.dashboard') }}"><i class="fas fa-tachometer-alt" style="width: 30px; text-align: center;"></i><span>Dashboard</span></a>
                 </li>
+                @endif
+                @if(Auth::user()->is_admin == 1)
                 <li class="nav-item" role="presentation">
                     <a class="{{ Request::routeIs(['admin.markets', 'admin.markets.filter', 'admin.markets.create', 'admin.markets.edit']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.markets') }}"><i class="fas fa-store" style="width: 30px; text-align: center;"></i><span>Market</span></a>
                 </li>
+                @endif
+                @if(Auth::user()->is_admin == 1)
                 <li class="nav-item" role="presentation">
                     <a class="{{ Request::routeIs(['admin.transactions', 'admin.transactions.filter']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.transactions') }}"><i class="fas fa-dollar-sign" style="width: 30px; text-align: center;"></i><span>Transactions</span></a>
                 </li>
+                @endif
+                @if(Auth::user()->is_admin == 1)
                 <li class="nav-item" role="presentation">
                     <a class="{{ Request::routeIs(['admin.customers','admin.customers.filter', 'admin.customers.show']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.customers') }}"><i class="fas fa-users" style="width: 30px; text-align: center;"></i><span>Customers</span></a>
                 </li>
+                @endif
+                @if(Auth::user()->is_admin == 1)
                 <li class="nav-item" role="presentation">
                     <a class="{{ Request::routeIs(['admin.verifications', 'admin.verifications.show']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.verifications') }}"><i class="fas fa-file-alt" style="width: 30px; text-align: center;"></i>@if(\App\Verification::where('document_verification_status', 'pending')->count() > 0)<span class="badge badge-danger py-1 m-0 mx-md-2 px-2 badge-counter">{{ \App\Verification::where('document_verification_status', 'pending')->count() }}</span>@endif<span>Verifications</span></a>
                 </li>
+                @endif
+                @if(Auth::user()->is_admin == 1)
                 <li class="nav-item" role="presentation">
-                    <a class="{{ Request::routeIs(['admin.transactions.enscrow', 'admin.transactions.accept', 'admin.transactions.proceed']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.transactions.enscrow') }}"><i class="far fa-credit-card" style="width: 30px; text-align: center;"></i>@if(\App\Trade::where('is_special', 0)->where('transaction_status', 'pending')->count() > 0)<span class="badge badge-danger py-1 m-0 mx-md-2 px-2 badge-counter">{{ \App\Trade::where('is_special', 0)->where('transaction_status', 'pending')->count() }}</span>@endif<span>Enscrow</span></a>
+                    <a class="{{ Request::routeIs(['admin.transactions.enscrow', 'admin.transactions.enscrow.filter', 'admin.transactions.accept', 'admin.transactions.proceed']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.transactions.enscrow') }}"><i class="far fa-credit-card" style="width: 30px; text-align: center;"></i>@if(\App\Trade::where('is_special', 0)->where('transaction_status', 'pending')->count() > 0)<span class="badge badge-danger py-1 m-0 mx-md-2 px-2 badge-counter">{{ \App\Trade::where('is_special', 0)->where('transaction_status', 'pending')->count() }}</span>@endif<span>Enscrow</span></a>
                 </li>
+                @endif
+                @if(Auth::user()->is_admin == 1)
                 <li class="nav-item" role="presentation">
                     <a class="{{ Request::routeIs(['admin.agents', 'admin.agents.create']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.agents') }}"><i class="fas fa-user-friends" style="width: 30px; text-align: center;"></i><span>Agents</span></a>
                 </li>
+                @endif
+                @if(Auth::user()->is_admin == 1)
                 <li class="nav-item" role="presentation">
                     <a class="{{ Request::routeIs(['admin.trades', 'admin.trade.accept.buy', 'admin.trade.accept.sell']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.trades') }}"><i class="fas fa-exchange-alt" style="width: 30px; text-align: center;"></i>@if(\App\Trade::where('is_special', 1)->where('transaction_status', 'pending')->count() > 0)<span class="badge badge-danger py-1 m-0 mx-md-2 px-2 badge-counter">{{ \App\Trade::where('is_special', 1)->where('transaction_status', 'pending')->count() }}</span>@endif<span>Trades</span></a>
                 </li>
+                @endif
                 <li class="nav-item" role="presentation">
                     <a class="{{ Request::routeIs(['admin.trades.disputes', 'admin.trades.dispute.join']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.trades.disputes') }}"><i class="fas fa-exclamation-triangle" style="width: 30px; text-align: center;"></i>@if(\App\Trade::where('is_special', 0)->where('is_dispute', 1)->where('transaction_status', 'pending')->count() > 0)<span class="badge badge-danger py-1 m-0 mx-md-2 px-2 badge-counter">{{ \App\Trade::where('is_special', 0)->where('is_dispute', 1)->where('transaction_status', 'pending')->count() }}</span>@endif<span>Disputes</span></a>
                 </li>
+                @if(Auth::user()->is_admin == 1)
                 <li class="nav-item" role="presentation">
                     <div>
                         <a class="btn btn-link nav-link {{ Request::routeIs(['admin.wallets.all','admin.wallets.single']) ? "active" : "" }}" id="walletsToggleButton">
@@ -73,15 +90,20 @@
                         </div>
                     </div>
                 </li>
+                @endif
+                @if(Auth::user()->is_admin == 1)
                 <li class="nav-item" role="presentation">
                     <a class="{{ Request::routeIs(['admin.analysis']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.analysis') }}"><i class="fas fa-chart-bar"  style="width: 30px; text-align: center;"></i><span>Analysis</span></a>
                 </li>
+                @endif
                 <li class="nav-item" role="presentation">
                     <a class="{{ Request::routeIs(['admin.profile']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.profile') }}"><i class="fas fa-user"  style="width: 30px; text-align: center;"></i><span>Profile</span></a>
                 </li>
+                @if(Auth::user()->is_admin == 1)
                 <li class="nav-item" role="presentation">
                     <a class="{{ Request::routeIs(['admin.settings']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.settings') }}"><i class="fas fa-cog"  style="width: 30px; text-align: center;"></i><span>Settings</span></a>
                 </li>
+                @endif
                 <li class="nav-item" role="presentation">
                     <a class="nav-link" href="{{ route('home') }}"><i class="fas fa-globe"  style="width: 30px; text-align: center;"></i><span>Website</span></a>
                 </li>

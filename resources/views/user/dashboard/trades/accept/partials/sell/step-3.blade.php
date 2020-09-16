@@ -32,7 +32,7 @@
     @endif
 @endif
 <p>Acknowledge payment of <strong class="text-success">NGN {{ number_format($trade->coin_amount_ngn, 2) }}</strong>, once you receive a credit alert from the <strong>{{ \App\User::whereId($trade->buyer_id)->first()->display_name }}</strong>, at this point of the transaction, the transaction is been processed. Please note that your coin is safe with us and will only be released after payment has been acknowledged.</p>
-<div class="mx-auto text-center d-md-flex d-block justify-content-center" id="trade-cancel">
+<div class="mx-auto text-center mt-4 d-md-flex d-block justify-content-center" id="trade-cancel">
     @if($trade->transaction_status == "cancelled")
         <a href="{{ route('trade.index') }}"  class="btn btn-info px-5">Close Trade Window</a>
     @else

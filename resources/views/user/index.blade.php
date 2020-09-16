@@ -9,8 +9,8 @@
                     <div class="row">
                         <div class="col-md-6 text-left d-flex align-items-center justify-content-center" style="font-style: normal;">
                             <div>
-                                <h1>Buy and Sell your coin <span class="emphasis">at zero risk</span></h1>
-                                <h6 class="font-weight-normal">The fastest and safest place to sell or buy your coin in less than 20 minutes</h6>
+                                <h1 id="home-text">Buy and Sell your coin <span class="emphasis">at zero risk</span></h1>
+                                <h6 id="home-text-small" class="font-weight-normal">The fastest and safest place to sell or buy your coin in less than 20 minutes</h6>
                             </div>
                         </div>
                         <div class="col-md-6"><img src="assets/img/bg.png?h=426e8e6e0a57f6c0b1fbf781b8f5fa78" class="img img-fluid"  /></div>
@@ -18,8 +18,8 @@
                 </div>
                 <div class="intro-heading text-uppercase"></div>
                 <div class="d-flex justify-content-center">
-                    <a class="btn btn-danger btn-xl text-uppercase" href="{{ route('market.sell') }}" style="margin: 0 15px; z-index: 3;">SELL</a>
-                    <a class="btn btn-success btn-xl text-uppercase" href="{{ route('market.buy') }}" style="margin: 0 15px; z-index: 3;">BUY</a>
+                    <a class="btn btn-danger btn-xl text-uppercase trade-btn" href="{{ route('market.sell') }}" style="margin: 0 15px; z-index: 3;">SELL</a>
+                    <a class="btn btn-success btn-xl text-uppercase trade-btn" href="{{ route('market.buy') }}" style="margin: 0 15px; z-index: 3;">BUY</a>
                 </div>
             </div>
         </div>
@@ -90,7 +90,7 @@
                                 <div><img src="{{ asset('/images/'.$market->coin->logo) }}" height="25px" class="mr-1" alt="logo"> {{ $market->min }}  -  {{ $market->max }} <span class="text-uppercase">{{ $market->coin->abbr }}</span></div>
                             </td>
                             <td class="p-4">
-                                <div>NGN 4,745,345</div>
+                                <div>{{ $market->rate }} / USD</div>
                             </td>
                             <td class="p-4">
                                 <div>
@@ -109,7 +109,7 @@
                                 @endif
                             </td>
                         </tr>
-                        <div class="col-10 col-sm-12 mx-auto bg-white d-block d-md-none d-flex justify-content-between shadow py-md-4 border-left border-warning my-2">
+                        <div class="col-11 col-sm-12 mx-auto bg-white d-block d-md-none d-flex justify-content-between shadow py-md-4 border-left border-warning my-2">
                             <div class="d-md-flex justify-content-around small">
                                 <div><p>{{ $market->user->display_name }}</p></div>
                                 @if($market->type === "buy")
@@ -118,13 +118,13 @@
                                     <div class="font-weight-bold">Seller<i class="fa fa-arrow-circle-up text-danger mx-1"></i></div>
                                 @endif
                                 <div><img src="{{ asset('/images/'.$market->coin->logo) }}" class="mr-1" height="20px" alt="logo"> {{ $market->min }}  -  {{ $market->max }} <span class="text-uppercase">{{ $market->coin->abbr }}</span></div>
-                                <div>NGN 4,745,345</div>
+                                <div>{{ $market->rate }} / USD</div>
                                 <div>
-                                    <i class="fa fa-star rating text-warning"></i>
-                                    <i class="fa fa-star rating text-warning"></i>
-                                    <i class="fa fa-star rating text-warning"></i>
-                                    <i class="fa fa-star rating text-warning"></i>
-                                    <i class="fa fa-star rating text-secondary"></i>
+                                    <i class="fa fa-star rating @if($market->rating() >= 1) text-warning @else text-secondary @endif"></i>
+                                    <i class="fa fa-star rating @if($market->rating() >= 2) text-warning @else text-secondary @endif"></i>
+                                    <i class="fa fa-star rating @if($market->rating() >= 3) text-warning @else text-secondary @endif"></i>
+                                    <i class="fa fa-star rating @if($market->rating() >= 4) text-warning @else text-secondary @endif"></i>
+                                    <i class="fa fa-star rating @if($market->rating() >= 5) text-warning @else text-secondary @endif"></i>
                                 </div>
                             </div>
                             <div class="d-md-none d-block align-self-center">
@@ -190,43 +190,44 @@
                 </div>
             </div>
         </div>
-    </section><section id="testimonials">
-        <div id="testimonial_095" class="carousel slide pb-5 testimonial_095_indicators testimonial_095_control_button thumb_scroll_x swipe_x ps_easeOutSine" data-ride="carousel" data-pause="hover" data-interval="5000" data-duration="2000">
-            <div class="testimonial_095_header">
-                <h5 class="emphasis">what people say</h5>
-            </div>
-            <ol class="carousel-indicators">
-                <li data-target="#testimonial_095" data-slide-to="0" class="active emphasis"></li>
-                <li data-target="#testimonial_095" data-slide-to="1"></li>
-                <li data-target="#testimonial_095" data-slide-to="2"></li>
-                <li data-target="#testimonial_095" data-slide-to="3"></li>
-            </ol>
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <div class="testimonial_095_slide"><a href="#"><span class="fa fa-user"></span></a>
-                        <p>Lorem ipsum dolor sit amet <a href="#" class="emphasis">@consectetuer</a> adipiscing elit am nibh unc varius facilisis eros ed erat in in velit quis arcu ornare laoreet urabitur.</p>
-                        <h5><a href="#" class="emphasis">Olakunle</a></h5>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="testimonial_095_slide"><a href="#"><span class="fa fa-user"></span></a>
-                        <p>Lorem ipsum dolor sit amet <a href="#" class="emphasis">@consectetuer</a> adipiscing elit am nibh unc varius facilisis eros ed erat in in velit quis arcu ornare laoreet urabitur.</p>
-                        <h5><a href="#" class="emphasis">Ayoola</a></h5>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="testimonial_095_slide"><a href="#"><span class="fa fa-user"></span></a>
-                        <p>Lorem ipsum dolor sit amet <a href="#" class="emphasis">@consectetuer</a> adipiscing elit am nibh unc varius facilisis eros ed erat in in velit quis arcu ornare laoreet urabitur.</p>
-                        <h5><a href="#" class="emphasis">Meezy</a></h5>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="testimonial_095_slide"><a href="#"><span class="fa fa-user"></span></a>
-                        <p>Lorem ipsum dolor sit amet <a href="#" class="emphasis">@consectetuer</a> adipiscing elit am nibh unc varius facilisis eros ed erat in in velit quis arcu ornare laoreet urabitur.</p>
-                        <h5><a href="#" class="emphasis">Bill Gates</a></h5>
-                    </div>
-                </div>
-            </div><a class="carousel-control-prev btn-carousel" href="#testimonial_095" data-slide="prev"><span class="fa fa-chevron-left"></span></a><a class="carousel-control-next btn-carousel" href="#testimonial_095" data-slide="next"><span class="fa fa-chevron-right"></span></a></div>
     </section>
+{{--    <section id="testimonials">--}}
+{{--        <div id="testimonial_095" class="carousel slide pb-5 testimonial_095_indicators testimonial_095_control_button thumb_scroll_x swipe_x ps_easeOutSine" data-ride="carousel" data-pause="hover" data-interval="5000" data-duration="2000">--}}
+{{--            <div class="testimonial_095_header">--}}
+{{--                <h5 class="emphasis">what people say</h5>--}}
+{{--            </div>--}}
+{{--            <ol class="carousel-indicators">--}}
+{{--                <li data-target="#testimonial_095" data-slide-to="0" class="active emphasis"></li>--}}
+{{--                <li data-target="#testimonial_095" data-slide-to="1"></li>--}}
+{{--                <li data-target="#testimonial_095" data-slide-to="2"></li>--}}
+{{--                <li data-target="#testimonial_095" data-slide-to="3"></li>--}}
+{{--            </ol>--}}
+{{--            <div class="carousel-inner">--}}
+{{--                <div class="carousel-item active">--}}
+{{--                    <div class="testimonial_095_slide"><a href="#"><span class="fa fa-user"></span></a>--}}
+{{--                        <p>Lorem ipsum dolor sit amet <a href="#" class="emphasis">@consectetuer</a> adipiscing elit am nibh unc varius facilisis eros ed erat in in velit quis arcu ornare laoreet urabitur.</p>--}}
+{{--                        <h5><a href="#" class="emphasis">Olakunle</a></h5>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--                <div class="carousel-item">--}}
+{{--                    <div class="testimonial_095_slide"><a href="#"><span class="fa fa-user"></span></a>--}}
+{{--                        <p>Lorem ipsum dolor sit amet <a href="#" class="emphasis">@consectetuer</a> adipiscing elit am nibh unc varius facilisis eros ed erat in in velit quis arcu ornare laoreet urabitur.</p>--}}
+{{--                        <h5><a href="#" class="emphasis">Ayoola</a></h5>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--                <div class="carousel-item">--}}
+{{--                    <div class="testimonial_095_slide"><a href="#"><span class="fa fa-user"></span></a>--}}
+{{--                        <p>Lorem ipsum dolor sit amet <a href="#" class="emphasis">@consectetuer</a> adipiscing elit am nibh unc varius facilisis eros ed erat in in velit quis arcu ornare laoreet urabitur.</p>--}}
+{{--                        <h5><a href="#" class="emphasis">Meezy</a></h5>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--                <div class="carousel-item">--}}
+{{--                    <div class="testimonial_095_slide"><a href="#"><span class="fa fa-user"></span></a>--}}
+{{--                        <p>Lorem ipsum dolor sit amet <a href="#" class="emphasis">@consectetuer</a> adipiscing elit am nibh unc varius facilisis eros ed erat in in velit quis arcu ornare laoreet urabitur.</p>--}}
+{{--                        <h5><a href="#" class="emphasis">Bill Gates</a></h5>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--            </div><a class="carousel-control-prev btn-carousel" href="#testimonial_095" data-slide="prev"><span class="fa fa-chevron-left"></span></a><a class="carousel-control-next btn-carousel" href="#testimonial_095" data-slide="next"><span class="fa fa-chevron-right"></span></a></div>--}}
+{{--    </section>--}}
 
 @endsection

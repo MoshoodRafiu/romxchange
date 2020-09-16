@@ -117,7 +117,12 @@ class TradeController extends Controller
     public function tradeDispute(){
         $trades = Trade::latest()->where('transaction_status', 'pending')->where('is_dispute', 1)->where('is_special', 0)->paginate(10);
 
-        return view('admin.trades.disputes.index', compact('trades'));
+        return view('admin.trades.disputes.index', ['trades' => $trades, 'search' => false]);
+    }
+
+    public function disputeFilter(Request $request){
+        $trades = Trade::latest()->where('is_special', 0)->where('transaction_status', 'pending')->where('is_dispute', 1)->where('transaction_id', $request->val)->get();
+        return view('admin.trades.disputes.index', ['trades' => $trades, 'search' => true, 'val' => $request->val]);
     }
 
     public function dispute(Trade $trade){
@@ -187,6 +192,22 @@ class TradeController extends Controller
         return back()->with('message', 'Trade cancelled successfully');
     }
 
+    public function canCancelTrade(Request $request){
+        $trade = Trade::find($request->trade);
+
+        if ($request->type == "seller"){
+            if ($trade->seller_transaction_stage == null){
+                return response()->json(array('success' => true));
+            }
+        }elseif ($request->type == "buyer"){
+            if ($trade->buyer_transaction_stage == null){
+                return response()->json(array('success' => true));
+            }
+        }
+
+        return response()->json(array('success' => false));
+    }
+
     public function cancel(Trade $trade){
         if (!$this->userInTrade($trade)){
             return back();
@@ -232,7 +253,7 @@ class TradeController extends Controller
 
     public function enscrow(){
         $trades = Trade::latest()->where('is_special', 0)->where('transaction_status', 'pending')->get();
-        return view('admin.enscrow.index', compact('trades'));
+        return view('admin.enscrow.index', ['trades' => $trades, 'search' => false]);
     }
 
     public function aceAccept(Trade $trade){

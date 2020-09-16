@@ -7,6 +7,7 @@ use App\Http\Controllers\MailController;
 use App\Providers\RouteServiceProvider;
 use App\User;
 use App\Verification;
+use Artesaos\SEOTools\Facades\SEOMeta;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -59,6 +60,12 @@ class RegisterController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'g-recaptcha-response' => ['required', 'captcha'],
         ]);
+    }
+
+    public function showRegistrationForm()
+    {
+        SEOMeta::setTitle('Register');
+        return view('auth.register');
     }
 
     /**

@@ -15,6 +15,19 @@
             <p class="text-primary m-0 font-weight-bold">All dispute trades</p>
         </div>
         <div class="card-body">
+            <div class="col-md-9 align-self-center">
+                @if(count($trades) > 0)
+                    @if($search)
+                        <h5 class="font-italic small">Showing pending dispute trades with ID <span class="font-weight-bold">'{{ $val }}'</span></h5>
+                    @endif
+                @endif
+            </div>
+            <div class="col-md-3 ml-auto">
+                <form action="{{ route('admin.trades.disputes.filter') }}" method="get" class="d-flex mb-3">
+                    <input type="text" name="val" class="form-control form-control-sm" placeholder="Transaction ID">
+                    <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-search"></i></button>
+                </form>
+            </div>
             @if(count($trades) > 0)
                 <table class="table bg-white shadow table-responsive-lg d-none d-md-table">
                     @foreach($trades as $trade)
@@ -55,7 +68,11 @@
                     @endforeach
                 </table>
             @else
-                <p class="my-4">No dispute trade</p>
+                @if($search)
+                    <p class="font-italic small">No pending dispute trades with ID <span class="font-weight-bold">'{{ $val }}'</span></p>
+                @else
+                    <p class="my-4">No pending dispute trades</p>
+                @endif
             @endif
         </div>
     </div>

@@ -13,6 +13,9 @@
     padding: 0;
     text-align: center;
 }
+#brand-logo{
+    height: 40px;
+}
 .loader {
     border: 16px solid #f3f3f3;
     border-radius: 50%;
@@ -228,5 +231,25 @@
 
     .chat-info{
         font-size: 8px;
+    }
+
+    #home-text{
+        font-size: 27px;
+    }
+
+    #home-text-small{
+        font-size: 11px;
+    }
+
+    #brand-logo{
+        height: 32px;
+    }
+
+    .trade-btn{
+        padding: 10px 20px;
+    }
+
+    .nav-item{
+        font-size: 13px;
     }
 }

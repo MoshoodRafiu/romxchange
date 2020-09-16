@@ -47,7 +47,11 @@
                     @endforeach
                 </table>
             @else
-                <p class="my-4">No pending transactions</p>
+                @if($search)
+                    <p class="font-italic small">No pending transaction with ID <span class="font-weight-bold">'{{ $val }}'</span></p>
+                @else
+                    <p class="my-4">No pending transactions</p>
+                @endif
             @endif
         </div>
     </div>
