@@ -56,7 +56,7 @@
     </section>
     <section id="portfolio" class="bg-light">
         <div class="container">
-            <div class="row">
+            <div class="row" style="font-size: 14px">
                     <div class="col-lg-12 text-center">
                         <h2 class="text-uppercase section-heading" style="font-size: 30px;">TOP Market</h2>
                     </div>
@@ -75,7 +75,7 @@
                         @endif
                     @endif
                 @if(count($markets) > 0)
-                    <table class="table bg-white shadow d-none d-md-table">
+                    <table style="font-size: 14px" class="table bg-white shadow d-none d-md-table">
                     @foreach($markets as $market)
                         <tr>
                             <td class="p-4"><div><p>{{ $market->user->display_name }}</p></div></td>
@@ -151,7 +151,7 @@
                 <div class="col-lg-12 text-center">
                     <h2 class="text-uppercase" style="font-size: 30px;">Crypto market</h2><table id="example" class="table shadow table-responsive-xl" cellspacing="0" width="100%">
                         <thead>
-                        <tr>
+                        <tr style="font-size: 14px">
                             <th>Rank</th>
                             <th>Name</th>
                             <th>Sym</th>
@@ -164,7 +164,7 @@
                         <tbody>
                         @isset($response)
                         @foreach($response as $key=>$coin)
-                        <tr>
+                        <tr style="font-size: 14px">
                             <td>{{ $key+1 }}</td>
                             <td class="d-flex justify-content-start align-items-center">
                                 <img width="20px" class="mx-3 py-lg-4 py-2" src="{{ $coin['logo_url'] }}" alt="logo">

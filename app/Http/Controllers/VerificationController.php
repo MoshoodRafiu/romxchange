@@ -75,7 +75,7 @@ class VerificationController extends Controller
             "pin_time_to_live" => env('TERMII_PIN_TIME_TO_LIVE'),
             "pin_length" => env('TERMII_PIN_LENGTH'),
             "pin_placeholder" => "< 1234 >",
-            "message_text" => "Your verification pin for AcexWorld is < 1234 >. Pin expires in 30 minutes",
+            "message_text" => "Your verification pin for ROMXCHANGE is < 1234 >. Pin expires in 30 minutes",
             "pin_type" => env('TERMII_PIN_TYPE'),
         ])->json();
 

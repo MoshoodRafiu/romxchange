@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
 
 class RegisterController extends Controller
 {
@@ -84,9 +85,15 @@ class RegisterController extends Controller
         $user->save();
 
         if ($user != null){
+            $verification = new Verification;
+            $verification->user_id = $user->id;
+            $verification->is_email_verified = 1;
+            $verification->email_verified_at = now();
+            $verification->save();
+            Auth::login($user);
 //            Send Email
-            MailController::sendSignupEmail($user->display_name, $user->email, $user->verification_code);
-            return redirect()->to('/login')->with('message', 'Account has been created, Please check email for verification link');
+            // MailController::sendSignupEmail($user->display_name, $user->email, $user->verification_code);
+            // return redirect()->to('/login')->with('message', 'Account has been created, Please check email for verification link');
         }
 
 //        Show error message

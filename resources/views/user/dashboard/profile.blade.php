@@ -92,7 +92,7 @@
                             </div>
                             <div class="col-sm-12">
                                 <div class="form-group text-left">
-                                    <label>Phone <span class="text-info font-weight-bold">(phone number should be in format 2348090000000)</span></label>
+                                    <label>Phone <span class="text-info font-weight-bold small">(phone number should be in format 2348090000000)</span></label>
                                     <input type="tel" class="form-control" name="phone" value="{{ Auth::user()->phone }}" @if(Auth::user()->verification->is_phone_verified == 1) disabled @endif/>
                                 </div>
                             </div>

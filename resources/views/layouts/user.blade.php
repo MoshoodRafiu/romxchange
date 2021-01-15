@@ -100,23 +100,20 @@
         <div class="col-sm-6 col-md-4 footer-navigation">
             <h3><a href="#" style="font-family: Poppins, sans-serif;color: rgb(254,209,54);font-size: 20px;"><img src="{{asset('assets/img/clogo.png')}}" height="28px"></a></h3>
             <p class="links"><a href="{{ route('home') }}">Home</a><strong> · </strong><a href="{{ route('market.buy') }}">Buy</a><strong> · </strong><a href="{{ route('market.sell') }}">Sell</a><strong> · </strong><a href="{{ route('market.index') }}">Market</a></p>
-            <p class="company-name">ACExWORLD © {{ date("Y", strtotime(now())) }} </p>
+            <p class="company-name">ROMXCHANGE © {{ date("Y", strtotime(now())) }} </p>
         </div>
         <div class="col-sm-6 col-md-4 footer-contacts">
             <div><i class="fa fa-phone small emphasis footer-contacts-icon"></i>
-                <p class="footer-center-info email text-left"> +234 9099992234</p>
-            </div>
-            <div><i class="fa fa-phone emphasis small footer-contacts-icon"></i>
-                <p class="footer-center-info email text-left"> +234 7098897878</p>
+                <p class="small footer-center-info email text-left"><a href="tel:2348144259341"> +234 8144259341</a></p>
             </div>
             <div><i class="fa fa-envelope emphasis small footer-contacts-icon"></i>
-                <p><a href="#" target="_blank">support@acexworld.com</a></p>
+                <p class="small footer-center-info email text-left"><a href="mailto:rafiumoshoodolakunle@gmail.com">rafiumoshoodolakunle@gmail.com</a></p>
             </div>
         </div>
         <div class="clearfix"></div>
         <div class="col-md-4 footer-about">
             <h4>About Us</h4>
-            <p> <span class="emphasis">ACExWORLD</span> is an escrow online cryptocurrency peer-to-peer exchange platform that bridges the gap between cryptocurrency buyers and sellers at <span class="emphasis">zero risk.</span> </p>
+            <p> <span class="emphasis">ROMXCHANGE</span> is an escrow online cryptocurrency peer-to-peer exchange platform that bridges the gap between cryptocurrency buyers and sellers at <span class="emphasis">zero risk.</span> </p>
             <div class="social-links social-icons"><a href="#"><i class="fa fa-facebook emphasis"></i></a><a href="#"><i class="fa fa-twitter emphasis"></i></a><a href="#"><i class="fa fa-instagram emphasis"></i></a><a href="#"><i class="fa fa-envelope emphasis"></i></a></div>
         </div>
     </div>
@@ -153,6 +150,7 @@
         document.execCommand("copy");
         $("#" + input + "").siblings(".clipboard-message").fadeIn().delay(1000).fadeOut();
     }
+
 </script>
 </body>
 
