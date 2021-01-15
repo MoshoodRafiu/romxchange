@@ -7,17 +7,17 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     {!! SEOMeta::generate() !!}
     <link rel="icon" type="image/png" sizes="218x250" href="{{asset('assets/img/logo.png')}}">
-{{--    <link rel="stylesheet" href="{{asset('assets/bootstrap/css/bootstrap.min.css?h=e3b2ea54c5d54884854fc0397d0f6bb8')}}">--}}
+{{--    <link rel="stylesheet" href="{{secure_asset('assets/bootstrap/css/bootstrap.min.css?h=e3b2ea54c5d54884854fc0397d0f6bb8')}}">--}}
 {{--    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700">--}}
 {{--    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">--}}
 {{--    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">--}}
 {{--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">--}}
-{{--    <link rel="stylesheet" href="{{asset('assets/fonts/fontawesome5-overrides.min.css?h=2c0fc24b3d3038317dc51c05339856d0')}}">--}}
-{{--    <link rel="stylesheet" href="{{asset('assets/css/styles.min.css?h=6db4afc03167ed9f14195623336d0742')}}">--}}
+{{--    <link rel="stylesheet" href="{{secure_asset('assets/fonts/fontawesome5-overrides.min.css?h=2c0fc24b3d3038317dc51c05339856d0')}}">--}}
+{{--    <link rel="stylesheet" href="{{secure_asset('assets/css/styles.min.css?h=6db4afc03167ed9f14195623336d0742')}}">--}}
 {{--    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css">--}}
 {{--    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.css">--}}
 {{--    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">--}}
-{{--    <link href="{{ asset('css/app.css') }}" rel="stylesheet">--}}
+{{--    <link href="{{ secure_asset('css/app.css') }}" rel="stylesheet">--}}
 
     <link rel="stylesheet" href="{{ asset('assets/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700">
@@ -27,14 +27,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cookie">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
-    <link rel="stylesheet" href="{{ asset('assets/fonts/fontawesome-all.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/fonts/font-awesome.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/fonts/fontawesome5-overrides.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('assets/css/styles.min.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('assets/fonts/fontawesome-all.min.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('assets/fonts/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('assets/fonts/fontawesome5-overrides.min.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('assets/css/styles.min.css') }}">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <script src="{{ asset('js/app.js') }}"></script>
+    <script src="{{ secure_asset('js/app.js') }}"></script>
 </head>
 
 <body id="page-top">
@@ -119,13 +119,13 @@
     </div>
 </footer>
 <script src="//code.tidio.co/c8xdi2r45imezsgn09lnyblgz9ep5w95.js" async></script>
-<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
-<script src="{{ asset('assets/bootstrap/js/bootstrap.min.js') }}"></script>
+<script src="{{ secure_asset('assets/js/jquery.min.js') }}"></script>
+<script src="{{ secure_asset('assets/bootstrap/js/bootstrap.min.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.js"></script>
 <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
-<script src="{{ asset('assets/js/script.min.js') }}"></script>
+<script src="{{ secure_asset('assets/js/script.min.js') }}"></script>
 @yield('script')
 <script>
 
