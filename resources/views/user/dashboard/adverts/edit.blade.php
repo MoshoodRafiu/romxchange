@@ -101,7 +101,7 @@
                             <div class="col-sm-12">
                                 <div class="form-group text-left">
                                     <label>USD/NGN Rate</label>
-                                    <input type="text" class="form-control @error('rate') is-invalid @enderror" placeholder="e.g 420" value="{{ $market->price_ngn }}" name="rate" autocomplete="off" required />
+                                    <input type="text" class="form-control @error('rate') is-invalid @enderror" placeholder="e.g 420" value="{{ $market->rate }}" name="rate" autocomplete="off" required />
                                     @error('rate')
                                     <div>
                                         <span class="text-danger small" role="alert">

@@ -57,15 +57,12 @@ class TradeController extends Controller
         }
 
         if ($type == "seller"){
-            $trade->buyer_has_summoned = 1;
+            $trade->update(['buyer_has_summoned' => 1]);
         }else{
-            $user = User::whereId($trade->buyer_id)->first();
-            $trade->seller_has_summoned = 1;
+            $trade->update(['seller_has_summoned' => 1]);
         }
 
-        $trade->update();
-
-        $sms = 'Hello, '.Str::ucfirst($user->display_name).' has summoned you to attend to a pending trade on www.acexworld.com';
+        $sms = 'Hello '.Str::ucfirst($user->display_name).', you have been summoned to attend to a pending trade on www.acexworld.com';
 
         if ($trade->seller_transaction_stage >= 3){
             return back()->with('error', 'Can\'t summon user, payments already settled');
@@ -100,9 +97,9 @@ class TradeController extends Controller
         $duration = Setting::all()->first()->duration;
 
         if ($trade->seller_transaction_stage > 2){
-            $mail = 'Hello, '.Str::ucfirst($user->display_name).' has summoned you to attend to a pending trade on www.acexworld.com';
+            $mail = 'Hello '.Str::ucfirst($user->display_name).', you have been summoned to attend to a pending trade on www.acexworld.com';
         }else{
-            $mail = 'Hello, '.Str::ucfirst($user->display_name).' has summoned you to attend to a pending trade on www.acexworld.com. Kindly note that trade window automatically closes '.$duration.' minutes after initiated time.';
+            $mail = 'Hello '.Str::ucfirst($user->display_name).', you have been summoned to attend to a pending trade on www.acexworld.com. Kindly note that trade window automatically closes '.$duration.' minutes after initiated time.';
         }
 
         if ($trade->seller_transaction_stage >= 3){

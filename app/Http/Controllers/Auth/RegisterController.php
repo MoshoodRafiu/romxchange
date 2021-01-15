@@ -86,7 +86,7 @@ class RegisterController extends Controller
         if ($user != null){
 //            Send Email
             MailController::sendSignupEmail($user->display_name, $user->email, $user->verification_code);
-            return back()->with('message', 'Account has been created, Please check email for verification link');
+            return redirect()->to('/login')->with('message', 'Account has been created, Please check email for verification link');
         }
 
 //        Show error message

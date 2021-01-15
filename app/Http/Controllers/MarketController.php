@@ -245,7 +245,7 @@ class MarketController extends Controller
         $market->update([
             'min' => $request->min,
             'max' => $request->max,
-            'rate' => $request->price_usd,
+            'rate' => $request->rate,
         ]);
 
         return redirect()->route('market.user')->with('message', 'Advert updated successfully');

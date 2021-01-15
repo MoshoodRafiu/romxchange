@@ -29,7 +29,7 @@
             <div class="form-group">
                 <label for="first_name"><strong>Amount</strong><br /></label>
                 <div class="row mx-auto">
-                    <input type="text" class="form-control col-10" id="coin-amount" name="first_name" value="{{ $trade->coin_amount }}" readonly/>
+                    <input type="text" class="form-control col-10" id="coin-amount" name="first_name" value="{{ $trade->coin_amount - $trade->transaction_charge_coin }}" readonly/>
                     <span class="bg-dark text-white px-2 py-1 clipboard-message">Copied to clipboard</span>
                     <a class="col-2 btn text-white btn-secondary" onclick="copyText('coin-amount')"><i class="fas fa-copy"></i></a>
                 </div>

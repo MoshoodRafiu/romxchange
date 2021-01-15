@@ -133,7 +133,7 @@ class WalletController extends Controller
     {
         $this->validate($request, [
             "company" => "required",
-            "wallet_address" => "required|min:32|max:32"
+            "wallet_address" => "required"
         ]);
 
         $wallet->company = $request->company;
@@ -148,7 +148,7 @@ class WalletController extends Controller
     {
         $this->validate($request, [
             "company" => "required",
-            "wallet_address" => "required|min:32|max:32"
+            "wallet_address" => "required"
         ]);
 
         if ($wallet->company !== $request->company){

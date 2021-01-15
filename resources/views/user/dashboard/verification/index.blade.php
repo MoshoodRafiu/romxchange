@@ -43,12 +43,12 @@
                                 </div>
                                 @if(Auth::user()->verification)
                                     @if(Auth::user()->verification->is_email_verified)
-                                        <div><i class="fa fa-check-circle text-warning fa-4x"></i></div>
+                                        <div><i class="fa fa-check-circle text-success fa-4x"></i></div>
                                     @else
-                                        <div><i class="fa fa-info-circle text-warning fa-4x"></i></div>
+                                        <div><i class="fa fa-info-circle text-danger fa-4x"></i></div>
                                     @endif
                                 @else
-                                    <div><i class="fa fa-info-circle text-warning fa-4x"></i></div>
+                                    <div><i class="fa fa-info-circle text-danger fa-4x"></i></div>
                                 @endif
                             </div>
                         </div>
@@ -80,13 +80,13 @@
                                     </div>
                                 </div>
                                 @if(Auth::user()->verification)
-                                    @if(Auth::user()->verification->is_email_verified)
-                                        <div><i class="fa fa-check-circle text-warning fa-4x"></i></div>
+                                    @if(Auth::user()->verification->is_phone_verified)
+                                        <div><i class="fa fa-check-circle text-success fa-4x"></i></div>
                                     @else
-                                        <div><i class="fa fa-info-circle text-warning fa-4x"></i></div>
+                                        <div><i class="fa fa-info-circle text-danger fa-4x"></i></div>
                                     @endif
                                 @else
-                                    <div><i class="fa fa-info-circle text-warning fa-4x"></i></div>
+                                    <div><i class="fa fa-info-circle text-danger fa-4x"></i></div>
                                 @endif
                             </div>
                         </div>
@@ -118,12 +118,12 @@
                                 </div>
                                 @if(Auth::user()->verification)
                                     @if(Auth::user()->verification->is_document_verified)
-                                        <div><i class="fa fa-check-circle text-warning fa-4x"></i></div>
+                                        <div><i class="fa fa-check-circle text-success fa-4x"></i></div>
                                     @else
-                                        <div><i class="fa fa-info-circle text-warning fa-4x"></i></div>
+                                        <div><i class="fa fa-info-circle text-danger fa-4x"></i></div>
                                     @endif
                                 @else
-                                    <div><i class="fa fa-info-circle text-warning fa-4x"></i></div>
+                                    <div><i class="fa fa-info-circle text-danger fa-4x"></i></div>
                                 @endif
                             </div>
                         </div>

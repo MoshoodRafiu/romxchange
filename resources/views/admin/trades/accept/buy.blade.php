@@ -584,6 +584,14 @@
                 $("#info-2-img").width('100');
             });
 
+            channel.listen('.coin-deposited', function() {
+                $("#info-3-text").text('Coin Sent, Verify Coin');
+                $("#info-3-text").removeClass('text-info');
+                $("#info-3-text").addClass('text-success');
+                $("#info-3-img").attr('src', '{{ asset('assets/img/verify.gif') }}');
+                $("#info-3-img").width('100');
+            });
+
             channel.listen('.payment-verified', function() {
                 $("#info-4-text").text('Payment Verified, Proceed with Transaction');
                 $("#info-4-text").removeClass('text-info');

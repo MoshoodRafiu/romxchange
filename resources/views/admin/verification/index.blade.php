@@ -14,21 +14,6 @@
             <p class="text-primary m-0 font-weight-bold">Verifications</p>
         </div>
         <div class="card-body">
-{{--            <div class="row">--}}
-{{--                <div class="col-md-9 align-self-center">--}}
-{{--                    @if(count($verifications) > 0)--}}
-{{--                        @if($search)--}}
-{{--                            <h5 class="font-italic">Showing search result for <span class="font-weight-bold">'{{ $val }}'</span></h5>--}}
-{{--                        @endif--}}
-{{--                    @endif--}}
-{{--                </div>--}}
-{{--                <div class="col-md-3 ml-auto">--}}
-{{--                    <form action="{{ route('admin.customers.filter') }}" method="get" class="d-flex mt-2 mb-4">--}}
-{{--                        <input type="text" name="val" class="form-control form-control-sm" placeholder="Search">--}}
-{{--                        <button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-search"></i></button>--}}
-{{--                    </form>--}}
-{{--                </div>--}}
-{{--            </div>--}}
             <div class="table-responsive">
                 <table class="table table-hover table-responsive-lg">
                     <thead>

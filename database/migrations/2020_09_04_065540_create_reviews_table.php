@@ -18,8 +18,8 @@ class CreateReviewsTable extends Migration
             $table->integer('trade_id');
             $table->integer('market_id');
             $table->integer('user_id');
-            $table->integer('star');
-            $table->text('message');
+            $table->integer('star')->nullable();
+            $table->text('message')->nullable();
             $table->timestamps();
         });
     }

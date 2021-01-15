@@ -29,7 +29,7 @@
                         <div id="nav-tabContent" class="tab-content">
                             <div class="tab-panel fade show active" role="tabpanel" aria-labelledby="item-1-1-tab">
                                 @isset($trade)
-                                <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex justify-content-between mb-4 align-items-center">
                                     <div class="small">
                                         <a href="{{ route('sms.summon', ['trade' => $trade, 'type' => 'seller']) }}" class="btn my-1 my-md-0 btn-sm btn-secondary">Summon via SMS</a>
                                         <a href="{{ route('mail.summon', ['trade' => $trade, 'type' => 'seller']) }}" class="btn my-1 my-md-0 btn-sm btn-info">Summon via Mail</a>

@@ -61,13 +61,13 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 d-flex justify-content-around my-4">
+            <div class="col-12 d-flex justify-content-center my-4">
                 @if($verification->document_verification_status == "pending" && $verification->is_document_verified == 0)
-                    <button class="btn btn-danger" data-toggle="modal" data-target="#declineModal{{ $verification->id }}">Decline</button>
-                    <button class="btn btn-success" data-toggle="modal" data-target="#approveModal{{ $verification->id }}">Approve</button>
+                    <button class="btn btn-danger mx-3" data-toggle="modal" data-target="#declineModal{{ $verification->id }}">Decline</button>
+                    <button class="btn btn-success mx-3" data-toggle="modal" data-target="#approveModal{{ $verification->id }}">Approve</button>
                 @else
-                    <button class="btn btn-danger" disabled>Decline</button>
-                    <button class="btn btn-success" disabled>Approve</button>
+                    <button class="btn btn-danger mx-3" disabled>Decline</button>
+                    <button class="btn btn-success mx-3" disabled>Approve</button>
                 @endif
             </div>
 

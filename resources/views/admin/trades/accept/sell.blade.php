@@ -621,11 +621,11 @@
             });
 
             channel.listen('.payment-made', function() {
-                $("#info-3-text").text('Payment Made, Verify Payment and Proceed');
-                $("#info-3-text").removeClass('text-info');
-                $("#info-3-text").addClass('text-success');
-                $("#info-3-img").attr('src', '{{ asset('assets/img/proceed.gif') }}');
-                $("#info-3-img").width('100');
+                $("#info-2-text").text('Payment Made, Verify Payment and Proceed');
+                $("#info-2-text").removeClass('text-info');
+                $("#info-2-text").addClass('text-success');
+                $("#info-2-img").attr('src', '{{ asset('assets/img/proceed.gif') }}');
+                $("#info-2-img").width('100');
             });
 
             channel.listen('.trade-accepted', function() {

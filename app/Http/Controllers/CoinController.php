@@ -106,7 +106,7 @@ class CoinController extends Controller
             return back()->with('error', 'Coin already used in transaction records');
         }
         $coin->delete();
-        unlink('/images/'.$coin->logo);
+        unlink('images/'.$coin->logo);
         return back()->with('message', 'Coin deleted successfully');
     }
 }

@@ -27,8 +27,9 @@
                             <label class="text-center">Bank Name</label>
                             <select name="bank_name" class="form-control">
                                 <option value="">Select Bank</option>
-                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Access Bank") selected @endif @endif value="Access Bank">Diamond Bank</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Access Bank") selected @endif @endif value="Access Bank">Access Bank</option>
                                 <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Citibank") selected @endif @endif value="Citibank">Citibank</option>
+                                <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Diamond Bank") selected @endif @endif value="Diamond Bank">Diamond Bank</option>
                                 <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Ecobank") selected @endif @endif value="Ecobank">Ecobank</option>
                                 <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "Fidelity Bank") selected @endif @endif value="Fidelity Bank">Fidelity Bank</option>
                                 <option @if(Auth::user()->bankaccount) @if(Auth::user()->bankaccount->bank_name == "First Bank") selected @endif @endif value="First Bank">First Bank</option>

@@ -159,7 +159,8 @@
                         <li class="list-group-item">
                             <div class="row align-items-center no-gutters">
                                 <div class="col mr-2">
-                                    <h6 class="mb-0 text-capitalize"><strong>{{ $coin->name }}</strong></h6><span class="text-xs">Updated {{ $coin->created_at->diffForHumans() }} ago by Admin&nbsp;</span>
+                                    <h6 class="mb-0 text-capitalize"><strong>{{ $coin->name }}</strong></h6>
+                                    <span class="text-xs">Updated {{ $coin->created_at->diffForHumans() }} ago by Admin&nbsp;</span>
                                 </div>
                             </div>
                         </li>
@@ -175,7 +176,7 @@
                             <div class="card-body">
                                 <div class="d-flex justify-content-between">
                                     <p class="m-0 text-capitalize"><strong>{{ $coin->name }}</strong></p>
-                                    <img src="{{ asset('/images/'.$coin->logo) }}" width="30px">
+                                    <img src="{{ asset('/images/'.$coin->logo) }}" height="30px">
                                 </div>
                                 <p class="text-success m-0" style="color: rgba(254,0,0,0.5);">Traded: {{ \App\Trade::where('coin_id', $coin->id)->where('transaction_status', 'success')->sum('coin_amount') }} {{ $coin->abbr }}</p>
                             </div>

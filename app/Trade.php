@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Trade extends Model
 {
+    protected $fillable = ['seller_has_summoned', 'buyer_has_summoned'];
     public function coin(){
         return $this->belongsTo('App\Coin');
     }

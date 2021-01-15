@@ -27,7 +27,7 @@
                         <thead>
                         <tr>
                             <th>S/N</th>
-                            <th>Wallet ID</th>
+                            <th>ID</th>
                             <th>Company</th>
                             <th>Currency</th>
                             <th>Action</th>

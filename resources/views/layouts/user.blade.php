@@ -37,7 +37,8 @@
     <script src="{{ asset('js/app.js') }}"></script>
 </head>
 
-<body id="page-top"><nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-dark" id="mainNav" style="background-color: rgb(2,12,31);">
+<body id="page-top">
+<nav class="navbar navbar-dark navbar-expand-lg fixed-top bg-dark" id="mainNav" style="background-color: rgb(2,12,31);">
     <div class="container"><a class="navbar-brand d-flex justify-content-center align-items-center" href="{{ url('/') }}" style="font-family: Poppins, sans-serif;"><img src="{{asset('assets/img/clogo.png')}}" id="brand-logo"></a><button id="toggleNavbar" class="navbar-toggler navbar-toggler-right" type="button"><i class="fa fa-bars"></i></button>
         <div class="collapse navbar-collapse" id="navbarResponsive" style="font-family: Poppins, sans-serif;">
             <ul class="nav navbar-nav ml-auto text-uppercase">
@@ -55,8 +56,7 @@
                     <li class="nav-item dropdown">
                         <a data-toggle="dropdown" aria-expanded="false" id="toggle" class="{{ Request::routeIs(['profile.index', 'trade.index', 'trade.accept.buy', 'trade.accept.sell', 'trade.initiate.buy', 'trade.initiate.sell', 'verification.index', 'verification.phone', 'verification.document', 'wallet.index', 'wallet.create', 'wallet.edit', 'market.user', 'market.create', 'market.edit']) ? "dropdown-toggle font-weight-bold nav-link text-warning" : "font-weight-bold dropdown-toggle nav-link" }}" href="#dropdown">{{ Auth::user()->display_name }}@if( \App\Trade::where('transaction_status', 'pending')->where(function ($query) {$query->where('buyer_id', Auth::user()->id)->orWhere('seller_id', Auth::user()->id);})->count() > 0)<span class="badge badge-danger mx-1 badge-counter small">{{ \App\Trade::where('transaction_status', 'pending')->where(function ($query) {$query->where('buyer_id', Auth::user()->id)->orWhere('seller_id', Auth::user()->id);})->count() }}</span>@endif</a>
                         <div role="menu" id="dropdown" class="dropdown-menu border-warning" style="background-color: #04122f;color: #ffffff;">
-                            <a class="{{ Request::routeIs(['profile.index']) ? "dropdown-item text-warning" : "dropdown-item" }}" href="{{ route('profile.index') }}" style="  color: rgb(255,255,255);
-" onmouseover="this.style.backgroundColor='#04122f';">PROFILE</a>
+                            <a class="{{ Request::routeIs(['profile.index']) ? "dropdown-item text-warning" : "dropdown-item" }}" href="{{ route('profile.index') }}" style="color: rgb(255,255,255);" onmouseover="this.style.backgroundColor='#04122f';">PROFILE</a>
                             <a class="{{ Request::routeIs(['trade.index', 'trade.accept.buy', 'trade.accept.sell', 'trade.initiate.buy', 'trade.initiate.sell']) ? "dropdown-item text-warning" : "dropdown-item" }}" href="{{ route('trade.index') }}" style="  color: rgb(255,255,255);" onmouseover="this.style.backgroundColor='#04122f';">TRADES @if( \App\Trade::where('transaction_status', 'pending')->where(function ($query) {$query->where('buyer_id', Auth::user()->id)->orWhere('seller_id', Auth::user()->id);})->count() > 0)<span class="badge badge-danger mx-2 badge-counter small">{{ \App\Trade::where('transaction_status', 'pending')->where(function ($query) {$query->where('buyer_id', Auth::user()->id)->orWhere('seller_id', Auth::user()->id);})->count() }}</span>@endif</a>
                             <a class="{{ Request::routeIs(['verification.index', 'verification.phone', 'verification.document']) ? "dropdown-item text-warning" : "dropdown-item" }}" href="{{ route('verification.index') }}" style="  color: rgb(255,255,255);
   font-family: inherit;
@@ -121,13 +121,6 @@
         </div>
     </div>
 </footer>
-{{--<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>--}}
-{{--<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.bundle.min.js"></script>--}}
-{{--<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.1.1/aos.js"></script>--}}
-{{--<script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>--}}
-{{--<script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>--}}
-{{--<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>--}}
-{{--<script src="{{asset('assets/js/script.min.js?h=cd034b0ef077cf81570ca19f43155272')}}"></script>--}}
 <script src="//code.tidio.co/c8xdi2r45imezsgn09lnyblgz9ep5w95.js" async></script>
 <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
 <script src="{{ asset('assets/bootstrap/js/bootstrap.min.js') }}"></script>
@@ -145,7 +138,7 @@
 
     $("#toggleNavbar").click(function (e) {
         e.preventDefault();
-        $('#navbarResponsive').toggle("slow");
+        $('#navbarResponsive').toggle(200);
     })
 
     function copyText(input) {

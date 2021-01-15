@@ -244,11 +244,14 @@
     #brand-logo{
         height: 32px;
     }
-
     .trade-btn{
         padding: 10px 20px;
     }
-
+    a.dropdown-item {
+        font-size: 12px;
+        font-weight: bold;
+        font-family: inherit;
+    }
     .nav-item{
         font-size: 13px;
     }

@@ -33,7 +33,7 @@ class CreateTradesTable extends Migration
             $table->string('transaction_charge_coin')->nullable();
             $table->string('transaction_charge_usd')->nullable();
             $table->string('seller_wallet_company')->nullable();
-            $table->timestamp('trade_window_expiry');
+            $table->dateTime('trade_window_expiry');
             $table->string('transaction_status')->default('pending');
             $table->timestamps();
         });
