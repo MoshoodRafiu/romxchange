@@ -9,9 +9,9 @@ return [
          * The default configurations to be used by the meta generator.
          */
         'defaults'       => [
-            'title'        => "Acexworld", // set false to total remove
+            'title'        => "Romxchange", // set false to total remove
             'titleBefore'  => false, // Put defaults.title before page title, like 'It's Over 9000! - Dashboard'
-            'description'  => 'ACExWORLD is an escrow online cryptocurrency peer-to-peer exchange platform that bridges the gap between cryptocurrency buyers and sellers at zero risk.', // set false to total remove
+            'description'  => 'Romxchange is an escrow online cryptocurrency peer-to-peer exchange platform that bridges the gap between cryptocurrency buyers and sellers at zero risk.', // set false to total remove
             'separator'    => ' - ',
             'keywords'     => [],
             'canonical'    => false, // Set null for using Url::current(), set false to total remove
