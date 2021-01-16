@@ -34,12 +34,30 @@ class CreateUsersTable extends Migration
 
         DB::table('users')->insert([
             'display_name' => 'Admin',
-            'email' => 'admin@gmail.com',
+            'email' => 'admin@devrom.tech',
             'password' => Hash::make('password'),
             'is_agent' => 1,
             'is_admin' => 1,
         ]);
 
+        DB::table('users')->insert([
+            'display_name' => 'devRom',
+            'email' => 'demo@devrom.tech',
+            'password' => Hash::make('password'),
+            'is_agent' => 0,
+            'is_admin' => 0,
+        ]);
+
+        DB::table('verifications')->insert([
+            'user_id' => 2,
+            'is_email_verified' => 1,
+            'is_phone_verified' => 1,
+            'is_document_verified' => 1,
+            'document_verification_status' => 'approved',
+            'email_verified_at' => now(),
+            'phone_verified_at' => now(),
+            'document_verified_at' => now()
+        ]);
     }
 
     /**
