@@ -48,9 +48,9 @@
                     @else
                         <td>
                             @if($search)
-                                <h5 class="font-italic">No search result for <span class="font-weight-bold">'{{ $val }}'</span></h5>
+                                <h5 class="font-italic small">No search result for <span class="font-weight-bold">'{{ $val }}'</span></h5>
                             @else
-                                <h5 class="font-italic">No Verification(s) yet</h5>
+                                <h5 class="font-italic small">No Verification(s) yet</h5>
                             @endif
                         </td>
                     @endif

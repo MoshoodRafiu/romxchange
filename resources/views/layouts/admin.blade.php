@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>AcexWorld</title>
+    <title>Romxchange</title>
     <link rel="icon" type="image/png" sizes="218x250" href="{{asset('assets/img/logo.png')}}">
     <link rel="stylesheet" href="{{ asset('sidebar-assets/bootstrap/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i">
@@ -57,7 +57,7 @@
                 @endif
                 @if(Auth::user()->is_admin == 1)
                 <li class="nav-item" role="presentation">
-                    <a class="{{ Request::routeIs(['admin.transactions.enscrow', 'admin.transactions.enscrow.filter', 'admin.transactions.accept', 'admin.transactions.proceed']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.transactions.enscrow') }}"><i class="far fa-credit-card" style="width: 30px; text-align: center;"></i>@if(\App\Trade::where('is_special', 0)->where('transaction_status', 'pending')->count() > 0)<span class="badge badge-danger py-1 m-0 mx-md-2 px-2 badge-counter">{{ \App\Trade::where('is_special', 0)->where('transaction_status', 'pending')->count() }}</span>@endif<span>Enscrow</span></a>
+                    <a class="{{ Request::routeIs(['admin.transactions.enscrow', 'admin.transactions.enscrow.filter', 'admin.transactions.accept', 'admin.transactions.proceed']) ? "nav-link active" : "nav-link" }}" href="{{ route('admin.transactions.enscrow') }}"><i class="far fa-credit-card" style="width: 30px; text-align: center;"></i>@if(\App\Trade::where('is_special', 0)->where('transaction_status', 'pending')->count() > 0)<span class="badge badge-danger py-1 m-0 mx-md-2 px-2 badge-counter">{{ \App\Trade::where('is_special', 0)->where('transaction_status', 'pending')->count() }}</span>@endif<span>Escrow</span></a>
                 </li>
                 @endif
                 @if(Auth::user()->is_admin == 1)
@@ -177,7 +177,7 @@
         </div>
         <footer class="bg-white sticky-footer">
             <div class="container my-auto">
-                <div class="text-center my-auto copyright"><span>Copyright © ACE WORLD {{ date("Y", strtotime(now())) }}</span></div>
+                <div class="text-center my-auto copyright"><span>Copyright © ROMXCHANGE {{ date("Y", strtotime(now())) }}</span></div>
             </div>
         </footer>
     </div><a class="border rounded d-inline scroll-to-top" href="#page-top"><i class="fas fa-angle-up"></i></a></div>

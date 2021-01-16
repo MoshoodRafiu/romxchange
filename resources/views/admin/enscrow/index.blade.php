@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <h3 class="text-dark mb-4">Enscrow</h3>
+    <h3 class="text-dark mb-4">Escrow</h3>
     <div class="row">
         @if(Session::has('message'))
             <div class="alert col-12 alert-success text-left" role="alert">{{ session('message') }}</div>
