@@ -39,14 +39,6 @@ class CreateUsersTable extends Migration
             'is_agent' => 1,
             'is_admin' => 1,
         ]);
-
-        DB::table('users')->insert([
-            'display_name' => 'devRom',
-            'email' => 'demo@devrom.tech',
-            'password' => Hash::make('password'),
-            'is_agent' => 0,
-            'is_admin' => 0,
-        ]);
     }
 
     /**
