@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 
-Route::group(['middleware' => ['auth', 'active']], function () {
+Route::group(['middleware' => ['auth', 'email_verified', 'active']], function () {
 
     Route::get('/profile', 'ProfileController@index')->name('profile.index');
     Route::put('/profile/update', 'ProfileController@update')->name('profile.update');
