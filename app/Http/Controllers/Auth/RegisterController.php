@@ -88,7 +88,10 @@ class RegisterController extends Controller
             $verification = new Verification;
             $verification->user_id = $user->id;
             $verification->is_email_verified = 1;
+            $verification->is_document_verified = 1;
+            $verification->document_verification_status = 'approved';
             $verification->email_verified_at = now();
+            $verification->document_verified_at = now();
             $verification->save();
             Auth::login($user);
 //            Send Email
